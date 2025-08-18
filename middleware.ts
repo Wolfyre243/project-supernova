@@ -1,9 +1,33 @@
-import { type NextRequest } from 'next/server';
+import { NextResponse, type NextRequest } from 'next/server';
 import { updateSession } from '@/utils/supabase/middleware';
+import { createClient } from '@/utils/supabase/server';
+import { redirect } from 'next/navigation';
+
 export async function middleware(request: NextRequest) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  const protectedRoutes = ['/account'];
+
+  let response = NextResponse.next({
+    request: {
+      headers: request.headers,
+    },
+  });
+
+  const path = new URL(request.url).pathname;
+  const isProtectedRoute = protectedRoutes.includes(path);
+
+  if (isProtectedRoute && !user) {
+    return NextResponse.redirect(new URL('/auth/login', request.url));
+  }
+
   // update user's auth session
   return await updateSession(request);
 }
+
 export const config = {
   matcher: [
     /*
