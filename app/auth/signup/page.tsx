@@ -1,12 +1,12 @@
 'use client';
 
-import { login } from './actions';
+import { signup } from './actions';
 import { Button } from '@/components/ui/button';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/utils/cn';
 import { FcGoogle } from 'react-icons/fc';
-import { useActionState, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -26,33 +26,49 @@ import { objectToFormData } from '@/utils/formatters';
 import { ArrowLeft, Eye, EyeClosed } from 'lucide-react';
 import Link from 'next/link';
 
-type LoginFormInitState = {
-  error: string | null;
-};
-
 const formSchema = z.object({
+  name: z
+    .string({
+      error: 'Invalid input',
+    })
+    .min(2, {
+      error: 'Name must be at least 2 characters',
+    })
+    .max(100, {
+      error: 'Name cannot exceed 100 characters',
+    }),
   email: z.email(),
-  password: z.string(),
+  password: z
+    .string()
+    .min(6, { message: 'Password must be at least 6 characters' })
+    .regex(/[A-Z]/, { message: 'Password must contain an uppercase letter' })
+    .regex(/\d/, { message: 'Password must contain a digit' })
+    .regex(/[^A-Za-z0-9]/, {
+      message: 'Password must contain a special character',
+    })
+    .max(50, { message: 'Password cannot exceed 50 characters' }),
 });
 
-export function LoginForm({ className }: React.ComponentProps<'form'>) {
+export function SignUpForm({ className }: React.ComponentProps<'form'>) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
+      name: '',
       email: '',
       password: '',
     },
   });
 
+  // Remove useActionState, use only useForm/formState
   const { setError, formState } = form;
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
     const formData = objectToFormData(data);
 
     // Call signup directly, mimic server action
-    const result = await login(formData);
+    const result = await signup(formData);
     if (result && result.error) {
       toast.error(result.error);
       setError('root', { message: result.error });
@@ -63,6 +79,13 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
     <div className={cn('flex flex-col gap-6', className)}>
       <Card className='overflow-hidden p-0'>
         <CardContent className='grid p-0 md:grid-cols-2'>
+          <div className='bg-muted relative hidden md:block'>
+            <img
+              src='https://images.unsplash.com/photo-1500245804862-0692ee1bbee8?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJvcGljYWwlMjBzdW5zZXR8ZW58MHx8MHx8fDA%3D'
+              alt='Image'
+              className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.5]'
+            />
+          </div>
           {/* TODO When doing google SSO might need to split this to button-level form actions */}
           <Form {...form}>
             <form
@@ -70,11 +93,32 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
               className='flex flex-col gap-4 p-6 md:p-8'
             >
               <div className='flex flex-col items-center text-center'>
-                <h1 className='text-2xl font-bold'>Welcome back</h1>
+                <h1 className='text-2xl font-bold'>Create an account</h1>
                 <p className='text-muted-foreground text-balance'>
-                  Login to your Nova account
+                  Take charge of your finance
                 </p>
               </div>
+              <FormField
+                control={form.control}
+                name='name'
+                render={({ field }) => (
+                  <FormItem>
+                    <FormLabel>Name</FormLabel>
+                    <FormControl>
+                      <Input
+                        placeholder='John'
+                        type='text'
+                        required
+                        {...field}
+                      />
+                    </FormControl>
+                    <FormDescription>
+                      This is the name we will address you by.
+                    </FormDescription>
+                    <FormMessage />
+                  </FormItem>
+                )}
+              />
 
               <FormField
                 control={form.control}
@@ -96,55 +140,55 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
                 )}
               />
 
-              <div>
-                <div className='flex flex-row gap-2 w-full items-end'>
-                  <FormField
-                    control={form.control}
-                    name='password'
-                    render={({ field }) => (
-                      <FormItem className='w-full'>
-                        <FormLabel>Password</FormLabel>
-                        <FormControl>
-                          <Input
-                            placeholder=''
-                            type={showPassword ? 'text' : 'password'}
-                            required
-                            autoComplete='password'
-                            {...field}
-                          />
-                        </FormControl>
-                        <FormMessage />
-                      </FormItem>
-                    )}
-                  />
-                  <Button
-                    type='button'
-                    variant={'default'}
-                    size={'icon'}
-                    className='px-2 py-1 bg-transparent text-accent-foreground hover:bg-transparent cursor-pointer'
-                    onClick={() => setShowPassword((prev) => !prev)}
-                  >
-                    {showPassword ? <Eye /> : <EyeClosed />}
-                  </Button>
-                </div>
-                <a
-                  href='#'
-                  className='text-sm underline-offset-2 hover:underline'
+              {/* TODO: Live password validation */}
+              <div className='flex flex-row gap-2 w-full items-end'>
+                <FormField
+                  control={form.control}
+                  name='password'
+                  render={({ field }) => (
+                    <FormItem className='w-full'>
+                      <FormLabel>Password</FormLabel>
+                      <FormControl>
+                        <Input
+                          placeholder=''
+                          type={showPassword ? 'text' : 'password'}
+                          required
+                          autoComplete='password'
+                          {...field}
+                        />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
+                />
+                <Button
+                  type='button'
+                  variant={'default'}
+                  size={'icon'}
+                  className='px-2 py-1 bg-transparent text-accent-foreground hover:bg-transparent cursor-pointer'
+                  onClick={() => setShowPassword((prev) => !prev)}
                 >
-                  Forgot your password?
-                </a>
+                  {showPassword ? <Eye /> : <EyeClosed />}
+                </Button>
               </div>
 
-              <Button type='submit' className='w-full'>
-                Login
+              <Button
+                type='submit'
+                className='w-full'
+                disabled={formState.isSubmitting}
+              >
+                Sign Up
               </Button>
-
+              {formState.errors.root && (
+                <div className='text-destructive text-sm mt-2'>
+                  {formState.errors.root.message}
+                </div>
+              )}
               <div className='after:border-border relative text-center text-sm after:absolute after:inset-0 after:top-1/2 after:z-0 after:flex after:items-center after:border-t'>
                 <span className='bg-card text-muted-foreground relative z-10 px-2'>
                   Or
                 </span>
               </div>
-
               <div className=''>
                 <Button variant='outline' type='button' className='w-full'>
                   <FcGoogle />
@@ -152,20 +196,13 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
                 </Button>
               </div>
               <div className='text-center text-sm'>
-                Don&apos;t have an account?{' '}
-                <a href='/auth/signup' className='underline underline-offset-4'>
-                  Sign up
+                Already have an account?{' '}
+                <a href='/auth/login' className='underline underline-offset-4'>
+                  Login
                 </a>
               </div>
             </form>
           </Form>
-          <div className='bg-muted relative hidden md:block'>
-            <img
-              src='https://images.unsplash.com/photo-1500245804862-0692ee1bbee8?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJvcGljYWwlMjBzdW5zZXR8ZW58MHx8MHx8fDA%3D'
-              alt='Image'
-              className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.5]'
-            />
-          </div>
         </CardContent>
       </Card>
       {/* TODO: Set real ToS and PP once done */}
@@ -177,14 +214,14 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
   );
 }
 
-export default function LoginPage() {
+export default function SignUpPage() {
   return (
     <div className='flex min-h-svh flex-col items-center justify-center p-6 md:p-10'>
       <div className='w-full max-w-sm md:max-w-4xl'>
         <Link href={'/'}>
           <p className='text-sm text-muted-foreground/80'>← Back to Website</p>
         </Link>
-        <LoginForm />
+        <SignUpForm />
       </div>
     </div>
   );

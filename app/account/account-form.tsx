@@ -5,6 +5,7 @@ import { type User } from '@supabase/supabase-js';
 
 // ...
 
+// TODO: Refactor
 export default function AccountForm({ user }: { user: User | null }) {
   const supabase = createClient();
   const [loading, setLoading] = useState(true);
@@ -18,7 +19,7 @@ export default function AccountForm({ user }: { user: User | null }) {
 
       const { data, error, status } = await supabase
         .from('profile')
-        .select(`first_name, last_name, dob`)
+        .select(`name, username`)
         .eq('user_id', user?.id)
         .single();
 
@@ -28,8 +29,8 @@ export default function AccountForm({ user }: { user: User | null }) {
       }
 
       if (data) {
-        setFirstName(data.first_name);
-        setLastName(data.last_name);
+        setFirstName(data.username);
+        setLastName(data.name);
       }
     } catch (error) {
       alert('Error loading user data!');
