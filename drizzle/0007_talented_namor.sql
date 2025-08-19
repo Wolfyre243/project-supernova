@@ -1,0 +1,1 @@
+ALTER POLICY "Enable read access for authenticated users" ON "roles" TO authenticated USING (true);

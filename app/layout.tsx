@@ -4,6 +4,7 @@ import './globals.css';
 
 import { ThemeProvider, ThemeToggler } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
+import { AuthProvider } from '@/context/authProvider';
 
 const geistSans = Geist({
   variable: '--font-geist-sans',
@@ -36,7 +37,11 @@ export default function RootLayout({
           enableSystem
           disableTransitionOnChange
         >
-          <main>{children}</main>
+          <AuthProvider>
+            <main className='max-w-screen flex flex-col justify-center items-center'>
+              {children}
+            </main>
+          </AuthProvider>
           <Toaster richColors closeButton expand={true} />
         </ThemeProvider>
       </body>

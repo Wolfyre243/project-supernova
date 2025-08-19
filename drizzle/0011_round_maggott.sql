@@ -1,0 +1,1 @@
+ALTER POLICY "Enable read access for authenticated users" ON "user_role" TO authenticated,public,supabase_admin,supabase_auth_admin;

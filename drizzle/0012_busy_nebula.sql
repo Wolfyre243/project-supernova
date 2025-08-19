@@ -1,0 +1,1 @@
+CREATE POLICY "Enable read access for authenticator (Supabase hooks)" ON "user_role" AS PERMISSIVE FOR SELECT TO "authenticator";

@@ -1,6 +1,6 @@
 {
-  "id": "00000000-0000-0000-0000-000000000000",
-  "prevId": "",
+  "id": "c9a8caa9-2aae-44a6-9729-36e020730808",
+  "prevId": "00000000-0000-0000-0000-000000000000",
   "version": "7",
   "dialect": "postgresql",
   "tables": {
@@ -70,20 +70,19 @@
       "compositePrimaryKeys": {},
       "uniqueConstraints": {
         "profile_username_key": {
-          "columns": ["username"],
+          "name": "profile_username_key",
           "nullsNotDistinct": false,
-          "name": "profile_username_key"
+          "columns": ["username"]
         }
       },
-      "checkConstraints": {},
       "policies": {
         "Users can update their own profile": {
           "name": "Users can update their own profile",
           "as": "PERMISSIVE",
           "for": "UPDATE",
           "to": ["public"],
-          "withCheck": "(auth.uid() = user_id)",
-          "using": "(auth.uid() = user_id)"
+          "using": "(auth.uid() = user_id)",
+          "withCheck": "(auth.uid() = user_id)"
         },
         "Allow auth admin to insert profiles": {
           "name": "Allow auth admin to insert profiles",
@@ -104,56 +103,34 @@
           "to": ["public"]
         }
       },
-      "isRLSEnabled": true
+      "checkConstraints": {},
+      "isRLSEnabled": false
     },
-    "public.status": {
-      "name": "status",
-      "schema": "",
+    "auth.users": {
+      "name": "users",
+      "schema": "auth",
       "columns": {
-        "status_id": {
-          "name": "status_id",
-          "type": "integer",
+        "id": {
+          "name": "id",
+          "type": "uuid",
           "primaryKey": true,
           "notNull": true
-        },
-        "status_name": {
-          "name": "status_name",
-          "type": "varchar(30)",
-          "primaryKey": false,
-          "notNull": true
         }
       },
-      "indexes": {
-        "status_status_name_key": {
-          "name": "status_status_name_key",
-          "columns": [
-            {
-              "expression": "status_name",
-              "asc": true,
-              "nulls": "last",
-              "opclass": "text_ops",
-              "isExpression": false
-            }
-          ],
-          "isUnique": true,
-          "concurrently": false,
-          "method": "btree",
-          "with": {}
-        }
-      },
+      "indexes": {},
       "foreignKeys": {},
       "compositePrimaryKeys": {},
       "uniqueConstraints": {},
-      "checkConstraints": {},
       "policies": {},
+      "checkConstraints": {},
       "isRLSEnabled": false
     }
   },
   "enums": {
     "public.gender": {
       "name": "gender",
-      "values": ["M", "F"],
-      "schema": "public"
+      "schema": "public",
+      "values": ["M", "F"]
     }
   },
   "schemas": {},
@@ -162,11 +139,8 @@
   "policies": {},
   "views": {},
   "_meta": {
+    "columns": {},
     "schemas": {},
-    "tables": {},
-    "columns": {}
-  },
-  "internal": {
     "tables": {}
   }
 }

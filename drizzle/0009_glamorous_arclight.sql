@@ -1,0 +1,1 @@
+ALTER TABLE "user_role" ALTER COLUMN "role_id" SET DEFAULT 1;

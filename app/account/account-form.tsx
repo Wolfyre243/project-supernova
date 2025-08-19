@@ -2,6 +2,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { type User } from '@supabase/supabase-js';
+import useAuth from '@/hooks/useAuth';
 
 // ...
 
@@ -12,6 +13,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   const [firstName, setFirstName] = useState<string | null>(null);
   const [lastName, setLastName] = useState<string | null>(null);
   const [age, setAge] = useState<string | null>(null);
+  const { userId, role } = useAuth();
 
   const getProfile = useCallback(async () => {
     try {
@@ -69,9 +71,10 @@ export default function AccountForm({ user }: { user: User | null }) {
   }
 
   return (
-    <div className='form-widget'>
+    <div className='form-widget w-full h-screen'>
       {/* ... */}
-
+      <h1>Your id: {userId}</h1>
+      <h1>Your role: {role}</h1>
       <div>
         <label htmlFor='email'>Email</label>
         <input id='email' type='text' value={user?.email} disabled />

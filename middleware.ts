@@ -11,12 +11,6 @@ export async function middleware(request: NextRequest) {
 
   const protectedRoutes = ['/account'];
 
-  let response = NextResponse.next({
-    request: {
-      headers: request.headers,
-    },
-  });
-
   const path = new URL(request.url).pathname;
   const isProtectedRoute = protectedRoutes.includes(path);
 
