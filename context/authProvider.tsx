@@ -7,21 +7,25 @@ import {
   useCallback,
   useContext,
   useEffect,
+  useLayoutEffect,
   useState,
 } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { Roles } from '@/config/authConfig';
 import { Loader2 } from 'lucide-react';
+import LoadingSpinner from '@/components/loading-spinner';
 
 export type AuthContextType = {
   userId: string | null | undefined;
   role: Roles | null | undefined;
+  loading: boolean;
   signOut: () => void;
 };
 
 const AuthContextInitState: AuthContextType = {
   userId: null,
   role: null,
+  loading: true,
   signOut: () => {},
 };
 
@@ -32,10 +36,10 @@ export const AuthProvider = ({ children }: any) => {
   // const [user, setUser] = useState<User | null>();
   const [userId, setUserId] = useState<string | null>();
   const [role, setRole] = useState<Roles | null>();
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(true);
 
   const setData = useCallback(async () => {
-    setLoading(true);
+    // setLoading(true);
 
     try {
       const { data, error } = await supabase.auth.getClaims();
@@ -55,26 +59,26 @@ export const AuthProvider = ({ children }: any) => {
     }
   }, [supabase]);
 
-  useEffect(() => {
+  useLayoutEffect(() => {
     setData();
-  }, []);
+    // const { data: listener } = supabase.auth.onAuthStateChange(() => {
+    //   setData();
+    // });
+    // return () => {
+    //   listener?.subscription.unsubscribe();
+    // };
+  }, [supabase]);
 
-  const value = {
+  const value: AuthContextType = {
     userId,
     role,
+    loading,
     signOut: () => supabase.auth.signOut(),
   };
 
   return (
     <AuthContext.Provider value={value}>
-      {loading ? (
-        <div className='flex flex-col justify-center items-center w-full h-screen'>
-          <Loader2 className='animate-spin' size={64} strokeWidth={1} />
-          <h1 className='text-xl'>Loading...</h1>
-        </div>
-      ) : (
-        <>{children}</>
-      )}
+      {loading ? <LoadingSpinner /> : <>{children}</>}
     </AuthContext.Provider>
   );
 };

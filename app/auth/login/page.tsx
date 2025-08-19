@@ -26,10 +26,6 @@ import { objectToFormData } from '@/utils/formatters';
 import { ArrowLeft, Eye, EyeClosed } from 'lucide-react';
 import Link from 'next/link';
 
-type LoginFormInitState = {
-  error: string | null;
-};
-
 const formSchema = z.object({
   email: z.email(),
   password: z.string(),
@@ -135,7 +131,11 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
                 </a>
               </div>
 
-              <Button type='submit' className='w-full'>
+              <Button
+                type='submit'
+                className='w-full'
+                disabled={formState.isSubmitting}
+              >
                 Login
               </Button>
 
@@ -179,7 +179,7 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
 
 export default function LoginPage() {
   return (
-    <div className='flex min-h-svh flex-col items-center justify-center p-6 md:p-10'>
+    <div className='flex w-full min-h-svh flex-col items-center justify-center p-6 md:p-10'>
       <div className='w-full max-w-sm md:max-w-4xl'>
         <Link href={'/'}>
           <p className='text-sm text-muted-foreground/80'>← Back to Website</p>

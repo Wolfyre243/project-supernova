@@ -23,6 +23,7 @@ export async function login(formData: FormData) {
     return { error: error.message || 'Login failed' };
   }
 
-  revalidatePath('/', 'layout');
-  redirect('/account');
+  // revalidatePath('/', 'layout');
+  await supabase.auth.getUser();
+  return redirect('/account');
 }

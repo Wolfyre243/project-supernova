@@ -1,4 +1,4 @@
-# User Authentication Flow
+# User Authentication Flowd
 
 Project Supernova uses **Supabase** for Authentication.
 
