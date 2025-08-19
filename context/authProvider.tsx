@@ -17,14 +17,18 @@ import LoadingSpinner from '@/components/loading-spinner';
 
 export type AuthContextType = {
   userId: string | null | undefined;
+  setUserId: (prev: string | null) => void;
   role: Roles | null | undefined;
+  setRole: (prev: number | null) => void;
   loading: boolean;
   signOut: () => void;
 };
 
 const AuthContextInitState: AuthContextType = {
   userId: null,
+  setUserId: () => {},
   role: null,
+  setRole: () => {},
   loading: true,
   signOut: () => {},
 };
@@ -43,7 +47,6 @@ export const AuthProvider = ({ children }: any) => {
 
     try {
       const { data, error } = await supabase.auth.getClaims();
-      console.log(data?.claims);
       const { user_role }: any = data?.claims ?? null;
 
       if (error) throw error;
@@ -69,9 +72,11 @@ export const AuthProvider = ({ children }: any) => {
     // };
   }, [supabase]);
 
-  const value: AuthContextType = {
+  const value = {
     userId,
+    setUserId,
     role,
+    setRole,
     loading,
     signOut: () => supabase.auth.signOut(),
   };

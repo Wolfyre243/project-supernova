@@ -42,7 +42,6 @@ export default function RequireAuth({
   if (loading) return <LoadingSpinner />;
 
   if (error) {
-    // Throw error during render so ErrorBoundary can catch it
     throw error;
   }
 

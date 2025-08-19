@@ -1,12 +1,11 @@
 'use client';
 
-import { login } from './actions';
 import { Button } from '@/components/ui/button';
 import { Label } from '@radix-ui/react-label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/utils/cn';
 import { FcGoogle } from 'react-icons/fc';
-import { useActionState, useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -23,8 +22,12 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { objectToFormData } from '@/utils/formatters';
-import { ArrowLeft, Eye, EyeClosed } from 'lucide-react';
+import { Eye, EyeClosed } from 'lucide-react';
 import Link from 'next/link';
+
+import { createClient } from '@/utils/supabase/client';
+import useAuth from '@/hooks/useAuth';
+import { redirect } from 'next/navigation';
 
 const formSchema = z.object({
   email: z.email(),
@@ -33,6 +36,7 @@ const formSchema = z.object({
 
 export function LoginForm({ className }: React.ComponentProps<'form'>) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
+  const { setUserId, setRole } = useAuth();
 
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
@@ -45,14 +49,33 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
   const { setError, formState } = form;
 
   async function onSubmit(data: z.infer<typeof formSchema>) {
-    const formData = objectToFormData(data);
+    const supabase = createClient();
 
-    // Call signup directly, mimic server action
-    const result = await login(formData);
-    if (result && result.error) {
-      toast.error(result.error);
-      setError('root', { message: result.error });
+    const { error } = await supabase.auth.signInWithPassword({
+      email: data.email,
+      password: data.password,
+    });
+
+    if (error) {
+      toast.error(error.message || 'Login failed');
+      setError('root', { message: error.message || 'Login failed' });
+      return;
     }
+
+    const { data: jwtData, error: userError } = await supabase.auth.getClaims();
+    const { user_role }: any = jwtData?.claims ?? null;
+
+    if (userError || !jwtData) {
+      toast.error('Something went wrong!');
+      setError('root', {
+        message: 'Something went wrong!',
+      });
+      return;
+    }
+
+    setUserId(jwtData.claims.sub);
+    setRole(user_role);
+    redirect('/account');
   }
 
   return (
