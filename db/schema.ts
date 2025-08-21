@@ -49,8 +49,8 @@ export const profile = pgTable(
       as: 'permissive',
       for: 'update',
       to: [PgRoles.PUBLIC],
-      using: sql`(auth.uid() = user_id)`,
-      withCheck: sql`(auth.uid() = user_id)`,
+      using: sql`((select auth.uid()) = user_id)`,
+      withCheck: sql`((select auth.uid()) = user_id)`,
     }),
     pgPolicy('Allow auth admin to insert profiles', {
       as: 'permissive',
@@ -61,6 +61,7 @@ export const profile = pgTable(
       as: 'permissive',
       for: 'insert',
       to: [PgRoles.AUTHENTICATED],
+      withCheck: sql`((select auth.uid()) = user_id)`,
     }),
     pgPolicy('Public profiles are viewable by everyone', {
       as: 'permissive',
@@ -124,7 +125,7 @@ export const userRole = pgTable(
       as: 'permissive',
       for: 'select',
       to: [
-        PgRoles.PUBLIC,
+        // PgRoles.PUBLIC,
         PgRoles.AUTHENTICATED,
         PgRoles.SUPABASE_AUTH_ADMIN,
         PgRoles.SUPABASE_ADMIN,
@@ -148,28 +149,28 @@ export const userRole = pgTable(
   ],
 );
 
-export const permissions = pgTable('permissions', {
-  permissionId: integer('permission_id').primaryKey().notNull(),
-  name: text().notNull().unique(),
-  ...timestamps,
-});
+// export const permissions = pgTable('permissions', {
+//   permissionId: integer('permission_id').primaryKey().notNull(),
+//   name: text().notNull().unique(),
+//   ...timestamps,
+// });
 
-export const rolePermissions = pgTable(
-  'role_permissions',
-  {
-    roleId: integer('role_id').notNull(),
-    permissionId: integer('permission_id').notNull(),
-    ...timestamps,
-  },
-  (table) => [
-    primaryKey({ columns: [table.roleId, table.permissionId] }),
-    foreignKey({
-      columns: [table.roleId],
-      foreignColumns: [roles.roleId],
-    }),
-    foreignKey({
-      columns: [table.permissionId],
-      foreignColumns: [permissions.permissionId],
-    }),
-  ],
-);
+// export const rolePermissions = pgTable(
+//   'role_permissions',
+//   {
+//     roleId: integer('role_id').notNull(),
+//     permissionId: integer('permission_id').notNull(),
+//     ...timestamps,
+//   },
+//   (table) => [
+//     primaryKey({ columns: [table.roleId, table.permissionId] }),
+//     foreignKey({
+//       columns: [table.roleId],
+//       foreignColumns: [roles.roleId],
+//     }),
+//     foreignKey({
+//       columns: [table.permissionId],
+//       foreignColumns: [permissions.permissionId],
+//     }),
+//   ],
+// );

@@ -1,0 +1,3 @@
+ALTER POLICY "Users can update their own profile" ON "profile" TO public USING ((select auth.uid() = user_id)) WITH CHECK ((select auth.uid() = user_id));--> statement-breakpoint
+ALTER POLICY "Users can insert their own profile" ON "profile" TO authenticated WITH CHECK ((select auth.uid() = user_id));--> statement-breakpoint
+ALTER POLICY "Enable read access for authenticated users" ON "user_role" TO authenticated,supabase_admin,supabase_auth_admin;
