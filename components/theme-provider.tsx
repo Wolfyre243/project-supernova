@@ -19,10 +19,11 @@ export function ThemeToggler() {
     <Button
       variant='ghost'
       size='icon'
+      className='rounded-full hover:bg-transparent dark:hover:bg-transparent cursor-pointer'
       aria-label='Toggle theme'
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >
-      {isDark ? <Sun /> : <MoonStar />}
+      {isDark ? <Sun className='size-4' /> : <MoonStar className='size-4' />}
     </Button>
   );
 }

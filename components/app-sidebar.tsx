@@ -64,20 +64,18 @@ export function AppSidebar() {
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <SidebarMenuButton size={'lg'}>
-              <>
-                <div className='flex aspect-square size-8 items-center justify-center rounded-lg'>
-                  {/* TODO: Replace with logo */}
-                  <Sparkle />
-                </div>
-                <div className='flex flex-col text-left text-lg leading-tight'>
-                  <h1 className='font-medium'>Nova</h1>
-                  <span className='text-xs text-muted-foreground/50'>
-                    Track your finance
-                  </span>
-                </div>
-              </>
-            </SidebarMenuButton>
+            <div className='flex flex-row items-center gap-2 p-1'>
+              <div className='flex aspect-square size-8 items-center justify-center rounded-lg'>
+                {/* TODO: Replace with logo */}
+                <Sparkle />
+              </div>
+              <div className='flex flex-col text-left text-lg leading-tight'>
+                <h1 className='font-medium'>Nova</h1>
+                <span className='text-xs text-muted-foreground/50'>
+                  Track your finance
+                </span>
+              </div>
+            </div>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarHeader>

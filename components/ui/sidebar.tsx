@@ -519,7 +519,12 @@ function SidebarMenuButton({
       data-sidebar='menu-button'
       data-size={size}
       data-active={isActive}
-      className={cn(sidebarMenuButtonVariants({ variant, size }), className)}
+      className={cn(
+        sidebarMenuButtonVariants({ variant, size }),
+        className,
+        isActive &&
+          'before:content-[""] before:absolute before:-left-0.5 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-full before:rounded-l-full before:bg-secondary/50 before:z-10 !bg-accent/50 !shadow-none',
+      )}
       {...props}
     />
   );

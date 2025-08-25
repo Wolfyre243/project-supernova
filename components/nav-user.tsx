@@ -1,65 +1,50 @@
-import { EllipsisVertical } from 'lucide-react';
 import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
 import {
   DropdownMenu,
   DropdownMenuContent,
-  DropdownMenuLabel,
   DropdownMenuTrigger,
 } from './ui/dropdown-menu';
-import {
-  SidebarMenu,
-  SidebarMenuButton,
-  SidebarMenuItem,
-  useSidebar,
-} from './ui/sidebar';
+import { SidebarMenuButton, useSidebar } from './ui/sidebar';
 
-export type NavUser = {
+// TODO: Should take reference from main User type instead
+export type NavUserType = {
   // userId: string;
   username: string;
   name: string;
   email: string;
   role: number;
-  avatarUrl: string | null;
+  avatarUrl?: string | null;
 };
 
-function UserHeader({ user }: { user: NavUser }) {
+function UserHeader({ user }: { user: NavUserType }) {
   return (
-    <>
-      <Avatar className='h-8 w-8 rounded-lg'>
+    <div className='flex flex-row gap-2 items-center'>
+      <Avatar className='h-8 w-8 rounded-full shadow-lg'>
         <AvatarImage src={user.avatarUrl ?? ''} />
-        <AvatarFallback className='rounded-lg'>
-          {user.name.charAt(0)}
-        </AvatarFallback>
+        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
       </Avatar>
       <span className='text-muted-foreground truncate leading-tight font-medium'>
         {user.name}
       </span>
-    </>
+    </div>
   );
 }
 
-// TODO: Put this in the dashboard topbar instead
-export default function NavUser({ user }: { user: NavUser }) {
-  const { isMobile } = useSidebar();
-
+export default function NavUser({ user }: { user: NavUserType }) {
+  // TODO: Add user information and profile stuff
   return (
-    <SidebarMenu>
-      <SidebarMenuItem>
-        <DropdownMenu>
-          <DropdownMenuTrigger asChild>
-            <SidebarMenuButton>
-              <UserHeader user={user} />
-              <EllipsisVertical className='ml-auto size-4' />
-            </SidebarMenuButton>
-          </DropdownMenuTrigger>
-          <DropdownMenuContent
-            className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
-            side={isMobile ? 'bottom' : 'right'}
-            align='end'
-            sideOffset={4}
-          ></DropdownMenuContent>
-        </DropdownMenu>
-      </SidebarMenuItem>
-    </SidebarMenu>
+    <DropdownMenu>
+      <DropdownMenuTrigger asChild className='outline-0'>
+        <UserHeader user={user} />
+        {/* <ChevronDown className='size-4' /> */}
+      </DropdownMenuTrigger>
+      <DropdownMenuContent
+        className='w-(--radix-dropdown-menu-trigger-width) min-w-56 rounded-lg'
+        align='end'
+        sideOffset={4}
+      >
+        <h1>hello world</h1>
+      </DropdownMenuContent>
+    </DropdownMenu>
   );
 }
