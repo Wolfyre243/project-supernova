@@ -10,7 +10,7 @@ export default function UserHomePage() {
         <BalanceHeader />
       </header>
 
-      <section className='bg-background flex h-full flex-col rounded-t-3xl p-6'>
+      <section className='bg-background flex min-h-full flex-col rounded-t-3xl p-6'>
         <h1>Hello World</h1>
       </section>
     </>

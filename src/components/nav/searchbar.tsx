@@ -6,7 +6,7 @@ import {
   ShortcutBadge,
   ShortcutBadgeGroup,
   ShortcutPlusBadge,
-} from './shortcut-badges';
+} from '@/components/shortcut-badges';
 import { useEffect, useRef, useState } from 'react';
 
 export function SearchBar() {

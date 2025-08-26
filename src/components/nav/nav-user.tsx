@@ -1,7 +1,7 @@
 'use client';
 
-import React, { useEffect, useState } from 'react';
-import { Avatar, AvatarFallback, AvatarImage } from './ui/avatar';
+import React, { useCallback, useEffect, useState } from 'react';
+import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
 import axios from 'axios';
 import {
   DropdownMenu,
@@ -10,13 +10,14 @@ import {
   DropdownMenuItem,
   DropdownMenuSeparator,
   DropdownMenuTrigger,
-} from './ui/dropdown-menu';
-import { Skeleton } from './ui/skeleton';
-import { useSidebar } from './ui/sidebar';
+} from '../ui/dropdown-menu';
+import { Skeleton } from '../ui/skeleton';
+import { useSidebar } from '../ui/sidebar';
 import Link from 'next/link';
 import { LogOut, Settings2 } from 'lucide-react';
 import useAuth from '@/hooks/useAuth';
 import { redirect } from 'next/navigation';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 // TODO: Should take reference from main User type instead
 export type NavUserType = {
@@ -58,9 +59,11 @@ export function NavUser() {
   const [user, setUser] = useState<NavUserType | null>(null);
   const [loading, setLoading] = useState(true);
   const { signOut } = useAuth();
+  const isMobile = useIsMobile();
 
-  useEffect(() => {
+  const fetchUser = useCallback(
     async function fetchUser() {
+      if (isMobile) return;
       setLoading(true);
       try {
         const res = await axios.get('/api/user');
@@ -70,9 +73,16 @@ export function NavUser() {
       } finally {
         setLoading(false);
       }
-    }
+    },
+    [setUser, isMobile],
+  );
+
+  useEffect(() => {
     fetchUser();
-  }, []);
+  }, [fetchUser]);
+
+  // Do not render on mobile
+  if (isMobile) return null;
 
   if (loading || !user) return <NavUserSkeleton />;
 
@@ -105,7 +115,7 @@ export function NavUser() {
             className='text-destructive flex w-full cursor-pointer flex-row items-center gap-2'
             type='button'
             onClick={async () => {
-              await signOut();
+              signOut();
               redirect('/auth/login');
             }}
           >
@@ -122,9 +132,11 @@ export function NavUserMobile() {
   const [user, setUser] = useState<NavUserType | null>(null);
   const [loading, setLoading] = useState(true);
   const { toggleSidebar } = useSidebar();
+  const isMobile = useIsMobile();
 
-  useEffect(() => {
+  const fetchUser = useCallback(
     async function fetchUser() {
+      if (!isMobile) return;
       setLoading(true);
       try {
         const res = await axios.get('/api/user');
@@ -134,9 +146,16 @@ export function NavUserMobile() {
       } finally {
         setLoading(false);
       }
-    }
+    },
+    [setUser, isMobile],
+  );
+
+  useEffect(() => {
     fetchUser();
-  }, []);
+  }, [fetchUser]);
+
+  // Do not render on desktop
+  if (!isMobile) return null;
 
   if (loading || !user)
     return <Skeleton className='bg-accent h-10 w-10 rounded-full' />;

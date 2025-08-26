@@ -183,14 +183,14 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
               </div>
             </form>
           </Form>
-          <Image
-            src='https://images.unsplash.com/photo-1500245804862-0692ee1bbee8?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJvcGljYWwlMjBzdW5zZXR8ZW58MHx8MHx8fDA%3D'
-            alt='Image'
-            fill
-            className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.5]'
-            priority
-            sizes='(max-width: 768px) 100vw, 50vw'
-          />
+          <div className='relative h-full w-full'>
+            <Image
+              src='https://images.unsplash.com/photo-1500245804862-0692ee1bbee8?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJvcGljYWwlMjBzdW5zZXR8ZW58MHx8MHx8fDA%3D'
+              alt='Image'
+              fill
+              className='h-full w-full object-cover dark:brightness-[0.5]'
+            />
+          </div>
         </CardContent>
       </Card>
       {/* TODO: Set real ToS and PP once done */}

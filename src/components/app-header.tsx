@@ -2,7 +2,7 @@
 'use client';
 
 import React from 'react';
-import { NavUserMobile } from './nav-user';
+import { NavUserMobile } from './nav/nav-user';
 import { Button } from './ui/button';
 import { Bell } from 'lucide-react';
 

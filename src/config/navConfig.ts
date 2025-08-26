@@ -34,3 +34,26 @@ export const navItems: Array<NavItem> = [
     icon: ChartNoAxesColumnIncreasing,
   },
 ];
+
+export const mobileNavItems: Record<string, NavItem> = {
+  home: {
+    title: 'Home',
+    url: '/home',
+    icon: Home,
+  },
+  accounts: {
+    title: 'Accounts',
+    url: '#',
+    icon: Wallet,
+  },
+  history: {
+    title: 'History',
+    url: '#',
+    icon: Receipt,
+  },
+  statistics: {
+    title: 'Statistics',
+    url: '#',
+    icon: ChartNoAxesColumnIncreasing,
+  },
+};

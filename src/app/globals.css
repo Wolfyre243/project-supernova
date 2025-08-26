@@ -1,6 +1,8 @@
 @import 'tailwindcss';
 @import 'tw-animate-css';
 
+@plugin 'tailwind-scrollbar';
+
 @custom-variant dark (&:is(.dark *));
 
 @theme inline {
@@ -256,6 +258,7 @@
   background: url('/mobile-homepage-gradient.jpg');
   background-size: cover;
   background-position: center;
+  /* background-attachment: fixed; */
 }
 
 @media (min-width: 1024px) {

@@ -82,14 +82,14 @@ export function SignUpForm({ className }: React.ComponentProps<'form'>) {
     <div className={cn('flex flex-col gap-6', className)}>
       <Card className='overflow-hidden p-0'>
         <CardContent className='grid p-0 md:grid-cols-2'>
-          <Image
-            src='https://images.unsplash.com/photo-1500245804862-0692ee1bbee8?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJvcGljYWwlMjBzdW5zZXR8ZW58MHx8MHx8fDA%3D'
-            alt='Image'
-            fill
-            className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.5]'
-            priority
-            sizes='(max-width: 768px) 100vw, 50vw'
-          />
+          <div className='relative h-full w-full'>
+            <Image
+              src='https://images.unsplash.com/photo-1500245804862-0692ee1bbee8?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJvcGljYWwlMjBzdW5zZXR8ZW58MHx8MHx8fDA%3D'
+              alt='Image'
+              fill
+              className='h-full w-full object-cover dark:brightness-[0.5]'
+            />
+          </div>
           {/* TODO When doing google SSO might need to split this to button-level form actions */}
           <Form {...form}>
             <form

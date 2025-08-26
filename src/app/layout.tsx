@@ -23,7 +23,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang='en' suppressHydrationWarning>
+    <html lang='en' suppressHydrationWarning className='scrollbar-thin'>
+      <head>
+        <meta name='apple-mobile-web-app-title' content='Nova' />
+      </head>
       <body className={`${outfit.variable} antialiased`}>
         <ThemeProvider
           attribute='class'

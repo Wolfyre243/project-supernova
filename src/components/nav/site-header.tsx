@@ -2,7 +2,7 @@ import React from 'react';
 import { Separator } from '@radix-ui/react-separator';
 import { SearchBar } from './searchbar';
 import { Bell, Settings } from 'lucide-react';
-import { ThemeToggler } from './theme-provider';
+import { ThemeToggler } from '../theme-provider';
 import { NavUser } from './nav-user';
 
 // TODO: Date should be fetched instead
@@ -26,7 +26,7 @@ function SettingsButton() {
 
 export default function SiteHeader() {
   return (
-    <header className='bg-background hidden h-(--header-height) flex-shrink-0 items-center gap-2 border-b transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) md:flex'>
+    <header className='bg-background sticky top-0 z-50 hidden h-(--header-height) flex-shrink-0 items-center gap-2 border-b shadow-md transition-[width,height] ease-linear group-has-data-[collapsible=icon]/sidebar-wrapper:h-(--header-height) md:flex'>
       <nav className='flex h-full w-full flex-row items-center justify-between gap-1 px-4 lg:gap-2'>
         {/* <SidebarTrigger className='-ml-1' /> */}
         {/* <Separator

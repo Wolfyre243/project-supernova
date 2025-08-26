@@ -2,9 +2,10 @@ import React from 'react';
 import { cookies } from 'next/headers';
 
 import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
-import { AppSidebar } from '@/components/app-sidebar';
-import SiteHeader from '@/components/site-header';
+import { AppSidebar } from '@/components/nav/app-sidebar';
+import SiteHeader from '@/components/nav/site-header';
 import RequireAuth from '@/components/require-auth';
+import BottomBar from '@/components/bottom-bar';
 
 export default async function UserHomeLayout({
   children,
@@ -27,15 +28,13 @@ export default async function UserHomeLayout({
       >
         <AppSidebar />
         <SidebarInset>
-          <main className='bg-homepage-gradient @container/main flex min-h-screen flex-1 flex-col lg:bg-none'>
+          <main className='bg-homepage-gradient flex min-h-screen flex-1 flex-col lg:bg-none'>
             <SiteHeader />
-            <div className='flex h-full flex-col overflow-y-scroll'>
-              {children}
-            </div>
-            <div className='sticky bottom-0 z-50 block w-full bg-white md:hidden'>
-              <h1>hello</h1>
-            </div>
+            <div className='flex min-h-screen flex-1 flex-col'>{children}</div>
           </main>
+          <div className='fixed right-0 bottom-0 left-0 z-50 w-full md:hidden'>
+            <BottomBar />
+          </div>
         </SidebarInset>
       </SidebarProvider>
     </RequireAuth>
