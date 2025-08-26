@@ -1,3 +1,4 @@
+import React from 'react';
 import RequireAuth from '@/components/require-auth';
 import AccountForm from './account-form';
 import { createClient } from '@/utils/supabase/server';

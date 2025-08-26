@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { Search } from 'lucide-react';
 import {
   ShortcutBadge,
@@ -33,19 +34,19 @@ export function SearchBar() {
 
   // TODO: Implement search functionality
   return (
-    <search className='flex flex-row w-1/3 h-fit items-center gap-3 border rounded-xl text-muted-foreground px-3 py-1 transition-all duration-200'>
+    <search className='text-muted-foreground flex h-fit w-1/3 flex-row items-center gap-3 rounded-xl border px-3 py-1 transition-all duration-200'>
       <Search className='size-4 flex-shrink-0' />
       <input
         name='searchTerm'
         type='text'
         placeholder={isFocused ? '' : 'Search'}
-        className='outline-0 placeholder:text-muted-foreground w-full text-sm'
+        className='placeholder:text-muted-foreground w-full text-sm outline-0'
         ref={searchInputRef}
         onFocus={() => setIsFocused(true)}
         onBlur={() => setIsFocused(false)}
       />
       <div
-        className={`transition-opacity duration-200 ${isFocused ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}
+        className={`transition-opacity duration-200 ${isFocused ? 'pointer-events-none opacity-0' : 'opacity-100'}`}
       >
         <ShortcutBadgeGroup>
           <ShortcutBadge>Ctrl</ShortcutBadge>

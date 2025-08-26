@@ -1,4 +1,6 @@
 'use client';
+
+import React from 'react';
 import { useCallback, useEffect, useState } from 'react';
 import { createClient } from '@/utils/supabase/client';
 import { type User } from '@supabase/supabase-js';
@@ -12,7 +14,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   const [loading, setLoading] = useState(true);
   const [firstName, setFirstName] = useState<string | null>(null);
   const [lastName, setLastName] = useState<string | null>(null);
-  const [age, setAge] = useState<string | null>(null);
+  // const [age, setAge] = useState<string | null>(null);
   const { userId, role } = useAuth();
 
   const getProfile = useCallback(async () => {
@@ -35,6 +37,7 @@ export default function AccountForm({ user }: { user: User | null }) {
         setLastName(data.name);
       }
     } catch (error) {
+      console.log(error);
       // alert('Error loading user data!');
     } finally {
       setLoading(false);
@@ -64,6 +67,7 @@ export default function AccountForm({ user }: { user: User | null }) {
       if (error) throw error;
       // alert('Profile updated!');
     } catch (error) {
+      console.log(error);
       // alert('Error updating the data!');
     } finally {
       setLoading(false);
@@ -71,7 +75,7 @@ export default function AccountForm({ user }: { user: User | null }) {
   }
 
   return (
-    <div className='form-widget w-full h-screen'>
+    <div className='form-widget h-screen w-full'>
       {/* ... */}
       <h1>Your id: {userId}</h1>
       <h1>Your role: {role}</h1>

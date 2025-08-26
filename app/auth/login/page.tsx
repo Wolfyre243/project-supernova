@@ -1,7 +1,6 @@
 'use client';
 
 import { Button } from '@/components/ui/button';
-import { Label } from '@radix-ui/react-label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/utils/cn';
 import { FcGoogle } from 'react-icons/fc';
@@ -21,7 +20,6 @@ import {
   FormLabel,
   FormMessage,
 } from '@/components/ui/form';
-import { objectToFormData } from '@/utils/formatters';
 import { Eye, EyeClosed } from 'lucide-react';
 import Link from 'next/link';
 
@@ -116,7 +114,7 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
               />
 
               <div>
-                <div className='flex flex-row gap-2 w-full items-end'>
+                <div className='flex w-full flex-row items-end gap-2'>
                   <FormField
                     control={form.control}
                     name='password'
@@ -140,7 +138,7 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
                     type='button'
                     variant={'default'}
                     size={'icon'}
-                    className='px-2 py-1 bg-transparent text-accent-foreground hover:bg-transparent cursor-pointer'
+                    className='text-accent-foreground cursor-pointer bg-transparent px-2 py-1 hover:bg-transparent'
                     onClick={() => setShowPassword((prev) => !prev)}
                   >
                     {showPassword ? <Eye /> : <EyeClosed />}
@@ -201,11 +199,23 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
 }
 
 export default function LoginPage() {
+  const { userId, loading } = useAuth();
+
+  // Redirect if authenticated
+  if (!loading && userId) {
+    redirect('/home');
+  }
+
+  if (loading) {
+    // Optionally, show a spinner or nothing while loading
+    return null;
+  }
+
   return (
-    <div className='flex w-full min-h-svh flex-col items-center justify-center p-6 md:p-10'>
+    <div className='flex min-h-svh w-full flex-col items-center justify-center p-6 md:p-10'>
       <div className='w-full max-w-sm md:max-w-4xl'>
         <Link href={'/'}>
-          <p className='text-sm text-muted-foreground/80'>← Back to Website</p>
+          <p className='text-muted-foreground/80 text-sm'>← Back to Website</p>
         </Link>
         <LoginForm />
       </div>

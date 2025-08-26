@@ -25,6 +25,8 @@ import {
 import { objectToFormData } from '@/utils/formatters';
 import { ArrowLeft, Eye, EyeClosed } from 'lucide-react';
 import Link from 'next/link';
+import { redirect } from 'next/navigation';
+import useAuth from '@/hooks/useAuth';
 
 const formSchema = z.object({
   name: z
@@ -141,7 +143,7 @@ export function SignUpForm({ className }: React.ComponentProps<'form'>) {
               />
 
               {/* TODO: Live password validation */}
-              <div className='flex flex-row gap-2 w-full items-end'>
+              <div className='flex w-full flex-row items-end gap-2'>
                 <FormField
                   control={form.control}
                   name='password'
@@ -165,7 +167,7 @@ export function SignUpForm({ className }: React.ComponentProps<'form'>) {
                   type='button'
                   variant={'default'}
                   size={'icon'}
-                  className='px-2 py-1 bg-transparent text-accent-foreground hover:bg-transparent cursor-pointer'
+                  className='text-accent-foreground cursor-pointer bg-transparent px-2 py-1 hover:bg-transparent'
                   onClick={() => setShowPassword((prev) => !prev)}
                 >
                   {showPassword ? <Eye /> : <EyeClosed />}
@@ -180,7 +182,7 @@ export function SignUpForm({ className }: React.ComponentProps<'form'>) {
                 Sign Up
               </Button>
               {formState.errors.root && (
-                <div className='text-destructive text-sm mt-2'>
+                <div className='text-destructive mt-2 text-sm'>
                   {formState.errors.root.message}
                 </div>
               )}
@@ -215,11 +217,23 @@ export function SignUpForm({ className }: React.ComponentProps<'form'>) {
 }
 
 export default function SignUpPage() {
+  const { userId, loading } = useAuth();
+
+  // Redirect if authenticated
+  if (!loading && userId) {
+    redirect('/home');
+  }
+
+  if (loading) {
+    // Optionally, show a spinner or nothing while loading
+    return null;
+  }
+
   return (
-    <div className='flex w-full min-h-svh flex-col items-center justify-center p-6 md:p-10'>
+    <div className='flex min-h-svh w-full flex-col items-center justify-center p-6 md:p-10'>
       <div className='w-full max-w-sm md:max-w-4xl'>
         <Link href={'/'}>
-          <p className='text-sm text-muted-foreground/80'>← Back to Website</p>
+          <p className='text-muted-foreground/80 text-sm'>← Back to Website</p>
         </Link>
         <SignUpForm />
       </div>

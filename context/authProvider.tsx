@@ -1,18 +1,9 @@
 'use client';
 
+import React from 'react';
 import { createClient } from '@/utils/supabase/client';
-import { Session, User } from '@supabase/supabase-js';
-import {
-  createContext,
-  useCallback,
-  useContext,
-  useEffect,
-  useLayoutEffect,
-  useState,
-} from 'react';
-import { jwtDecode } from 'jwt-decode';
+import { createContext, useCallback, useLayoutEffect, useState } from 'react';
 import { Roles } from '@/config/authConfig';
-import { Loader2 } from 'lucide-react';
 import LoadingSpinner from '@/components/loading-spinner';
 
 export type AuthContextType = {
@@ -35,7 +26,7 @@ const AuthContextInitState: AuthContextType = {
 
 const AuthContext = createContext<AuthContextType>(AuthContextInitState);
 
-export const AuthProvider = ({ children }: any) => {
+export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
   const supabase = createClient();
   // const [user, setUser] = useState<User | null>();
   const [userId, setUserId] = useState<string | null>();
@@ -47,7 +38,9 @@ export const AuthProvider = ({ children }: any) => {
 
     try {
       const { data, error } = await supabase.auth.getClaims();
-      const { user_role }: any = data?.claims ?? null;
+      const user_role = (
+        data?.claims as { user_role?: Roles; sub?: string } | null
+      )?.user_role;
 
       if (error) throw error;
 
@@ -78,7 +71,11 @@ export const AuthProvider = ({ children }: any) => {
     role,
     setRole,
     loading,
-    signOut: () => supabase.auth.signOut(),
+    signOut: async () => {
+      setUserId(null);
+      setRole(null);
+      await supabase.auth.signOut();
+    },
   };
 
   return (

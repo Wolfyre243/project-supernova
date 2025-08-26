@@ -3,7 +3,7 @@
 import * as React from 'react';
 import { Slot } from '@radix-ui/react-slot';
 import { cva, VariantProps } from 'class-variance-authority';
-import { PanelLeftIcon } from 'lucide-react';
+import { Menu } from 'lucide-react';
 
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/utils/cn';
@@ -266,14 +266,17 @@ function SidebarTrigger({
       data-slot='sidebar-trigger'
       variant='ghost'
       size='icon'
-      className={cn('size-7', className)}
+      className={cn(
+        'size-7 cursor-pointer hover:bg-transparent dark:hover:bg-transparent',
+        className,
+      )}
       onClick={(event) => {
         onClick?.(event);
         toggleSidebar();
       }}
       {...props}
     >
-      <PanelLeftIcon />
+      <Menu className='size-6' />
       <span className='sr-only'>Toggle Sidebar</span>
     </Button>
   );
@@ -359,7 +362,7 @@ function SidebarSeparator({
   ...props
 }: React.ComponentProps<typeof Separator>) {
   return (
-    <div className='flex w-full px-2 justify-center'>
+    <div className='flex w-full justify-center px-2'>
       <Separator
         data-slot='sidebar-separator'
         data-sidebar='separator'
@@ -523,7 +526,7 @@ function SidebarMenuButton({
         sidebarMenuButtonVariants({ variant, size }),
         className,
         isActive &&
-          'before:content-[""] before:absolute before:-left-0.5 before:top-1/2 before:-translate-y-1/2 before:w-1 before:h-full before:rounded-l-full before:bg-secondary/50 before:z-10 !bg-accent/50 !shadow-none',
+          'before:bg-secondary/50 !bg-accent/50 !shadow-none before:absolute before:top-1/2 before:-left-0.5 before:z-10 before:h-full before:w-1 before:-translate-y-1/2 before:rounded-l-full before:content-[""]',
       )}
       {...props}
     />

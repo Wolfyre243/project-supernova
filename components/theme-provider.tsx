@@ -1,5 +1,6 @@
 'use client';
 
+import React from 'react';
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { Button } from './ui/button';
 import { MoonStar, Sun } from 'lucide-react';
@@ -12,14 +13,14 @@ export function ThemeProvider({
 }
 
 export function ThemeToggler() {
-  const { theme, setTheme, resolvedTheme } = useTheme();
+  const { setTheme, resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';
 
   return (
     <Button
       variant='ghost'
       size='icon'
-      className='rounded-full hover:bg-transparent dark:hover:bg-transparent cursor-pointer'
+      className='cursor-pointer rounded-full hover:bg-transparent dark:hover:bg-transparent'
       aria-label='Toggle theme'
       onClick={() => setTheme(isDark ? 'light' : 'dark')}
     >

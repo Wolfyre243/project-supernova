@@ -11,11 +11,6 @@ const outfit = Outfit({
   subsets: ['latin'],
 });
 
-// const geistMono = Geist_Mono({
-//   variable: '--font-geist-mono',
-//   subsets: ['latin'],
-// });
-
 export const metadata: Metadata = {
   title: 'Nova - Take Charge of Your Finance',
   description:
@@ -37,7 +32,7 @@ export default function RootLayout({
           disableTransitionOnChange
         >
           <AuthProvider>
-            <main className='max-w-screen flex flex-col justify-center items-center'>
+            <main className='flex max-w-screen flex-col items-center justify-center'>
               {children}
             </main>
           </AuthProvider>

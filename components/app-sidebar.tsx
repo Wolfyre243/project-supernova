@@ -1,23 +1,24 @@
 'use client';
 
+import React from 'react';
 import {
   Sidebar,
   SidebarContent,
   SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
-  SidebarRail,
   SidebarSeparator,
+  SidebarTrigger,
+  useSidebar,
 } from '@/components/ui/sidebar';
 import { NavItem, navItems } from '@/config/navConfig';
-import { Sparkle } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
+import { cn } from '@/utils/cn';
 
 function NavGroup({ items }: { items: NavItem[] }) {
   const pathname = usePathname();
@@ -59,21 +60,28 @@ function NavGroup({ items }: { items: NavItem[] }) {
 }
 
 export function AppSidebar() {
+  const { state } = useSidebar();
+
   return (
     <Sidebar variant='sidebar' collapsible='icon'>
       <SidebarHeader>
         <SidebarMenu>
           <SidebarMenuItem>
-            <div className='flex flex-row items-center gap-2 p-1'>
+            <div className='flex h-full w-fit flex-row items-center gap-2 py-1'>
               <div className='flex aspect-square size-8 items-center justify-center rounded-lg'>
                 {/* TODO: Replace with logo */}
-                <Sparkle />
+                <SidebarTrigger />
               </div>
-              <div className='flex flex-col text-left text-lg leading-tight'>
+              <div
+                className={cn(
+                  'flex flex-col text-left text-lg leading-tight',
+                  state === 'collapsed' && 'hidden',
+                )}
+              >
                 <h1 className='font-medium'>Nova</h1>
-                <span className='text-xs text-muted-foreground/50'>
+                {/* <span className='text-muted-foreground/50 text-xs'>
                   Track your finance
-                </span>
+                </span> */}
               </div>
             </div>
           </SidebarMenuItem>
