@@ -11,7 +11,7 @@ export function ShortcutBadgeGroup({
   className?: string;
 }) {
   return (
-    <div className={cn('flex flex-row items-center w-fit gap-2', className)}>
+    <div className={cn('flex w-fit flex-row items-center gap-2', className)}>
       {children}
     </div>
   );
@@ -29,7 +29,7 @@ export function ShortcutBadge({
   return (
     <div
       className={cn(
-        `rounded-lg w-fit h-fit text-muted-foreground text-sm`,
+        `text-muted-foreground h-fit w-fit rounded-lg text-sm`,
         variant === 'background' ? 'bg-muted px-2 py-1' : '',
         className,
       )}
@@ -40,5 +40,5 @@ export function ShortcutBadge({
 }
 
 export function ShortcutPlusBadge() {
-  return <div className={cn(`rounded-lg w-fit text-muted-foreground`)}>+</div>;
+  return <div className={cn(`text-muted-foreground w-fit rounded-lg`)}>+</div>;
 }

@@ -49,6 +49,7 @@
   },
   "devDependencies": {
     "@eslint/js": "^9.34.0",
+    "@next/eslint-plugin-next": "^15.5.0",
     "@tailwindcss/postcss": "^4",
     "@types/node": "^20",
     "@types/react": "19.1.10",
@@ -62,6 +63,7 @@
     "eslint-plugin-prettier": "^5.5.4",
     "eslint-plugin-react": "^7.37.5",
     "eslint-plugin-react-hooks": "^5.2.0",
+    "eslint-plugin-unicorn": "^60.0.0",
     "globals": "^16.3.0",
     "husky": "^9.1.7",
     "jiti": "^2.5.1",

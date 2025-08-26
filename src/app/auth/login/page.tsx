@@ -14,7 +14,6 @@ import { useForm } from 'react-hook-form';
 import {
   Form,
   FormControl,
-  FormDescription,
   FormField,
   FormItem,
   FormLabel,
@@ -22,10 +21,12 @@ import {
 } from '@/components/ui/form';
 import { Eye, EyeClosed } from 'lucide-react';
 import Link from 'next/link';
+import Image from 'next/image';
 
 import { createClient } from '@/utils/supabase/client';
 import useAuth from '@/hooks/useAuth';
 import { redirect } from 'next/navigation';
+import { Roles } from '@/config/authConfig';
 
 const formSchema = z.object({
   email: z.email(),
@@ -61,7 +62,9 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
     }
 
     const { data: jwtData, error: userError } = await supabase.auth.getClaims();
-    const { user_role }: any = jwtData?.claims ?? null;
+    const user_role = (
+      jwtData?.claims as { user_role?: Roles; sub?: string } | null
+    )?.user_role;
 
     if (userError || !jwtData) {
       toast.error('Something went wrong!');
@@ -72,7 +75,7 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
     }
 
     setUserId(jwtData.claims.sub);
-    setRole(user_role);
+    setRole(user_role ?? null);
     redirect('/account');
   }
 
@@ -180,13 +183,14 @@ export function LoginForm({ className }: React.ComponentProps<'form'>) {
               </div>
             </form>
           </Form>
-          <div className='bg-muted relative hidden md:block'>
-            <img
-              src='https://images.unsplash.com/photo-1500245804862-0692ee1bbee8?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJvcGljYWwlMjBzdW5zZXR8ZW58MHx8MHx8fDA%3D'
-              alt='Image'
-              className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.5]'
-            />
-          </div>
+          <Image
+            src='https://images.unsplash.com/photo-1500245804862-0692ee1bbee8?fm=jpg&q=60&w=3000&ixlib=rb-4.1.0&ixid=M3wxMjA3fDB8MHxzZWFyY2h8M3x8dHJvcGljYWwlMjBzdW5zZXR8ZW58MHx8MHx8fDA%3D'
+            alt='Image'
+            fill
+            className='absolute inset-0 h-full w-full object-cover dark:brightness-[0.5]'
+            priority
+            sizes='(max-width: 768px) 100vw, 50vw'
+          />
         </CardContent>
       </Card>
       {/* TODO: Set real ToS and PP once done */}

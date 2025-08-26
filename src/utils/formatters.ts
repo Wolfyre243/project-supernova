@@ -4,7 +4,7 @@
  * @param obj
  * @returns formData
  */
-export function objectToFormData(obj: Record<string, any>): FormData {
+export function objectToFormData(obj: Record<string, unknown>): FormData {
   const formData = new FormData();
   Object.entries(obj).forEach(([key, value]) => {
     // Converts any date value to an ISO string

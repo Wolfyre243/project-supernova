@@ -10,7 +10,7 @@ export type AuthContextType = {
   userId: string | null | undefined;
   setUserId: (prev: string | null) => void;
   role: Roles | null | undefined;
-  setRole: (prev: number | null) => void;
+  setRole: (prev: Roles | null) => void;
   loading: boolean;
   signOut: () => void;
 };
@@ -63,7 +63,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // return () => {
     //   listener?.subscription.unsubscribe();
     // };
-  }, [supabase]);
+  }, [supabase, setData]);
 
   const value = {
     userId,
