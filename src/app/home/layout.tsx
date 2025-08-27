@@ -5,7 +5,7 @@ import { SidebarInset, SidebarProvider } from '@/components/ui/sidebar';
 import { AppSidebar } from '@/components/nav/app-sidebar';
 import SiteHeader from '@/components/nav/site-header';
 import RequireAuth from '@/components/require-auth';
-import BottomBar from '@/components/bottom-bar';
+import BottomBar from '@/components/nav/bottom-bar';
 
 export default async function UserHomeLayout({
   children,
@@ -28,7 +28,7 @@ export default async function UserHomeLayout({
       >
         <AppSidebar />
         <SidebarInset>
-          <main className='bg-homepage-gradient flex min-h-screen flex-1 flex-col lg:bg-none'>
+          <main className='bg-homepage-gradient flex max-h-screen flex-1 flex-col lg:bg-none'>
             <SiteHeader />
             <div className='flex min-h-screen flex-1 flex-col'>{children}</div>
           </main>

@@ -33,7 +33,7 @@ const formSchema = z.object({
   password: z.string(),
 });
 
-export function LoginForm({ className }: React.ComponentProps<'form'>) {
+function LoginForm({ className }: React.ComponentProps<'form'>) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
   const { setUserId, setRole } = useAuth();
 

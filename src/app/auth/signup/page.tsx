@@ -2,11 +2,10 @@
 
 import { signup } from './actions';
 import { Button } from '@/components/ui/button';
-import { Label } from '@radix-ui/react-label';
 import { Input } from '@/components/ui/input';
 import { cn } from '@/utils/cn';
 import { FcGoogle } from 'react-icons/fc';
-import { useEffect, useState } from 'react';
+import { useState } from 'react';
 import { toast } from 'sonner';
 import { Card, CardContent } from '@/components/ui/card';
 
@@ -23,7 +22,7 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { objectToFormData } from '@/utils/formatters';
-import { ArrowLeft, Eye, EyeClosed } from 'lucide-react';
+import { Eye, EyeClosed } from 'lucide-react';
 import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
@@ -52,7 +51,7 @@ const formSchema = z.object({
     .max(50, { message: 'Password cannot exceed 50 characters' }),
 });
 
-export function SignUpForm({ className }: React.ComponentProps<'form'>) {
+function SignUpForm({ className }: React.ComponentProps<'form'>) {
   const [showPassword, setShowPassword] = useState<boolean>(false);
 
   const form = useForm<z.infer<typeof formSchema>>({

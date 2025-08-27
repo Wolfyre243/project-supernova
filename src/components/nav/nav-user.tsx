@@ -18,6 +18,7 @@ import { LogOut, Settings2 } from 'lucide-react';
 import useAuth from '@/hooks/useAuth';
 import { redirect } from 'next/navigation';
 import { useIsMobile } from '@/hooks/use-mobile';
+import LogOutButton from '../logout-btn';
 
 // TODO: Should take reference from main User type instead
 export type NavUserType = {
@@ -109,19 +110,9 @@ export function NavUser() {
           </DropdownMenuItem>
         </DropdownMenuGroup>
         <DropdownMenuSeparator />
-        <DropdownMenuItem>
+        <DropdownMenuItem className='hover:bg-muted focus:bg-muted/40 dark:hover:bg-muted'>
           {/* Use AuthProvider's signOut and redirect to /auth/login */}
-          <button
-            className='text-destructive flex w-full cursor-pointer flex-row items-center gap-2'
-            type='button'
-            onClick={async () => {
-              signOut();
-              redirect('/auth/login');
-            }}
-          >
-            <LogOut className='text-destructive' />
-            Log Out
-          </button>
+          <LogOutButton />
         </DropdownMenuItem>
       </DropdownMenuContent>
     </DropdownMenu>

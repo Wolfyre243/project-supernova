@@ -43,3 +43,7 @@ next-env.d.ts
 generated
 .drizzle
 certificates
+
+# Serwist
+public/sw*
+public/swe-worker*

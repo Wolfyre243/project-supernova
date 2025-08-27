@@ -65,17 +65,19 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     // };
   }, [supabase, setData]);
 
+  const signOut = async () => {
+    setUserId(null);
+    setRole(null);
+    await supabase.auth.signOut();
+  };
+
   const value = {
     userId,
     setUserId,
     role,
     setRole,
     loading,
-    signOut: async () => {
-      setUserId(null);
-      setRole(null);
-      await supabase.auth.signOut();
-    },
+    signOut,
   };
 
   return (

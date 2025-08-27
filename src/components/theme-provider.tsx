@@ -1,6 +1,6 @@
 'use client';
 
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ThemeProvider as NextThemesProvider, useTheme } from 'next-themes';
 import { Button } from './ui/button';
 import { MoonStar, Sun } from 'lucide-react';
@@ -26,5 +26,33 @@ export function ThemeToggler() {
     >
       {isDark ? <Sun className='size-4' /> : <MoonStar className='size-4' />}
     </Button>
+  );
+}
+
+import { ToggleGroup, ToggleGroupItem } from './ui/toggle-group';
+
+export function ThemeToggleBar() {
+  const { setTheme, resolvedTheme } = useTheme();
+
+  return (
+    <ToggleGroup
+      type='single'
+      value={resolvedTheme}
+      onValueChange={(val) => val && setTheme(val)}
+      aria-label='Toggle theme'
+      variant='outline'
+      size='sm'
+    >
+      <ToggleGroupItem
+        value='light'
+        aria-label='Light theme'
+        className='rounded-l-full'
+      >
+        <Sun className='size-4' />
+      </ToggleGroupItem>
+      <ToggleGroupItem value='dark' aria-label='Dark theme'>
+        <MoonStar className='size-4' />
+      </ToggleGroupItem>
+    </ToggleGroup>
   );
 }
