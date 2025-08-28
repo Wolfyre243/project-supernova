@@ -89,7 +89,7 @@ export function NavGroupSecondary({
     <SidebarGroup className={cn('', className)}>
       <SidebarGroupContent>
         <SidebarMenu>
-          {items.map((item: NavItem, i) => (
+          {items.map((item: NavItem) => (
             <SidebarMenuItem key={item.title}>
               <SidebarMenuButton
                 asChild

@@ -2,7 +2,7 @@ import type { Metadata } from 'next';
 import { Outfit } from 'next/font/google';
 import './globals.css';
 
-import { ThemeProvider } from '@/components/theme-provider';
+import { ThemeMetaUpdater, ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/context/authProvider';
 // import RootLayoutClient from '@/components/root-layout-client';
@@ -107,28 +107,30 @@ export default function RootLayout({
   return (
     <html lang='en' suppressHydrationWarning className='scrollbar-thin'>
       <head>
-        <meta name='apple-mobile-web-app-title' content='Nova' />
-        <link rel='manifest' href='/manifest.webmanifest' />
-        {/* <meta
-          name='theme-color'
-          media='(prefers-color-scheme: light)'
-          content='#f9f9f9'
-        />
+        {/* Theme color for light mode */}
         <meta
           name='theme-color'
+          content='#ffffff'
+          media='(prefers-color-scheme: light)'
+        />
+        {/* Theme color for dark mode */}
+        <meta
+          name='theme-color'
+          content='#121212'
           media='(prefers-color-scheme: dark)'
-          content='#050505'
-        /> */}
+        />
+        <link rel='manifest' href='/manifest.webmanifest' />
       </head>
       <body className={`${outfit.variable} antialiased`}>
         <ThemeProvider
           attribute='class'
           defaultTheme='system'
           enableSystem
-          disableTransitionOnChange
+          enableColorScheme
         >
           <AuthProvider>
             <main className='flex max-w-screen flex-col items-center justify-center'>
+              <ThemeMetaUpdater />
               {children}
             </main>
           </AuthProvider>

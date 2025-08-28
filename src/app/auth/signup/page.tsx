@@ -233,9 +233,9 @@ export default function SignUpPage() {
   return (
     <div className='flex min-h-svh w-full flex-col items-center justify-center p-6 md:p-10'>
       <div className='w-full max-w-sm md:max-w-4xl'>
-        <Link href={'/'}>
+        {/* <Link href={'/'}>
           <p className='text-muted-foreground/80 text-sm'>← Back to Website</p>
-        </Link>
+        </Link> */}
         <SignUpForm />
       </div>
     </div>

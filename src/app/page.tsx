@@ -21,6 +21,7 @@ import {
 import { ThemeToggler } from '@/components/theme-provider';
 import Image from 'next/image';
 import Link from 'next/link';
+import { APP_VERSION } from '@/config/appInfoConfig';
 
 export const metadata: Metadata = {
   title: 'Nova - Empower Your Finances with Simple Tracking',
@@ -44,7 +45,7 @@ export default function Home() {
           />
           <div className='hidden flex-row items-baseline gap-2 md:flex'>
             <h1 className='text-2xl font-semibold'>Nova</h1>
-            <p className='text-sm'>v1.0.0</p>
+            <p className='text-sm'>{APP_VERSION}</p>
           </div>
         </div>
         <nav className='flex w-fit flex-row items-center gap-4'>

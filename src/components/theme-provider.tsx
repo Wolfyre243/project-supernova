@@ -12,6 +12,24 @@ export function ThemeProvider({
   return <NextThemesProvider {...props}>{children}</NextThemesProvider>;
 }
 
+export function ThemeMetaUpdater() {
+  const { resolvedTheme } = useTheme();
+
+  useEffect(() => {
+    const metaTag = document.querySelector('meta[name="theme-color"]');
+    console.log('meta tag:', metaTag);
+    if (metaTag) {
+      if (resolvedTheme === 'dark') {
+        metaTag.setAttribute('content', '#050505');
+      } else {
+        metaTag.setAttribute('content', '#f9f9f9');
+      }
+    }
+  }, [resolvedTheme]);
+
+  return null;
+}
+
 export function ThemeToggler() {
   const { setTheme, resolvedTheme } = useTheme();
   const isDark = resolvedTheme === 'dark';

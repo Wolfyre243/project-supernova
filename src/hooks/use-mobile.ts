@@ -19,3 +19,41 @@ export function useIsMobile() {
 
   return !!isMobile;
 }
+
+function getPWADisplayMode() {
+  if (document.referrer.startsWith('android-app://')) {
+    return 'twa'; // Trusted Web Activity
+  }
+  if (window.matchMedia('(display-mode: standalone)').matches) {
+    return 'standalone';
+  }
+  if (window.matchMedia('(display-mode: fullscreen)').matches) {
+    return 'fullscreen';
+  }
+  if (window.matchMedia('(display-mode: minimal-ui)').matches) {
+    return 'minimal-ui';
+  }
+  if (window.matchMedia('(display-mode: browser)').matches) {
+    return 'browser'; // Standard browser tab
+  }
+  return 'unknown';
+}
+
+export function useIsPWA() {
+  const [isPWA, setIsPWA] = React.useState<boolean | undefined>(undefined);
+
+  React.useEffect(() => {
+    const displayMode = getPWADisplayMode();
+    if (
+      displayMode === 'standalone' ||
+      displayMode === 'fullscreen' ||
+      displayMode === 'minimal-ui'
+    ) {
+      setIsPWA(true);
+    } else {
+      setIsPWA(false);
+    }
+  }, [setIsPWA]);
+
+  return !!isPWA;
+}
