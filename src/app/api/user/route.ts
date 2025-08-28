@@ -39,7 +39,7 @@ export async function GET() {
         ...userProfile,
         email: user.email ?? '',
         role: userProfile.userRole?.roleId,
-        // avatarUrl: null, // Not present in schema
+        // avatarUrl: null, // Not present in schema yet
       },
       { status: 200 },
     );
