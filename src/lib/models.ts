@@ -8,6 +8,35 @@ export interface UserDetails {
   createdAt: Date | null | undefined;
   updatedAt: Date | null | undefined;
   deletedAt: Date | null | undefined;
+  status: string | null | undefined;
+}
+
+export interface Category {
+  categoryId: string | null | undefined;
+  userId: string | null | undefined;
+  name: string | null | undefined;
+  type: 'income' | 'expense' | null | undefined;
+  icon: string | null | undefined;
+  color: string | null | undefined;
+  description: string | null | undefined;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  deletedAt: Date | null | undefined;
+  status: string | null | undefined;
+}
+
+export interface Account {
+  accountId: string | null | undefined;
+  userId: string | null | undefined;
+  name: string | null | undefined;
+  icon: string | null | undefined;
+  color: string | null | undefined;
+  description: string | null | undefined;
+  isSavings: boolean | null | undefined;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  deletedAt: Date | null | undefined;
+  status: string | null | undefined;
 }
 
 export interface UserFinanceDetails {

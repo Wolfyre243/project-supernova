@@ -261,7 +261,7 @@ export const income = pgTable(
   {
     incomeId: uuid('income_id').primaryKey(),
     accountId: uuid('account_id').notNull(),
-    categoryId: uuid('category_id'),
+    categoryId: uuid('category_id').notNull(),
     amount: numeric().notNull(),
     date: date().notNull().defaultNow(),
     notes: text(),
@@ -301,7 +301,7 @@ export const expense = pgTable(
   {
     expenseId: uuid('expense_id').primaryKey(),
     accountId: uuid('account_id').notNull(),
-    categoryId: uuid('category_id'),
+    categoryId: uuid('category_id').notNull(),
     amount: numeric().notNull(),
     date: date().notNull().defaultNow(),
     notes: text(),

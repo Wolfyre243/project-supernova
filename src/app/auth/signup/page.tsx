@@ -23,7 +23,6 @@ import {
 } from '@/components/ui/form';
 import { objectToFormData } from '@/utils/formatters';
 import { Eye, EyeClosed } from 'lucide-react';
-import Link from 'next/link';
 import { redirect } from 'next/navigation';
 import useAuth from '@/hooks/useAuth';
 import Image from 'next/image';
