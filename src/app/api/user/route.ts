@@ -1,7 +1,7 @@
-// app/api/user/route.ts
+'use server';
+
 import { NextResponse } from 'next/server';
 import { createClient } from '@/utils/supabase/server';
-// You may need to adjust the import path for your Drizzle client/database instance
 import db from '@/db/db';
 
 export async function GET() {

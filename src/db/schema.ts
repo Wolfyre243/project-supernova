@@ -80,10 +80,10 @@ export const profile = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('cascade'),
-    // foreignKey({
-    //   columns: [table.statusId],
-    //   foreignColumns: [status.statusId],
-    // }),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    }),
     unique('profile_username_key').on(table.username),
     pgPolicy('Users can update their own profile', {
       as: 'permissive',
@@ -156,11 +156,15 @@ export const userRole = pgTable(
     foreignKey({
       columns: [table.roleId],
       foreignColumns: [roles.roleId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     foreignKey({
       columns: [table.userId],
       foreignColumns: [profile.userId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     pgPolicy('Enable read access for authenticated users', {
       as: 'permissive',
       for: 'select',
@@ -192,7 +196,7 @@ export const userRole = pgTable(
 export const account = pgTable(
   'account',
   {
-    accountId: uuid('account_id').primaryKey(),
+    accountId: uuid('account_id').primaryKey().defaultRandom(),
     userId: uuid('user_id').notNull(),
     name: text().notNull(),
     description: text(),
@@ -207,11 +211,15 @@ export const account = pgTable(
       columns: [table.userId],
       foreignColumns: [profile.userId],
       name: 'account_user_id_fkey',
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     foreignKey({
       columns: [table.statusId],
       foreignColumns: [status.statusId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     pgPolicy('Users can manage their own accounts', {
       as: 'permissive',
       for: 'all',
@@ -225,7 +233,7 @@ export const account = pgTable(
 export const category = pgTable(
   'category',
   {
-    categoryId: uuid('category_id').primaryKey(),
+    categoryId: uuid('category_id').primaryKey().defaultRandom(),
     userId: uuid('user_id').notNull(),
     name: text().notNull(),
     type: transactionType().notNull(),
@@ -245,7 +253,9 @@ export const category = pgTable(
     foreignKey({
       columns: [table.statusId],
       foreignColumns: [status.statusId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     pgPolicy('Users can manage their own categories', {
       as: 'permissive',
       for: 'all',
@@ -259,23 +269,34 @@ export const category = pgTable(
 export const income = pgTable(
   'income',
   {
-    incomeId: uuid('income_id').primaryKey(),
+    incomeId: uuid('income_id').primaryKey().defaultRandom(),
     accountId: uuid('account_id').notNull(),
     categoryId: uuid('category_id').notNull(),
     amount: numeric().notNull(),
     date: date().notNull().defaultNow(),
     notes: text(),
+    statusId: integer('status_id').notNull().default(Status.ACTIVE),
     ...timestamps,
   },
   (table) => [
     foreignKey({
       columns: [table.accountId],
       foreignColumns: [account.accountId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     foreignKey({
       columns: [table.categoryId],
       foreignColumns: [category.categoryId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     pgPolicy('Users can manage their own income', {
       as: 'permissive',
       for: 'all',
@@ -299,23 +320,34 @@ export const income = pgTable(
 export const expense = pgTable(
   'expense',
   {
-    expenseId: uuid('expense_id').primaryKey(),
+    expenseId: uuid('expense_id').primaryKey().defaultRandom(),
     accountId: uuid('account_id').notNull(),
     categoryId: uuid('category_id').notNull(),
     amount: numeric().notNull(),
     date: date().notNull().defaultNow(),
     notes: text(),
+    statusId: integer('status_id').notNull().default(Status.ACTIVE),
     ...timestamps,
   },
   (table) => [
     foreignKey({
       columns: [table.accountId],
       foreignColumns: [account.accountId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     foreignKey({
       columns: [table.categoryId],
       foreignColumns: [category.categoryId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     pgPolicy('Users can manage their own expenses', {
       as: 'permissive',
       for: 'all',
@@ -339,7 +371,7 @@ export const expense = pgTable(
 export const savingsGoal = pgTable(
   'savings_goal',
   {
-    savingsGoalId: uuid('savings_goal_id').primaryKey(),
+    savingsGoalId: uuid('savings_goal_id').primaryKey().defaultRandom(),
     accountId: uuid('account_id').notNull(),
     name: text().notNull(),
     targetAmount: numeric('target_amount').notNull(),
@@ -350,11 +382,15 @@ export const savingsGoal = pgTable(
     foreignKey({
       columns: [table.accountId],
       foreignColumns: [account.accountId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     foreignKey({
       columns: [table.statusId],
       foreignColumns: [status.statusId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     pgPolicy('Users can manage their own savings goals', {
       as: 'permissive',
       for: 'all',
@@ -378,7 +414,7 @@ export const savingsGoal = pgTable(
 export const budget = pgTable(
   'budget',
   {
-    budgetId: uuid('budget_id').primaryKey(),
+    budgetId: uuid('budget_id').primaryKey().defaultRandom(),
     categoryId: uuid('category_id').notNull(),
     allocatedAmount: numeric('allocated_amount').notNull(),
     period: frequency().notNull().default('monthly'),
@@ -390,11 +426,15 @@ export const budget = pgTable(
     foreignKey({
       columns: [table.categoryId],
       foreignColumns: [category.categoryId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     foreignKey({
       columns: [table.statusId],
       foreignColumns: [status.statusId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     pgPolicy('Users can manage their own budgets', {
       as: 'permissive',
       for: 'all',

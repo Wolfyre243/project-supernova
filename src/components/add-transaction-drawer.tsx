@@ -28,6 +28,11 @@ import {
 import { useState } from 'react';
 import { CategorySelector } from './category-select';
 import { AccountSelector } from './account-select';
+import {
+  useCreateExpenseMutation,
+  useCreateIncomeMutation,
+} from '@/app/state/transaction/transactionsApiSlice';
+import { APIError } from '@/lib/exceptions';
 
 const createTransactionFormSchema = z.object({
   categoryId: z.string().nonempty({
@@ -54,8 +59,10 @@ const createTransactionFormSchema = z.object({
 export function CreateTransactionDrawer() {
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>(
-    'income',
+    'expense',
   );
+  const [createIncomeMutation] = useCreateIncomeMutation();
+  const [createExpenseMutation] = useCreateExpenseMutation();
 
   const defaultValues = {
     categoryId: '',
@@ -73,10 +80,26 @@ export function CreateTransactionDrawer() {
   const { setError, formState } = form;
 
   async function onSubmit(data: z.input<typeof createTransactionFormSchema>) {
-    setIsOpen(false);
-    // TODO POST to api
-    console.log(data);
-    form.reset(defaultValues);
+    // Ensure amount is a number before passing to mutation
+    const payload = {
+      ...data,
+      amount: data.amount as number,
+    };
+
+    try {
+      if (transactionType === 'income') await createIncomeMutation(payload);
+      if (transactionType === 'expense') await createExpenseMutation(payload);
+
+      setIsOpen(false);
+    } catch (error: unknown) {
+      // if (error instanceof APIError) {
+      //   return setError('root', { message: error.message });
+      // }
+      console.error(error);
+      return setError('root', { message: 'Something went wrong!' });
+    } finally {
+      form.reset(defaultValues);
+    }
   }
 
   return (
@@ -186,7 +209,7 @@ export function CreateTransactionDrawer() {
                 control={form.control}
                 name='categoryId'
                 render={({ field }) => (
-                  <FormItem className='w-2/3'>
+                  <FormItem className='w-3/4 max-w-5/6'>
                     <FormLabel className='text-muted-foreground'>
                       Category
                     </FormLabel>
@@ -211,7 +234,7 @@ export function CreateTransactionDrawer() {
                 control={form.control}
                 name='accountId'
                 render={({ field }) => (
-                  <FormItem className='w-2/3'>
+                  <FormItem className='w-3/4 max-w-5/6'>
                     <FormLabel className='text-muted-foreground'>
                       Account
                     </FormLabel>

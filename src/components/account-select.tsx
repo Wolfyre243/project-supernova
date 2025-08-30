@@ -10,19 +10,26 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown, DollarSign } from 'lucide-react';
 import { useEffect, useState } from 'react';
+import { useGetAccountsQuery } from '@/app/state/account/accountsApiSlice';
+import { Skeleton } from './ui/skeleton';
+import { toast } from 'sonner';
 
-const dummyData: Partial<Account>[] = [
-  {
-    accountId: 'abscdef123jnjw1',
-    name: 'Debit Card',
-    icon: 'DollarSign',
-  },
-  {
-    accountId: 'absqwdqwdqdnjw1',
-    name: 'Cash',
-    icon: 'DollarSign',
-  },
-];
+function AccountSelectSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'flex w-full items-center justify-between gap-4 py-2 transition-all duration-200 focus:outline-none',
+        className,
+      )}
+    >
+      <div className='flex flex-row items-center gap-4'>
+        <Skeleton className='h-10 w-10 rounded-full' />
+        <Skeleton className='h-4 w-28 rounded-full' />
+      </div>
+      <ChevronDown className={`h-5 w-5`} />
+    </div>
+  );
+}
 
 export function AccountSelector({
   onValueChange,
@@ -32,26 +39,38 @@ export function AccountSelector({
   className?: string;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selected, setSelected] = useState<Partial<Account>>(dummyData[0]);
+  const [selected, setSelected] = useState<Account | undefined>(undefined);
+
+  const { data, isLoading, isError, error } = useGetAccountsQuery();
 
   useEffect(() => {
-    if (dummyData[0]?.accountId) {
-      onValueChange(dummyData[0].accountId);
+    if (data && data.length > 0 && data[0].accountId) {
+      setSelected(data[0]);
+      onValueChange(data[0].accountId);
     }
-  }, [onValueChange]);
+  }, [data, onValueChange]);
 
-  const handleOptionClick = (option: Partial<Account>) => {
+  const handleOptionClick = (option: Account) => {
     setSelected(option);
     onValueChange(option.accountId as string);
     setIsOpen(false);
   };
+
+  if (isLoading) {
+    return <AccountSelectSkeleton />;
+  }
+
+  if (isError) {
+    console.error(error);
+    toast.error('Error loading categories');
+  }
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
       <DropdownMenuTrigger asChild>
         <div
           className={cn(
-            'flex w-full items-center justify-between gap-4 py-2 transition-all duration-200 focus:outline-none',
+            'flex max-w-full items-center justify-between gap-4 py-2 transition-all duration-200 focus:outline-none',
             className,
           )}
         >
@@ -59,7 +78,9 @@ export function AccountSelector({
             <div className='bg-accent flex items-center justify-center rounded-full p-2'>
               <DollarSign />
             </div>
-            <span className='text-xl'>{selected.name}</span>
+            <span className='max-w-42 truncate text-xl'>
+              {selected?.name ?? 'Select'}
+            </span>
           </div>
           <ChevronDown
             className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
@@ -67,12 +88,12 @@ export function AccountSelector({
         </div>
       </DropdownMenuTrigger>
 
-      {/* TODO: Fetch available options from db */}
       <DropdownMenuContent className='w-76'>
-        {dummyData.map((accountOption: Partial<Account>) => {
-          return (
+        {data &&
+          data.length > 0 &&
+          data.map((accountOption: Account) => (
             <DropdownMenuItem
-              key={crypto.randomUUID()}
+              key={accountOption.accountId}
               onClick={() => handleOptionClick(accountOption)}
               className='flex items-center gap-2'
             >
@@ -81,8 +102,10 @@ export function AccountSelector({
               </div>
               <span>{accountOption.name}</span>
             </DropdownMenuItem>
-          );
-        })}
+          ))}
+        {data && data.length === 0 && !isLoading && (
+          <DropdownMenuItem disabled>No accounts found</DropdownMenuItem>
+        )}
       </DropdownMenuContent>
     </DropdownMenu>
   );

@@ -134,6 +134,20 @@
       "when": 1756514639572,
       "tag": "0018_minor_nomad",
       "breakpoints": true
+    },
+    {
+      "idx": 19,
+      "version": "7",
+      "when": 1756551856071,
+      "tag": "0019_bright_toad",
+      "breakpoints": true
+    },
+    {
+      "idx": 20,
+      "version": "7",
+      "when": 1756552112392,
+      "tag": "0020_whole_vengeance",
+      "breakpoints": true
     }
   ]
 }

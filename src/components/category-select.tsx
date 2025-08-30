@@ -10,31 +10,26 @@ import {
 } from './ui/dropdown-menu';
 import { Category } from '@/lib/models';
 import { cn } from '@/utils/cn';
+import { useGetCategoriesByTypeQuery } from '@/app/state/category/categoriesApiSlice';
+import { Skeleton } from './ui/skeleton';
+import { toast } from 'sonner';
 
-const dummyDataIncome: Partial<Category>[] = [
-  {
-    categoryId: 'abscdef123jnjw1',
-    name: 'Salary',
-    icon: 'DollarSign',
-  },
-  {
-    categoryId: 'absqwdqwdqdnjw1',
-    name: 'Gigs',
-    icon: 'DollarSign',
-  },
-];
-const dummyDataExpenses: Partial<Category>[] = [
-  {
-    categoryId: 'a223rweeewfwf',
-    name: 'Food',
-    icon: 'DollarSign',
-  },
-  {
-    categoryId: 'wefwefwef',
-    name: 'Clothes',
-    icon: 'DollarSign',
-  },
-];
+function CategorySelectSkeleton({ className }: { className?: string }) {
+  return (
+    <div
+      className={cn(
+        'flex w-full items-center justify-between gap-4 py-2 transition-all duration-200 focus:outline-none',
+        className,
+      )}
+    >
+      <div className='flex flex-row items-center gap-4'>
+        <Skeleton className='h-10 w-10 rounded-full' />
+        <Skeleton className='h-4 w-28 rounded-full' />
+      </div>
+      <ChevronDown className={`h-5 w-5`} />
+    </div>
+  );
+}
 
 export function CategorySelector({
   onValueChange,
@@ -45,33 +40,34 @@ export function CategorySelector({
   transactionType: 'income' | 'expense';
   className?: string;
 }) {
-  const [categoryList, setCategoryList] = useState<Partial<Category>[]>([]);
-
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selected, setSelected] = useState<Partial<Category> | undefined>(
-    undefined,
-  );
+  const [selected, setSelected] = useState<Category | undefined>(undefined);
+
+  const { data, isError, isLoading, error } =
+    useGetCategoriesByTypeQuery(transactionType);
 
   // Ensure parent receives the initial value on mount
   useEffect(() => {
-    if (transactionType === 'income') {
-      setCategoryList(dummyDataIncome);
-    } else {
-      setCategoryList(dummyDataExpenses);
+    if (data && data[0]?.categoryId) {
+      setSelected(data[0]);
+      onValueChange(data[0].categoryId);
     }
-    if (categoryList[0]?.categoryId) {
-      setSelected(categoryList[0]);
-      onValueChange(categoryList[0].categoryId);
-    } else {
-      setSelected(undefined);
-    }
-  }, [onValueChange, transactionType, categoryList]);
+  }, [onValueChange, data, isLoading]);
 
-  const handleOptionClick = (option: Partial<Category>) => {
+  const handleOptionClick = (option: Category) => {
     setSelected(option);
     onValueChange(option.categoryId as string);
     setIsOpen(false);
   };
+
+  if (isLoading) {
+    return <CategorySelectSkeleton />;
+  }
+
+  if (isError) {
+    console.error(error);
+    toast.error('Error loading categories');
+  }
 
   return (
     <DropdownMenu open={isOpen} onOpenChange={setIsOpen}>
@@ -86,9 +82,7 @@ export function CategorySelector({
             <div className='bg-accent flex items-center justify-center rounded-full p-2'>
               <DollarSign />
             </div>
-            <span className='text-xl'>
-              {selected?.name ?? 'Select category'}
-            </span>
+            <span className='text-xl'>{selected?.name ?? 'Select'}</span>
           </div>
           <ChevronDown
             className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
@@ -98,8 +92,8 @@ export function CategorySelector({
 
       {/* TODO: Fetch available options from db */}
       <DropdownMenuContent className='w-76'>
-        {categoryList.length > 0
-          ? categoryList.map((categoryOption: Partial<Category>) => {
+        {data && data.length > 0
+          ? data.map((categoryOption: Category) => {
               return (
                 <DropdownMenuItem
                   key={crypto.randomUUID()}

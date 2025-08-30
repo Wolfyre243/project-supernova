@@ -39,6 +39,32 @@ export interface Account {
   status: string | null | undefined;
 }
 
+export interface Income {
+  incomeId: string | null | undefined;
+  amount: number | null | undefined;
+  accountId: string | null | undefined;
+  categoryId: string | null | undefined;
+  notes: string | null | undefined;
+  date: Date | null | undefined;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  deletedAt: Date | null | undefined;
+  status: string | null | undefined;
+}
+
+export interface Expense {
+  expenseId: string | null | undefined;
+  amount: number | null | undefined;
+  accountId: string | null | undefined;
+  categoryId: string | null | undefined;
+  notes: string | null | undefined;
+  date: Date | null | undefined;
+  createdAt: Date | null | undefined;
+  updatedAt: Date | null | undefined;
+  deletedAt: Date | null | undefined;
+  status: string | null | undefined;
+}
+
 export interface UserFinanceDetails {
   totalBalance: number | null | undefined;
   monthlyTotalIncome: number | null | undefined;
