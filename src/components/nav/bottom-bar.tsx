@@ -2,7 +2,6 @@
 
 import { mobileNavItems, NavIconItem } from '@/config/navConfig';
 import { cn } from '@/utils/cn';
-import { Plus } from 'lucide-react';
 import Link from 'next/link';
 import { usePathname } from 'next/navigation';
 import { CreateTransactionDrawer } from '../add-transaction-drawer';
@@ -18,7 +17,7 @@ function BottomBarItem({
     <Link
       href={item.url}
       className={cn(
-        'flex h-full w-full flex-col items-center gap-1',
+        'text-muted-foreground flex h-full w-full flex-col items-center gap-1',
         active && 'text-secondary',
       )}
     >

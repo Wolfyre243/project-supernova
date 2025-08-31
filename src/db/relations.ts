@@ -64,11 +64,13 @@ export const userRoleRelations = relations(userRole, ({ one }) => ({
 }));
 
 // Account table relations
-export const accountRelations = relations(account, ({ one }) => ({
+export const accountRelations = relations(account, ({ one, many }) => ({
   user: one(profile, {
     fields: [account.userId],
     references: [profile.userId],
   }),
+  incomes: many(income),
+  expenses: many(expense),
   status: one(status, {
     fields: [account.statusId],
     references: [status.statusId],

@@ -1,7 +1,7 @@
 'use client';
 
 import { useState, useEffect } from 'react';
-import { ChevronDown, DollarSign } from 'lucide-react';
+import { ChevronDown, DollarSign, Icon } from 'lucide-react';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -13,6 +13,7 @@ import { cn } from '@/utils/cn';
 import { useGetCategoriesByTypeQuery } from '@/app/state/category/categoriesApiSlice';
 import { Skeleton } from './ui/skeleton';
 import { toast } from 'sonner';
+import { IconMap } from '@/config/iconMap';
 
 function CategorySelectSkeleton({ className }: { className?: string }) {
   return (
@@ -74,15 +75,24 @@ export function CategorySelector({
       <DropdownMenuTrigger asChild>
         <div
           className={cn(
-            'flex w-full items-center justify-between gap-4 py-2 transition-all duration-200 focus:outline-none',
+            'flex w-full items-center justify-between gap-1 py-2 transition-all duration-200 focus:outline-none',
             className,
           )}
         >
           <div className='flex flex-row items-center gap-4'>
-            <div className='bg-accent flex items-center justify-center rounded-full p-2'>
-              <DollarSign />
+            <div
+              className={`text-card flex items-center justify-center rounded-full p-2.5`}
+              style={{ backgroundColor: selected?.color || '#f9f9f9' }}
+            >
+              {selected?.icon &&
+                (() => {
+                  const SelectedIcon = IconMap[selected.icon];
+                  return SelectedIcon ? <SelectedIcon /> : null;
+                })()}
             </div>
-            <span className='text-xl'>{selected?.name ?? 'Select'}</span>
+            <span className='max-w-36 truncate text-xl'>
+              {selected?.name ?? 'Select'}
+            </span>
           </div>
           <ChevronDown
             className={`h-5 w-5 transform transition-transform duration-200 ${isOpen ? 'rotate-180' : 'rotate-0'}`}
@@ -100,10 +110,23 @@ export function CategorySelector({
                   onClick={() => handleOptionClick(categoryOption)}
                   className='flex items-center gap-2'
                 >
-                  <div className='bg-background flex flex-row items-center justify-center rounded-full p-2'>
-                    <DollarSign className='size-4' />
+                  <div
+                    className={`flex flex-row items-center justify-center rounded-full p-2`}
+                    style={{
+                      backgroundColor: categoryOption.color || '#f9f9f9',
+                    }}
+                  >
+                    {categoryOption?.icon &&
+                      (() => {
+                        const SelectedIcon = IconMap[categoryOption.icon];
+                        return SelectedIcon ? (
+                          <SelectedIcon className='text-card size-4' />
+                        ) : null;
+                      })()}
                   </div>
-                  <span>{categoryOption.name}</span>
+                  <span className='max-w-56 truncate'>
+                    {categoryOption.name}
+                  </span>
                 </DropdownMenuItem>
               );
             })

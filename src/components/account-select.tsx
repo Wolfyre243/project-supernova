@@ -13,6 +13,7 @@ import { useEffect, useState } from 'react';
 import { useGetAccountsQuery } from '@/app/state/account/accountsApiSlice';
 import { Skeleton } from './ui/skeleton';
 import { toast } from 'sonner';
+import { IconMap } from '@/config/iconMap';
 
 function AccountSelectSkeleton({ className }: { className?: string }) {
   return (
@@ -70,15 +71,22 @@ export function AccountSelector({
       <DropdownMenuTrigger asChild>
         <div
           className={cn(
-            'flex max-w-full items-center justify-between gap-4 py-2 transition-all duration-200 focus:outline-none',
+            'flex max-w-full items-center justify-between gap-1 py-2 transition-all duration-200 focus:outline-none',
             className,
           )}
         >
           <div className='flex flex-row items-center gap-4'>
-            <div className='bg-accent flex items-center justify-center rounded-full p-2'>
-              <DollarSign />
+            <div
+              className='text-card flex items-center justify-center rounded-full p-2.5'
+              style={{ backgroundColor: selected?.color || '#f9f9f9' }}
+            >
+              {selected?.icon &&
+                (() => {
+                  const SelectedIcon = IconMap[selected.icon];
+                  return SelectedIcon ? <SelectedIcon /> : null;
+                })()}
             </div>
-            <span className='max-w-42 truncate text-xl'>
+            <span className='max-w-36 truncate text-xl'>
               {selected?.name ?? 'Select'}
             </span>
           </div>
@@ -97,10 +105,19 @@ export function AccountSelector({
               onClick={() => handleOptionClick(accountOption)}
               className='flex items-center gap-2'
             >
-              <div className='bg-background flex flex-row items-center justify-center rounded-full p-2'>
-                <DollarSign className='size-4' />
+              <div
+                className='flex flex-row items-center justify-center rounded-full p-2'
+                style={{ backgroundColor: accountOption.color || '#f9f9f9' }}
+              >
+                {accountOption?.icon &&
+                  (() => {
+                    const SelectedIcon = IconMap[accountOption.icon];
+                    return SelectedIcon ? (
+                      <SelectedIcon className='text-card size-4' />
+                    ) : null;
+                  })()}
               </div>
-              <span>{accountOption.name}</span>
+              <span className='max-w-56 truncate'>{accountOption.name}</span>
             </DropdownMenuItem>
           ))}
         {data && data.length === 0 && !isLoading && (

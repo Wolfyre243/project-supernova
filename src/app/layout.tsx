@@ -138,7 +138,12 @@ export default function RootLayout({
               </main>
             </StoreProvider>
           </AuthProvider>
-          <Toaster richColors closeButton expand={true} />
+          <Toaster
+            swipeDirections={['left', 'right']}
+            richColors
+            closeButton
+            expand={true}
+          />
         </ThemeProvider>
       </body>
     </html>

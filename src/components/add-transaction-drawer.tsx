@@ -33,6 +33,7 @@ import {
   useCreateIncomeMutation,
 } from '@/app/state/transaction/transactionsApiSlice';
 import { APIError } from '@/lib/exceptions';
+import { toast } from 'sonner';
 
 const createTransactionFormSchema = z.object({
   categoryId: z.string().nonempty({
@@ -91,6 +92,9 @@ export function CreateTransactionDrawer() {
       if (transactionType === 'expense') await createExpenseMutation(payload);
 
       setIsOpen(false);
+      toast.success(`Recorded ${transactionType} successfully, good job!`, {
+        position: 'top-center',
+      });
     } catch (error: unknown) {
       // if (error instanceof APIError) {
       //   return setError('root', { message: error.message });
