@@ -8,7 +8,7 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown, DollarSign } from 'lucide-react';
+import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useGetAccountsQuery } from '@/app/state/account/accountsApiSlice';
 import { Skeleton } from './ui/skeleton';

@@ -3,6 +3,17 @@
 import { useIsMobile } from '@/hooks/use-mobile';
 import { useGetUserDetailsQuery } from '@/app/state/userDetails/userDetailsApiSlice';
 import { useGetBalanceQuery } from '@/app/state/transaction/transactionsApiSlice';
+import { Skeleton } from '../ui/skeleton';
+
+function BalanceCardSkeleton() {
+  return (
+    <div className='flex h-30 w-full flex-col gap-4'>
+      <Skeleton className='h-6 w-1/2 rounded-full' />
+      <Skeleton className='h-4 w-30 rounded-full' />
+      <Skeleton className='h-8 w-40 rounded-full' />
+    </div>
+  );
+}
 
 // Mobile Version (minimised)
 export function BalanceCardMobile() {
@@ -14,11 +25,11 @@ export function BalanceCardMobile() {
     error,
   } = useGetUserDetailsQuery();
 
-  if (isLoading) return <h1>Loading...</h1>;
+  if (isLoading) return <BalanceCardSkeleton />;
   if (isError) return <h1>Oopsies! Error: {error.toString()}</h1>;
 
   return (
-    <div className='flex flex-col gap-4 text-[#f9f9f9]'>
+    <div className='flex min-h-30 w-full flex-col gap-4 text-[#f9f9f9]'>
       <h2 className='text-2xl font-semibold'>Hello, {userDetails?.name} 👋</h2>
       <div>
         <h4>Total Balance</h4>
@@ -44,11 +55,11 @@ export function BalanceCard() {
   } = useGetUserDetailsQuery();
 
   if (isMobile) return null;
-  if (isLoading) return <h1>Loading...</h1>;
+  if (isLoading) return <BalanceCardSkeleton />;
   if (isError) return <h1>Oopsies! Error: {error.toString()}</h1>;
 
   return (
-    <div className='flex flex-col gap-4'>
+    <div className='flex w-full flex-col gap-4'>
       <h2 className='text-2xl font-semibold'>Hello, {userDetails?.name} 👋</h2>
       <div>
         <h4>Total Balance</h4>
