@@ -40,7 +40,9 @@ export function AccountSelector({
   className?: string;
 }) {
   const [isOpen, setIsOpen] = useState<boolean>(false);
-  const [selected, setSelected] = useState<Account | undefined>(undefined);
+  const [selected, setSelected] = useState<Partial<Account> | undefined>(
+    undefined,
+  );
 
   const { data, isLoading, isError, error } = useGetAccountsQuery();
 
@@ -51,7 +53,7 @@ export function AccountSelector({
     }
   }, [data, onValueChange]);
 
-  const handleOptionClick = (option: Account) => {
+  const handleOptionClick = (option: Partial<Account>) => {
     setSelected(option);
     onValueChange(option.accountId as string);
     setIsOpen(false);
@@ -99,7 +101,7 @@ export function AccountSelector({
       <DropdownMenuContent className='w-76'>
         {data &&
           data.length > 0 &&
-          data.map((accountOption: Account) => (
+          data.map((accountOption: Partial<Account>) => (
             <DropdownMenuItem
               key={accountOption.accountId}
               onClick={() => handleOptionClick(accountOption)}

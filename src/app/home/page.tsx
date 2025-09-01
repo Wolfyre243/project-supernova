@@ -1,4 +1,5 @@
 import { AppHeader } from '@/components/app-header';
+import { AccountsCard } from '@/components/dashboard/accounts-card';
 import {
   BalanceCard,
   BalanceCardMobile,
@@ -22,7 +23,9 @@ export default function UserHomePage() {
             <IncomeCard />
             <ExpenseCard />
           </div>
-          <div className='flex w-full flex-row gap-4'></div>
+          <div className='flex w-full flex-row gap-4'>
+            <AccountsCard />
+          </div>
         </div>
 
         {/* Right Column, hidden on mobile */}

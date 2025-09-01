@@ -6,7 +6,7 @@ type Granularity = 'day' | 'week' | 'month' | 'year';
 export const transactionsApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: '/api/transaction' }),
   reducerPath: 'transactionsApi',
-  tagTypes: ['Transactions'],
+  tagTypes: ['Account', 'Transactions'],
   endpoints: (builder) => ({
     createIncome: builder.mutation<Transaction, Partial<Transaction>>({
       query: (income) => ({
@@ -14,7 +14,7 @@ export const transactionsApiSlice = createApi({
         method: 'POST',
         body: income,
       }),
-      invalidatesTags: ['Transactions'],
+      invalidatesTags: ['Account', 'Transactions'],
     }),
     createExpense: builder.mutation<Transaction, Partial<Transaction>>({
       query: (expense) => ({
@@ -22,7 +22,7 @@ export const transactionsApiSlice = createApi({
         method: 'POST',
         body: expense,
       }),
-      invalidatesTags: ['Transactions'],
+      invalidatesTags: ['Account', 'Transactions'],
     }),
     getBalance: builder.query<{ balance: number }, void>({
       query: () => `/balance`,

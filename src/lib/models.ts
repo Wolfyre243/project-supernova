@@ -33,6 +33,7 @@ export interface Account {
   color: string | null | undefined;
   description: string | null | undefined;
   isSavings: boolean | null | undefined;
+  total: number | null | undefined;
   createdAt: Date | null | undefined;
   updatedAt: Date | null | undefined;
   deletedAt: Date | null | undefined;
