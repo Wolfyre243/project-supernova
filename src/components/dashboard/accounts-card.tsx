@@ -10,14 +10,15 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from '../ui/carousel';
-import { useCallback, useState } from 'react';
-import { ChevronLeft, ChevronRight, SearchX } from 'lucide-react';
+import { useCallback, useEffect, useState } from 'react';
+import { ChevronLeft, ChevronRight, Plus, SearchX } from 'lucide-react';
 import { useGetAccountsQuery } from '@/app/state/account/accountsApiSlice';
 import { Account } from '@/lib/models';
 import { IconMap } from '@/config/iconMap';
 import { truncateString } from '@/utils/formatters';
 import { formatDistanceToNow } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
+import { Button } from '../ui/button';
 
 function AccountCardSkeleton() {
   return (
@@ -34,7 +35,7 @@ function AccountCardSkeleton() {
 
 function SingleAccountCard({ account }: { account: Partial<Account> }) {
   return (
-    <div className='flex w-full flex-col gap-2 rounded-xl border-2 p-4 shadow-md'>
+    <div className='flex w-full flex-col gap-2 rounded-xl border-2 p-4'>
       <div
         className='flex w-fit flex-row items-center justify-center rounded-full p-2'
         style={{ backgroundColor: account.color || '#f9f9f9' }}
@@ -51,7 +52,7 @@ function SingleAccountCard({ account }: { account: Partial<Account> }) {
         <h2 className='text-muted-foreground'>
           {truncateString(account.name ?? '', 24)}
         </h2>
-        <h1 className='text-xl font-semibold'>${account.total}</h1>
+        <h1 className='text-2xl font-semibold'>${account.total?.toFixed(2)}</h1>
       </div>
       <p className='text-muted text-sm'>
         Last Updated:{' '}
@@ -66,6 +67,7 @@ function SingleAccountCard({ account }: { account: Partial<Account> }) {
 export function AccountsCard({ className }: { className?: string }) {
   const isMobile = useIsMobile();
   const [api, setApi] = useState<CarouselApi>();
+  const [current, setCurrent] = useState(0);
 
   const { data, isLoading, isError, error } = useGetAccountsQuery();
 
@@ -75,6 +77,25 @@ export function AccountsCard({ className }: { className?: string }) {
 
   const scrollNext = useCallback(() => {
     if (api) api.scrollNext();
+  }, [api]);
+
+  const scrollTo = useCallback(
+    (index: number) => {
+      if (api) api.scrollTo(index);
+    },
+    [api],
+  );
+
+  useEffect(() => {
+    if (!api) {
+      return;
+    }
+
+    setCurrent(api.selectedScrollSnap() + 1);
+
+    api.on('select', () => {
+      setCurrent(api.selectedScrollSnap() + 1);
+    });
   }, [api]);
 
   return (
@@ -88,9 +109,19 @@ export function AccountsCard({ className }: { className?: string }) {
         <h1 className='md:text-md text-xl font-semibold text-nowrap'>
           Accounts
         </h1>
+        <Button size={'icon'} variant={'ghost'}>
+          <Plus className='size-5' />
+        </Button>
       </div>
       <div className='flex w-full flex-row items-center justify-center gap-2'>
-        <button onClick={scrollPrev}>
+        <button
+          className={cn(
+            'transition-all duration-200 ease-in-out',
+            api?.canScrollPrev() ? '' : 'text-muted',
+          )}
+          disabled={!api?.canScrollPrev()}
+          onClick={scrollPrev}
+        >
           <ChevronLeft />
         </button>
         {isLoading && <AccountCardSkeleton />}
@@ -113,9 +144,36 @@ export function AccountsCard({ className }: { className?: string }) {
             </CarouselContent>
           </Carousel>
         )}
-        <button onClick={scrollNext}>
+        <button
+          className={cn(
+            'transition-all duration-200 ease-in-out',
+            api?.canScrollNext() ? '' : 'text-muted',
+          )}
+          disabled={!api?.canScrollNext()}
+          onClick={scrollNext}
+        >
           <ChevronRight />
         </button>
+      </div>
+      {/* Indicators */}
+      <div className='flex w-full flex-row items-center justify-center gap-2'>
+        {Array.from({ length: data?.length as number }).map((item, i) => {
+          if (i + 1 === current) {
+            return (
+              <button
+                key={crypto.randomUUID()}
+                className='bg-muted-foreground h-2 w-2 rounded-full'
+              />
+            );
+          }
+          return (
+            <button
+              key={crypto.randomUUID()}
+              className='border-muted-foreground h-2 w-2 rounded-full border'
+              onClick={() => scrollTo(i)}
+            />
+          );
+        })}
       </div>
     </div>
   );
