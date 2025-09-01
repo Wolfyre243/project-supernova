@@ -12,6 +12,7 @@ import {
   primaryKey,
   boolean,
   numeric,
+  timestamp,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { timestamps } from './columns.helpers';
@@ -266,14 +267,17 @@ export const category = pgTable(
   ],
 );
 
-export const income = pgTable(
-  'income',
+export const transaction = pgTable(
+  'transaction',
   {
-    incomeId: uuid('income_id').primaryKey().defaultRandom(),
+    transactionId: uuid('transaction_id').primaryKey().defaultRandom(),
     accountId: uuid('account_id').notNull(),
     categoryId: uuid('category_id').notNull(),
+    type: transactionType().notNull(),
     amount: numeric().notNull(),
-    date: date().notNull().defaultNow(),
+    date: timestamp({ withTimezone: true, mode: 'date' })
+      .notNull()
+      .defaultNow(),
     notes: text(),
     statusId: integer('status_id').notNull().default(Status.ACTIVE),
     ...timestamps,
@@ -297,7 +301,7 @@ export const income = pgTable(
     })
       .onDelete('cascade')
       .onUpdate('cascade'),
-    pgPolicy('Users can manage their own income', {
+    pgPolicy('Users can manage their own transactions', {
       as: 'permissive',
       for: 'all',
       to: [PgRoles.AUTHENTICATED],
@@ -317,56 +321,56 @@ export const income = pgTable(
   ],
 );
 
-export const expense = pgTable(
-  'expense',
-  {
-    expenseId: uuid('expense_id').primaryKey().defaultRandom(),
-    accountId: uuid('account_id').notNull(),
-    categoryId: uuid('category_id').notNull(),
-    amount: numeric().notNull(),
-    date: date().notNull().defaultNow(),
-    notes: text(),
-    statusId: integer('status_id').notNull().default(Status.ACTIVE),
-    ...timestamps,
-  },
-  (table) => [
-    foreignKey({
-      columns: [table.accountId],
-      foreignColumns: [account.accountId],
-    })
-      .onDelete('cascade')
-      .onUpdate('cascade'),
-    foreignKey({
-      columns: [table.categoryId],
-      foreignColumns: [category.categoryId],
-    })
-      .onDelete('cascade')
-      .onUpdate('cascade'),
-    foreignKey({
-      columns: [table.statusId],
-      foreignColumns: [status.statusId],
-    })
-      .onDelete('cascade')
-      .onUpdate('cascade'),
-    pgPolicy('Users can manage their own expenses', {
-      as: 'permissive',
-      for: 'all',
-      to: [PgRoles.AUTHENTICATED],
-      using: sql`EXISTS (
-        SELECT 1 FROM account 
-        WHERE 
-          account.account_id = ${table.accountId} AND 
-          account.user_id = auth.uid()
-      )`,
-      withCheck: sql`EXISTS (
-        SELECT 1 FROM account 
-        WHERE 
-          account.account_id = ${table.accountId} AND 
-          account.user_id = auth.uid()
-      )`,
-    }),
-  ],
-);
+// export const expense = pgTable(
+//   'expense',
+//   {
+//     expenseId: uuid('expense_id').primaryKey().defaultRandom(),
+//     accountId: uuid('account_id').notNull(),
+//     categoryId: uuid('category_id').notNull(),
+//     amount: numeric().notNull(),
+//     date: date().notNull().defaultNow(),
+//     notes: text(),
+//     statusId: integer('status_id').notNull().default(Status.ACTIVE),
+//     ...timestamps,
+//   },
+//   (table) => [
+//     foreignKey({
+//       columns: [table.accountId],
+//       foreignColumns: [account.accountId],
+//     })
+//       .onDelete('cascade')
+//       .onUpdate('cascade'),
+//     foreignKey({
+//       columns: [table.categoryId],
+//       foreignColumns: [category.categoryId],
+//     })
+//       .onDelete('cascade')
+//       .onUpdate('cascade'),
+//     foreignKey({
+//       columns: [table.statusId],
+//       foreignColumns: [status.statusId],
+//     })
+//       .onDelete('cascade')
+//       .onUpdate('cascade'),
+//     pgPolicy('Users can manage their own expenses', {
+//       as: 'permissive',
+//       for: 'all',
+//       to: [PgRoles.AUTHENTICATED],
+//       using: sql`EXISTS (
+//         SELECT 1 FROM account
+//         WHERE
+//           account.account_id = ${table.accountId} AND
+//           account.user_id = auth.uid()
+//       )`,
+//       withCheck: sql`EXISTS (
+//         SELECT 1 FROM account
+//         WHERE
+//           account.account_id = ${table.accountId} AND
+//           account.user_id = auth.uid()
+//       )`,
+//     }),
+//   ],
+// );
 
 export const savingsGoal = pgTable(
   'savings_goal',

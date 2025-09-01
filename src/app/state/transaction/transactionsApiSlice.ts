@@ -1,12 +1,14 @@
-import { Expense, Income } from '@/lib/models';
+import { Transaction } from '@/lib/models';
 import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+
+type Granularity = 'day' | 'week' | 'month' | 'year';
 
 export const transactionsApiSlice = createApi({
   baseQuery: fetchBaseQuery({ baseUrl: '/api/transaction' }),
   reducerPath: 'transactionsApi',
   tagTypes: ['Transactions'],
   endpoints: (builder) => ({
-    createIncome: builder.mutation<Income, Partial<Income>>({
+    createIncome: builder.mutation<Transaction, Partial<Transaction>>({
       query: (income) => ({
         url: `/income`,
         method: 'POST',
@@ -14,7 +16,7 @@ export const transactionsApiSlice = createApi({
       }),
       invalidatesTags: ['Transactions'],
     }),
-    createExpense: builder.mutation<Expense, Partial<Expense>>({
+    createExpense: builder.mutation<Transaction, Partial<Transaction>>({
       query: (expense) => ({
         url: `/expense`,
         method: 'POST',
@@ -26,6 +28,20 @@ export const transactionsApiSlice = createApi({
       query: () => `/balance`,
       providesTags: ['Transactions'],
     }),
+    getIncomeTotal: builder.query<
+      { totalIncome: number; incomeDifference: number },
+      Granularity
+    >({
+      query: (granularity) => `/income?granularity=${granularity}`,
+      providesTags: ['Transactions'],
+    }),
+    getExpenseTotal: builder.query<
+      { totalExpense: number; expenseDifference: number },
+      Granularity
+    >({
+      query: (granularity) => `/expense?granularity=${granularity}`,
+      providesTags: ['Transactions'],
+    }),
   }),
 });
 
@@ -34,4 +50,6 @@ export const {
   useCreateIncomeMutation,
   useCreateExpenseMutation,
   useGetBalanceQuery,
+  useGetIncomeTotalQuery,
+  useGetExpenseTotalQuery,
 } = transactionsApiSlice;

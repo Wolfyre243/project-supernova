@@ -32,15 +32,13 @@ import {
   useCreateExpenseMutation,
   useCreateIncomeMutation,
 } from '@/app/state/transaction/transactionsApiSlice';
-import { APIError } from '@/lib/exceptions';
 import { toast } from 'sonner';
 
 const createTransactionFormSchema = z.object({
-  categoryId: z.string().nonempty({
-    // TODO: Remember to change back to uuid
+  categoryId: z.uuid().nonempty({
     error: 'Please select a category',
   }),
-  accountId: z.string().nonempty({
+  accountId: z.uuid().nonempty({
     error: 'Please select an account',
   }),
   amount: z.coerce
@@ -54,7 +52,6 @@ const createTransactionFormSchema = z.object({
       error: 'Notes cannot exceed 100 characters',
     })
     .optional(),
-  date: z.date(),
 });
 
 export function CreateTransactionDrawer() {
@@ -62,6 +59,7 @@ export function CreateTransactionDrawer() {
   const [transactionType, setTransactionType] = useState<'income' | 'expense'>(
     'expense',
   );
+  // TODO: Merge income and expense into transaction
   const [createIncomeMutation] = useCreateIncomeMutation();
   const [createExpenseMutation] = useCreateExpenseMutation();
 
@@ -70,7 +68,6 @@ export function CreateTransactionDrawer() {
     accountId: '',
     amount: 0.0,
     notes: '',
-    date: new Date(),
   };
 
   const form = useForm<z.input<typeof createTransactionFormSchema>>({
@@ -85,6 +82,7 @@ export function CreateTransactionDrawer() {
     const payload = {
       ...data,
       amount: data.amount as number,
+      type: transactionType,
     };
 
     try {

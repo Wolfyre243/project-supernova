@@ -1,0 +1,1 @@
+ALTER TABLE "transaction" ALTER COLUMN "date" SET DEFAULT 'Mon Sep 01 2025';

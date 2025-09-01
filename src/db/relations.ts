@@ -7,8 +7,7 @@ import {
   status,
   account,
   category,
-  income,
-  expense,
+  transaction,
   savingsGoal,
   budget,
 } from './schema';
@@ -26,8 +25,7 @@ export const statusRelations = relations(status, ({ many }) => ({
   profiles: many(profile),
   accounts: many(account),
   categories: many(category),
-  income: many(income),
-  expenses: many(expense),
+  transactions: many(transaction),
   savingsGoals: many(savingsGoal),
   budgets: many(budget),
 }));
@@ -69,8 +67,7 @@ export const accountRelations = relations(account, ({ one, many }) => ({
     fields: [account.userId],
     references: [profile.userId],
   }),
-  incomes: many(income),
-  expenses: many(expense),
+  transactions: many(transaction),
   status: one(status, {
     fields: [account.statusId],
     references: [status.statusId],
@@ -87,30 +84,17 @@ export const categoryRelations = relations(category, ({ one, many }) => ({
     fields: [category.statusId],
     references: [status.statusId],
   }),
-  income: many(income),
-  expenses: many(expense),
+  transactions: many(transaction),
 }));
 
-// Income table relations
-export const incomeRelations = relations(income, ({ one }) => ({
+// Transaction table relations
+export const transactionRelations = relations(transaction, ({ one }) => ({
   account: one(account, {
-    fields: [income.accountId],
+    fields: [transaction.accountId],
     references: [account.accountId],
   }),
   category: one(category, {
-    fields: [income.categoryId],
-    references: [category.categoryId],
-  }),
-}));
-
-// Expense table relations
-export const expenseRelations = relations(expense, ({ one }) => ({
-  account: one(account, {
-    fields: [expense.accountId],
-    references: [account.accountId],
-  }),
-  category: one(category, {
-    fields: [expense.categoryId],
+    fields: [transaction.categoryId],
     references: [category.categoryId],
   }),
 }));

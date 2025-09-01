@@ -4,9 +4,15 @@ import { useIsMobile } from '@/hooks/use-mobile';
 import { TrendingDown, TrendingUp } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { cn } from '@/utils/cn';
+import {
+  useGetExpenseTotalQuery,
+  useGetIncomeTotalQuery,
+} from '@/app/state/transaction/transactionsApiSlice';
 
 export function IncomeCard({ className }: { className?: string }) {
   const isMobile = useIsMobile();
+
+  const { data } = useGetIncomeTotalQuery('month');
 
   return (
     <div
@@ -24,12 +30,19 @@ export function IncomeCard({ className }: { className?: string }) {
       <div>
         {/* TODO: Add chart here */}
         <h1 className='mb-1 text-xl font-semibold text-green-500 md:text-2xl'>
-          $4,200.00
+          ${data?.totalIncome ?? '...'}
         </h1>
         <div className='text-muted-foreground flex flex-row items-center gap-1'>
-          <Badge className='rounded-full bg-green-500/10 text-green-500'>
-            <TrendingUp /> 9.8%
-          </Badge>
+          {data && data?.incomeDifference >= 0 ? (
+            <Badge className='rounded-full bg-green-500/10 text-green-500'>
+              <TrendingUp /> {Math.abs(data.incomeDifference).toFixed(1)}%
+            </Badge>
+          ) : (
+            <Badge className='rounded-full bg-red-500/10 text-red-500'>
+              <TrendingDown />{' '}
+              {Math.abs(data?.incomeDifference || 0).toFixed(1)}%
+            </Badge>
+          )}
           {!isMobile && <span className='text-sm'>vs last month</span>}
         </div>
       </div>
@@ -39,6 +52,8 @@ export function IncomeCard({ className }: { className?: string }) {
 
 export function ExpenseCard({ className }: { className?: string }) {
   const isMobile = useIsMobile();
+
+  const { data } = useGetExpenseTotalQuery('month');
 
   return (
     <div
@@ -56,12 +71,19 @@ export function ExpenseCard({ className }: { className?: string }) {
       <div>
         {/* TODO: Add chart here */}
         <h1 className='mb-1 text-xl font-semibold text-red-400 md:text-2xl'>
-          $1,100.00
+          ${data?.totalExpense ?? '...'}
         </h1>
         <div className='text-muted-foreground flex flex-row items-center gap-1'>
-          <Badge className='rounded-full bg-green-500/10 text-green-500'>
-            <TrendingDown /> 9.8%
-          </Badge>
+          {data && data?.expenseDifference >= 0 ? (
+            <Badge className='rounded-full bg-red-500/10 text-red-500'>
+              <TrendingUp /> {Math.abs(data.expenseDifference).toFixed(1)}%
+            </Badge>
+          ) : (
+            <Badge className='rounded-full bg-green-500/10 text-green-500'>
+              <TrendingDown />{' '}
+              {Math.abs(data?.expenseDifference || 0).toFixed(1)}%
+            </Badge>
+          )}
           {!isMobile && <span className='text-sm'>vs last month</span>}
         </div>
       </div>

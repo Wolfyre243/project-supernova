@@ -1,0 +1,928 @@
+{
+  "id": "2d999ce8-b695-40ba-a578-b71560e4afc0",
+  "prevId": "a52afdf9-60e3-4ba4-a598-6c784e7c7208",
+  "version": "7",
+  "dialect": "postgresql",
+  "tables": {
+    "public.account": {
+      "name": "account",
+      "schema": "",
+      "columns": {
+        "account_id": {
+          "name": "account_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "is_savings": {
+          "name": "is_savings",
+          "type": "boolean",
+          "primaryKey": false,
+          "notNull": true,
+          "default": false
+        },
+        "status_id": {
+          "name": "status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "account_user_id_fkey": {
+          "name": "account_user_id_fkey",
+          "tableFrom": "account",
+          "tableTo": "profile",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["user_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "account_status_id_status_status_id_fk": {
+          "name": "account_status_id_status_status_id_fk",
+          "tableFrom": "account",
+          "tableTo": "status",
+          "columnsFrom": ["status_id"],
+          "columnsTo": ["status_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "Users can manage their own accounts": {
+          "name": "Users can manage their own accounts",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["authenticated"],
+          "using": "((select auth.uid()) = user_id)",
+          "withCheck": "((select auth.uid()) = user_id)"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.budget": {
+      "name": "budget",
+      "schema": "",
+      "columns": {
+        "budget_id": {
+          "name": "budget_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "allocated_amount": {
+          "name": "allocated_amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "period": {
+          "name": "period",
+          "type": "frequency",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "'monthly'"
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status_id": {
+          "name": "status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "budget_category_id_category_category_id_fk": {
+          "name": "budget_category_id_category_category_id_fk",
+          "tableFrom": "budget",
+          "tableTo": "category",
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["category_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "budget_status_id_status_status_id_fk": {
+          "name": "budget_status_id_status_status_id_fk",
+          "tableFrom": "budget",
+          "tableTo": "status",
+          "columnsFrom": ["status_id"],
+          "columnsTo": ["status_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "Users can manage their own budgets": {
+          "name": "Users can manage their own budgets",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["authenticated"],
+          "using": "EXISTS (\n        SELECT 1 FROM category\n        WHERE\n          category.category_id = \"budget\".\"category_id\" AND\n          category.user_id = auth.uid()\n      )",
+          "withCheck": "EXISTS (\n        SELECT 1 FROM category\n        WHERE\n          category.category_id = \"budget\".\"category_id\" AND\n          category.user_id = auth.uid()\n      )"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.category": {
+      "name": "category",
+      "schema": "",
+      "columns": {
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "transaction_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "icon": {
+          "name": "icon",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "color": {
+          "name": "color",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "description": {
+          "name": "description",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status_id": {
+          "name": "status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "category_user_id_profile_user_id_fk": {
+          "name": "category_user_id_profile_user_id_fk",
+          "tableFrom": "category",
+          "tableTo": "profile",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["user_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "category_status_id_status_status_id_fk": {
+          "name": "category_status_id_status_status_id_fk",
+          "tableFrom": "category",
+          "tableTo": "status",
+          "columnsFrom": ["status_id"],
+          "columnsTo": ["status_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "Users can manage their own categories": {
+          "name": "Users can manage their own categories",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["authenticated"],
+          "using": "((select auth.uid()) = user_id)",
+          "withCheck": "((select auth.uid()) = user_id)"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.profile": {
+      "name": "profile",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "dob": {
+          "name": "dob",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "gender": {
+          "name": "gender",
+          "type": "gender",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "username": {
+          "name": "username",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status_id": {
+          "name": "status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "profile_user_id_fkey": {
+          "name": "profile_user_id_fkey",
+          "tableFrom": "profile",
+          "tableTo": "users",
+          "schemaTo": "auth",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "profile_status_id_status_status_id_fk": {
+          "name": "profile_status_id_status_status_id_fk",
+          "tableFrom": "profile",
+          "tableTo": "status",
+          "columnsFrom": ["status_id"],
+          "columnsTo": ["status_id"],
+          "onDelete": "no action",
+          "onUpdate": "no action"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "profile_username_key": {
+          "name": "profile_username_key",
+          "nullsNotDistinct": false,
+          "columns": ["username"]
+        }
+      },
+      "policies": {
+        "Users can update their own profile": {
+          "name": "Users can update their own profile",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": ["public"],
+          "using": "((select auth.uid()) = user_id)",
+          "withCheck": "((select auth.uid()) = user_id)"
+        },
+        "Allow auth admin to insert profiles": {
+          "name": "Allow auth admin to insert profiles",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": ["supabase_auth_admin"]
+        },
+        "Users can insert their own profile": {
+          "name": "Users can insert their own profile",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": ["authenticated"],
+          "withCheck": "((select auth.uid()) = user_id)"
+        },
+        "Public profiles are viewable by everyone": {
+          "name": "Public profiles are viewable by everyone",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": ["public"]
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.roles": {
+      "name": "roles",
+      "schema": "",
+      "columns": {
+        "role_id": {
+          "name": "role_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {
+        "role_name_key": {
+          "name": "role_name_key",
+          "nullsNotDistinct": false,
+          "columns": ["name"]
+        }
+      },
+      "policies": {
+        "Enable read access for authenticated users": {
+          "name": "Enable read access for authenticated users",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": ["authenticated", "supabase_admin", "supabase_auth_admin"]
+        },
+        "Allow only supabase_admin to insert roles": {
+          "name": "Allow only supabase_admin to insert roles",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": ["supabase_admin", "supabase_auth_admin"]
+        },
+        "Allow only supabase_admin to update roles": {
+          "name": "Allow only supabase_admin to update roles",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": ["supabase_admin", "supabase_auth_admin"]
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.savings_goal": {
+      "name": "savings_goal",
+      "schema": "",
+      "columns": {
+        "savings_goal_id": {
+          "name": "savings_goal_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "target_amount": {
+          "name": "target_amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "status_id": {
+          "name": "status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "savings_goal_account_id_account_account_id_fk": {
+          "name": "savings_goal_account_id_account_account_id_fk",
+          "tableFrom": "savings_goal",
+          "tableTo": "account",
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["account_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "savings_goal_status_id_status_status_id_fk": {
+          "name": "savings_goal_status_id_status_status_id_fk",
+          "tableFrom": "savings_goal",
+          "tableTo": "status",
+          "columnsFrom": ["status_id"],
+          "columnsTo": ["status_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "Users can manage their own savings goals": {
+          "name": "Users can manage their own savings goals",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["authenticated"],
+          "using": "EXISTS (\n        SELECT 1 FROM account \n        WHERE \n          account.account_id = \"savings_goal\".\"account_id\" AND \n          account.user_id = auth.uid()\n      )",
+          "withCheck": "EXISTS (\n        SELECT 1 FROM account \n        WHERE \n          account.account_id = \"savings_goal\".\"account_id\" AND \n          account.user_id = auth.uid()\n      )"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.status": {
+      "name": "status",
+      "schema": "",
+      "columns": {
+        "status_id": {
+          "name": "status_id",
+          "type": "integer",
+          "primaryKey": true,
+          "notNull": true
+        },
+        "name": {
+          "name": "name",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "Enable read access for authenticated users": {
+          "name": "Enable read access for authenticated users",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": ["authenticated", "supabase_auth_admin"]
+        },
+        "Allow only supabase_admin to insert statuses": {
+          "name": "Allow only supabase_admin to insert statuses",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": ["supabase_admin", "supabase_auth_admin"]
+        },
+        "Allow only supabase_admin to update statuses": {
+          "name": "Allow only supabase_admin to update statuses",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": ["supabase_admin", "supabase_auth_admin"]
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.transaction": {
+      "name": "transaction",
+      "schema": "",
+      "columns": {
+        "transaction_id": {
+          "name": "transaction_id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true,
+          "default": "gen_random_uuid()"
+        },
+        "account_id": {
+          "name": "account_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "category_id": {
+          "name": "category_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "type": {
+          "name": "type",
+          "type": "transaction_type",
+          "typeSchema": "public",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "amount": {
+          "name": "amount",
+          "type": "numeric",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "date": {
+          "name": "date",
+          "type": "date",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "notes": {
+          "name": "notes",
+          "type": "text",
+          "primaryKey": false,
+          "notNull": false
+        },
+        "status_id": {
+          "name": "status_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "transaction_account_id_account_account_id_fk": {
+          "name": "transaction_account_id_account_account_id_fk",
+          "tableFrom": "transaction",
+          "tableTo": "account",
+          "columnsFrom": ["account_id"],
+          "columnsTo": ["account_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "transaction_category_id_category_category_id_fk": {
+          "name": "transaction_category_id_category_category_id_fk",
+          "tableFrom": "transaction",
+          "tableTo": "category",
+          "columnsFrom": ["category_id"],
+          "columnsTo": ["category_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "transaction_status_id_status_status_id_fk": {
+          "name": "transaction_status_id_status_status_id_fk",
+          "tableFrom": "transaction",
+          "tableTo": "status",
+          "columnsFrom": ["status_id"],
+          "columnsTo": ["status_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {
+        "Users can manage their own transactions": {
+          "name": "Users can manage their own transactions",
+          "as": "PERMISSIVE",
+          "for": "ALL",
+          "to": ["authenticated"],
+          "using": "EXISTS (\n        SELECT 1 FROM account \n        WHERE \n          account.account_id = \"transaction\".\"account_id\" AND \n          account.user_id = auth.uid()\n      )",
+          "withCheck": "EXISTS (\n        SELECT 1 FROM account \n        WHERE \n          account.account_id = \"transaction\".\"account_id\" AND \n          account.user_id = auth.uid()\n      )"
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "public.user_role": {
+      "name": "user_role",
+      "schema": "",
+      "columns": {
+        "user_id": {
+          "name": "user_id",
+          "type": "uuid",
+          "primaryKey": false,
+          "notNull": true
+        },
+        "role_id": {
+          "name": "role_id",
+          "type": "integer",
+          "primaryKey": false,
+          "notNull": true,
+          "default": 1
+        },
+        "created_at": {
+          "name": "created_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "updated_at": {
+          "name": "updated_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": true,
+          "default": "now()"
+        },
+        "deleted_at": {
+          "name": "deleted_at",
+          "type": "timestamp with time zone",
+          "primaryKey": false,
+          "notNull": false
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {
+        "user_role_role_id_roles_role_id_fk": {
+          "name": "user_role_role_id_roles_role_id_fk",
+          "tableFrom": "user_role",
+          "tableTo": "roles",
+          "columnsFrom": ["role_id"],
+          "columnsTo": ["role_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        },
+        "user_role_user_id_profile_user_id_fk": {
+          "name": "user_role_user_id_profile_user_id_fk",
+          "tableFrom": "user_role",
+          "tableTo": "profile",
+          "columnsFrom": ["user_id"],
+          "columnsTo": ["user_id"],
+          "onDelete": "cascade",
+          "onUpdate": "cascade"
+        }
+      },
+      "compositePrimaryKeys": {
+        "user_role_user_id_role_id_pk": {
+          "name": "user_role_user_id_role_id_pk",
+          "columns": ["user_id", "role_id"]
+        }
+      },
+      "uniqueConstraints": {},
+      "policies": {
+        "Enable read access for authenticated users": {
+          "name": "Enable read access for authenticated users",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": ["authenticated", "supabase_admin", "supabase_auth_admin"]
+        },
+        "Enable read access for authenticator (Supabase hooks)": {
+          "name": "Enable read access for authenticator (Supabase hooks)",
+          "as": "PERMISSIVE",
+          "for": "SELECT",
+          "to": ["authenticator"]
+        },
+        "Allow only supabase_admin to insert roles": {
+          "name": "Allow only supabase_admin to insert roles",
+          "as": "PERMISSIVE",
+          "for": "INSERT",
+          "to": ["supabase_admin", "supabase_auth_admin"]
+        },
+        "Allow only supabase_admin to update roles": {
+          "name": "Allow only supabase_admin to update roles",
+          "as": "PERMISSIVE",
+          "for": "UPDATE",
+          "to": ["supabase_admin", "supabase_auth_admin"]
+        }
+      },
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    },
+    "auth.users": {
+      "name": "users",
+      "schema": "auth",
+      "columns": {
+        "id": {
+          "name": "id",
+          "type": "uuid",
+          "primaryKey": true,
+          "notNull": true
+        }
+      },
+      "indexes": {},
+      "foreignKeys": {},
+      "compositePrimaryKeys": {},
+      "uniqueConstraints": {},
+      "policies": {},
+      "checkConstraints": {},
+      "isRLSEnabled": false
+    }
+  },
+  "enums": {
+    "public.frequency": {
+      "name": "frequency",
+      "schema": "public",
+      "values": ["daily", "weekly", "monthly", "yearly"]
+    },
+    "public.gender": {
+      "name": "gender",
+      "schema": "public",
+      "values": ["M", "F"]
+    },
+    "public.transaction_type": {
+      "name": "transaction_type",
+      "schema": "public",
+      "values": ["income", "expense"]
+    }
+  },
+  "schemas": {},
+  "sequences": {},
+  "roles": {},
+  "policies": {},
+  "views": {},
+  "_meta": {
+    "columns": {},
+    "schemas": {},
+    "tables": {}
+  }
+}

@@ -2,7 +2,7 @@
 
 import { Status } from '@/config/statusConfig';
 import db from '@/db/db';
-import { account, expense, income } from '@/db/schema';
+import { account, transaction } from '@/db/schema';
 import { APIError } from '@/lib/exceptions';
 import { createClient } from '@/utils/supabase/server';
 import { and, eq, sum } from 'drizzle-orm';
@@ -23,34 +23,42 @@ export async function GET() {
 
     const [incomeSubquery] = await db
       .select({
-        total: sum(income.amount).mapWith(Number),
+        total: sum(transaction.amount).mapWith(Number),
       })
-      .from(income)
+      .from(transaction)
       .leftJoin(
         account,
         and(
-          eq(income.accountId, account.accountId),
-          eq(income.statusId, activeStatus),
+          eq(transaction.accountId, account.accountId),
+          eq(account.statusId, activeStatus),
         ),
       )
       .where(
-        and(eq(account.userId, user.id), eq(income.statusId, activeStatus)),
+        and(
+          eq(account.userId, user.id),
+          eq(transaction.statusId, activeStatus),
+          eq(transaction.type, 'income'),
+        ),
       );
 
     const [expenseSubquery] = await db
       .select({
-        total: sum(expense.amount).mapWith(Number),
+        total: sum(transaction.amount).mapWith(Number),
       })
-      .from(expense)
+      .from(transaction)
       .leftJoin(
         account,
         and(
-          eq(expense.accountId, account.accountId),
-          eq(expense.statusId, activeStatus),
+          eq(transaction.accountId, account.accountId),
+          eq(account.statusId, activeStatus),
         ),
       )
       .where(
-        and(eq(account.userId, user.id), eq(expense.statusId, activeStatus)),
+        and(
+          eq(account.userId, user.id),
+          eq(transaction.statusId, activeStatus),
+          eq(transaction.type, 'expense'),
+        ),
       );
 
     const finalBalance =
