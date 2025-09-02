@@ -75,7 +75,6 @@ export async function GET(request: NextRequest) {
 
     const incomeDifference = parseFloat(percentageDiff.toFixed(1));
 
-    // TODO: Return raw data too for chart display, as well as past day/week/month/year data
     return NextResponse.json(
       { totalIncome: currentIncome, incomeDifference },
       { status: 200 },
