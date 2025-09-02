@@ -3,7 +3,7 @@
 import db from '@/db/db';
 import { account, transaction } from '@/db/schema';
 import { APIError } from '@/lib/exceptions';
-import { parseGranularity } from '@/utils/parsers';
+import { parseScope } from '@/utils/parsers';
 import { createClient } from '@/utils/supabase/server';
 import { and, eq, gte, lt, sum } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
@@ -19,12 +19,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Parse granularity from query params
+    // Parse scope from query params
     const { searchParams } = new URL(request.url);
-    const granularity = searchParams.get('granularity') || 'month';
+    const scope = searchParams.get('scope') || 'month';
 
     const { startDate, endDate, previousStartDate, previousEndDate } =
-      parseGranularity(granularity);
+      parseScope(scope);
 
     // Fetch current period's total income
     const [currentExpenseQuery] = await db

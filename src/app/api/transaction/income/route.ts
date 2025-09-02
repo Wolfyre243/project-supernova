@@ -6,7 +6,7 @@ import { APIError } from '@/lib/exceptions';
 import { createClient } from '@/utils/supabase/server';
 import { NextRequest, NextResponse } from 'next/server';
 import { and, eq, gte, lt, sum } from 'drizzle-orm';
-import { parseGranularity } from '@/utils/parsers';
+import { parseScope } from '@/utils/parsers';
 
 export async function GET(request: NextRequest) {
   const supabase = await createClient();
@@ -19,12 +19,12 @@ export async function GET(request: NextRequest) {
   }
 
   try {
-    // Parse granularity from query params
+    // Parse scope from query params
     const { searchParams } = new URL(request.url);
-    const granularity = searchParams.get('granularity') || 'month';
+    const scope = searchParams.get('scope') || 'month';
 
     const { startDate, endDate, previousStartDate, previousEndDate } =
-      parseGranularity(granularity);
+      parseScope(scope);
 
     // Fetch current period's total income
     const [currentIncomeQuery] = await db
