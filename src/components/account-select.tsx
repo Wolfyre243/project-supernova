@@ -10,7 +10,7 @@ import {
 } from '@/components/ui/dropdown-menu';
 import { ChevronDown } from 'lucide-react';
 import { useEffect, useState } from 'react';
-import { useGetAccountsQuery } from '@/app/state/account/accountsApiSlice';
+import { useGetAccountsQuery } from '@/app/state/account/accountsApi';
 import { Skeleton } from './ui/skeleton';
 import { toast } from 'sonner';
 import { IconMap } from '@/config/iconMap';

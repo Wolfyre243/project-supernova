@@ -1,10 +1,7 @@
 import { Category } from '@/lib/models';
-import { createApi, fetchBaseQuery } from '@reduxjs/toolkit/query/react';
+import { apiSlice } from '../mainApiSlice';
 
-export const categoriesApiSlice = createApi({
-  baseQuery: fetchBaseQuery({ baseUrl: '/api' }),
-  reducerPath: 'categoriesApi',
-  tagTypes: ['Categories'],
+export const categoriesApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getCategories: builder.query<Category[], void>({
       query: () => `/category`,
@@ -19,4 +16,4 @@ export const categoriesApiSlice = createApi({
 });
 
 export const { useGetCategoriesQuery, useGetCategoriesByTypeQuery } =
-  categoriesApiSlice;
+  categoriesApi;

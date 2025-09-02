@@ -31,7 +31,7 @@ import { AccountSelector } from './account-select';
 import {
   useCreateExpenseMutation,
   useCreateIncomeMutation,
-} from '@/app/state/transaction/transactionsApiSlice';
+} from '@/app/state/transaction/transactionsApi';
 import { toast } from 'sonner';
 
 const createTransactionFormSchema = z.object({

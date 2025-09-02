@@ -7,7 +7,7 @@ import { cn } from '@/utils/cn';
 import {
   useGetExpenseTotalQuery,
   useGetIncomeTotalQuery,
-} from '@/app/state/transaction/transactionsApiSlice';
+} from '@/app/state/transaction/transactionsApi';
 
 export function IncomeCard({ className }: { className?: string }) {
   const isMobile = useIsMobile();

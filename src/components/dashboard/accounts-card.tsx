@@ -11,12 +11,19 @@ import {
   CarouselPrevious,
 } from '../ui/carousel';
 import { useCallback, useEffect, useState } from 'react';
-import { ChevronLeft, ChevronRight, Plus, SearchX } from 'lucide-react';
-import { useGetAccountsQuery } from '@/app/state/account/accountsApiSlice';
+import {
+  ChevronLeft,
+  ChevronRight,
+  HeartCrack,
+  Plus,
+  RotateCcw,
+  SearchX,
+} from 'lucide-react';
+import { useGetAccountsQuery } from '@/app/state/account/accountsApi';
 import { Account } from '@/lib/models';
 import { IconMap } from '@/config/iconMap';
 import { truncateString } from '@/utils/formatters';
-import { formatDistanceToNow } from 'date-fns';
+import { formatDistanceToNowStrict } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
 
@@ -56,7 +63,7 @@ function SingleAccountCard({ account }: { account: Partial<Account> }) {
       </div>
       <p className='text-muted text-sm'>
         Last Updated:{' '}
-        {formatDistanceToNow(account.updatedAt as Date, {
+        {formatDistanceToNowStrict(account.updatedAt as Date, {
           addSuffix: true,
         })}
       </p>
@@ -65,7 +72,6 @@ function SingleAccountCard({ account }: { account: Partial<Account> }) {
 }
 
 export function AccountsCard({ className }: { className?: string }) {
-  const isMobile = useIsMobile();
   const [api, setApi] = useState<CarouselApi>();
   const [current, setCurrent] = useState(0);
 
@@ -125,6 +131,21 @@ export function AccountsCard({ className }: { className?: string }) {
           <ChevronLeft />
         </button>
         {isLoading && <AccountCardSkeleton />}
+        {isError && error && (
+          <div className='flex h-30 w-full flex-col items-center justify-center gap-2 rounded-2xl'>
+            <HeartCrack className='text-muted' />
+            <h1 className='text-muted'>Error fetching accounts...</h1>
+            {/* TODO: Add retry functionality */}
+            <Button
+              size='sm'
+              variant={'ghost'}
+              className='text-muted-foreground text-sm'
+            >
+              <RotateCcw />
+              Retry
+            </Button>
+          </div>
+        )}
         {data?.length === 0 && (
           <div className='flex h-30 w-full flex-col items-center justify-center gap-2 rounded-2xl'>
             <SearchX className='text-muted' />

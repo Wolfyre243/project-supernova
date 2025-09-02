@@ -16,7 +16,7 @@ import Link from 'next/link';
 import { Settings2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import LogOutButton from '../logout-btn';
-import { useGetUserDetailsQuery } from '@/app/state/userDetails/userDetailsApiSlice';
+import { useGetUserDetailsQuery } from '@/app/state/user/userApi';
 import { UserDetails } from '@/lib/models';
 
 function UserHeader({ user }: { user: UserDetails }) {

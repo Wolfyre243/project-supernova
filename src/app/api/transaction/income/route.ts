@@ -110,6 +110,13 @@ export async function POST(request: NextRequest) {
     // TODO: Body validation?
 
     const newIncome = await db.insert(transaction).values(body).returning();
+
+    await db
+      .update(account)
+      .set({ updatedAt: new Date() })
+      .where(eq(account.accountId, body.accountId));
+
+    // TODO: Introduce a logging system
     console.log('Successfully created income log:', newIncome);
 
     return NextResponse.json(

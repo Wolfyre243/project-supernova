@@ -5,7 +5,7 @@ import { SidebarTrigger, useSidebar } from '../ui/sidebar';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { Avatar, AvatarFallback, AvatarImage } from '@/components/ui/avatar';
 import { ThemeToggleBar } from '../theme-provider';
-import { useGetUserDetailsQuery } from '@/app/state/userDetails/userDetailsApiSlice';
+import { useGetUserDetailsQuery } from '@/app/state/user/userApi';
 import { Skeleton } from '../ui/skeleton';
 
 export function AppSidebarHeaderSkeleton() {

@@ -108,6 +108,12 @@ export async function POST(request: NextRequest) {
     const body = await request.json();
 
     const newExpense = await db.insert(transaction).values(body).returning();
+
+    await db
+      .update(account)
+      .set({ updatedAt: new Date() })
+      .where(eq(account.accountId, body.accountId));
+
     console.log('Successfully created expense log:', newExpense);
 
     return NextResponse.json(

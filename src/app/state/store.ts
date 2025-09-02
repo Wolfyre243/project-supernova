@@ -3,28 +3,19 @@ import {
   type Action,
   type ThunkAction,
 } from '@reduxjs/toolkit';
-import { userDetailsApiSlice } from './userDetails/userDetailsApiSlice';
 import { listenerMiddleware } from './listenerMiddleware';
-import { categoriesApiSlice } from './category/categoriesApiSlice';
-import { accountsApiSlice } from './account/accountsApiSlice';
-import { transactionsApiSlice } from './transaction/transactionsApiSlice';
+import { apiSlice } from './mainApiSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
       // users: usersReducer <- example if not using createApi
-      [userDetailsApiSlice.reducerPath]: userDetailsApiSlice.reducer,
-      [categoriesApiSlice.reducerPath]: categoriesApiSlice.reducer,
-      [accountsApiSlice.reducerPath]: accountsApiSlice.reducer,
-      [transactionsApiSlice.reducerPath]: transactionsApiSlice.reducer,
+      [apiSlice.reducerPath]: apiSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>
       getDefaultMiddleware()
         .prepend(listenerMiddleware.middleware)
-        .concat(userDetailsApiSlice.middleware)
-        .concat(categoriesApiSlice.middleware)
-        .concat(accountsApiSlice.middleware)
-        .concat(transactionsApiSlice.middleware),
+        .concat(apiSlice.middleware),
   });
 };
 

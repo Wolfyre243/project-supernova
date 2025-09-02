@@ -10,7 +10,7 @@ import {
 } from './ui/dropdown-menu';
 import { Category } from '@/lib/models';
 import { cn } from '@/utils/cn';
-import { useGetCategoriesByTypeQuery } from '@/app/state/category/categoriesApiSlice';
+import { useGetCategoriesByTypeQuery } from '@/app/state/category/categoriesApi';
 import { Skeleton } from './ui/skeleton';
 import { toast } from 'sonner';
 import { IconMap } from '@/config/iconMap';

@@ -1,8 +1,8 @@
 'use client';
 
 import { useIsMobile } from '@/hooks/use-mobile';
-import { useGetUserDetailsQuery } from '@/app/state/userDetails/userDetailsApiSlice';
-import { useGetBalanceQuery } from '@/app/state/transaction/transactionsApiSlice';
+import { useGetUserDetailsQuery } from '@/app/state/user/userApi';
+import { useGetBalanceQuery } from '@/app/state/transaction/transactionsApi';
 import { Skeleton } from '../ui/skeleton';
 
 function BalanceCardSkeleton() {
