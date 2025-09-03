@@ -218,7 +218,8 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    return NextResponse.json({ entries }, { status: 200 });
+    console.log(entries);
+    return NextResponse.json(entries, { status: 200 });
   } catch (error) {
     console.log(error);
     if (error instanceof APIError) {

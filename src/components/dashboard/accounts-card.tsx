@@ -29,7 +29,7 @@ import { Button } from '../ui/button';
 
 function AccountCardSkeleton() {
   return (
-    <div className='flex w-full flex-col gap-4 rounded-xl border-2 p-4 shadow-md'>
+    <div className='flex h-full w-full flex-col gap-4 rounded-xl border-2 p-4 shadow-md'>
       <Skeleton className='h-8 w-8 rounded-full' />
       <div className='flex flex-col gap-1'>
         <Skeleton className='h-4 w-36 rounded-3xl' />
@@ -107,12 +107,12 @@ export function AccountsCard({ className }: { className?: string }) {
   return (
     <div
       className={cn(
-        'md:bg-card flex w-full flex-col gap-4 md:max-w-1/3 md:rounded-2xl md:border md:p-4',
+        'md:bg-card flex w-full flex-col gap-4 md:max-w-[28%] md:rounded-2xl md:border md:p-4',
         className,
       )}
     >
       <div className='flex flex-row items-center justify-between'>
-        <h1 className='md:text-md text-xl font-semibold text-nowrap'>
+        <h1 className='text-xl font-semibold text-nowrap md:text-base md:font-normal'>
           Accounts
         </h1>
         <Button size={'icon'} variant={'ghost'}>
@@ -153,7 +153,7 @@ export function AccountsCard({ className }: { className?: string }) {
           </div>
         )}
         {!isLoading && data && data?.length > 0 && (
-          <Carousel setApi={setApi} className='flex h-fit flex-col'>
+          <Carousel setApi={setApi} className='flex h-fit max-w-[80%] flex-col'>
             <CarouselContent className='items-center'>
               {data.map((account: Partial<Account>) => {
                 return (

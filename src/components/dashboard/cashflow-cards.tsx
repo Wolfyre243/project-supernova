@@ -1,18 +1,48 @@
 'use client';
 
 import { useIsMobile } from '@/hooks/use-mobile';
-import { TrendingDown, TrendingUp } from 'lucide-react';
+import { Loader2, TrendingDown, TrendingUp } from 'lucide-react';
 import { Badge } from '../ui/badge';
 import { cn } from '@/utils/cn';
 import {
   useGetExpenseTotalQuery,
   useGetIncomeTotalQuery,
+  useGetTransactionStatsByDateQuery,
 } from '@/app/state/transaction/transactionsApi';
+import {
+  ChartConfig,
+  ChartContainer,
+  ChartTooltip,
+  ChartTooltipContent,
+} from '../ui/chart';
+import { Area, AreaChart } from 'recharts';
 
 export function IncomeCard({ className }: { className?: string }) {
   const isMobile = useIsMobile();
 
   const { data } = useGetIncomeTotalQuery('month');
+
+  const now = new Date();
+  const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const { data: chartData, isLoading: chartIsLoading } =
+    useGetTransactionStatsByDateQuery({
+      type: 'income',
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    });
+
+  const chartConfig = {
+    totalAmount: {
+      label: 'Total',
+    },
+    date: {
+      label: 'Income',
+    },
+    transactionCount: {
+      label: 'Transaction Count',
+    },
+  } satisfies ChartConfig;
 
   return (
     <div
@@ -28,9 +58,57 @@ export function IncomeCard({ className }: { className?: string }) {
         {/* <ExternalLink className='size-4' /> */}
       </div>
       <div>
-        {/* TODO: Add chart here */}
+        <div className='flex h-10 flex-col'>
+          {chartIsLoading && !isMobile && (
+            <div className='text-muted flex h-full flex-row items-center justify-center gap-2'>
+              <Loader2 className='animate-spin' />
+              <span>Loading chart...</span>
+            </div>
+          )}
+          {chartData && !isMobile && (
+            <ChartContainer config={chartConfig} className='h-full w-full'>
+              <AreaChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  bottom: 10,
+                }}
+              >
+                {/* <CartesianGrid /> */}
+                {/* <defs>
+                  <linearGradient id='fillIncome' x1='2' y1='0' x2='1' y2='2'>
+                    <stop
+                      offset='5%'
+                      stopColor='var(--color-green-500)'
+                      stopOpacity={0.8}
+                    />
+                    <stop
+                      offset='95%'
+                      stopColor='var(--color-green-500)'
+                      stopOpacity={0}
+                    />
+                  </linearGradient>
+                </defs> */}
+                <Area
+                  dataKey='totalAmount'
+                  type='natural'
+                  fill='url(#fillIncome)'
+                  fillOpacity={0.1}
+                  stroke='var(--color-green-500)'
+                  stackId='a'
+                />
+                <ChartTooltip
+                  cursor={false}
+                  includeHidden
+                  content={<ChartTooltipContent />}
+                />
+              </AreaChart>
+            </ChartContainer>
+          )}
+        </div>
+
         <h1 className='mb-1 text-xl font-semibold text-green-500 md:text-2xl'>
-          ${data?.totalIncome ?? '...'}
+          ${data?.totalIncome.toFixed(2) ?? '...'}
         </h1>
         <div className='text-muted-foreground flex flex-row items-center gap-1'>
           {data && data?.incomeDifference >= 0 ? (
@@ -55,6 +133,28 @@ export function ExpenseCard({ className }: { className?: string }) {
 
   const { data } = useGetExpenseTotalQuery('month');
 
+  const now = new Date();
+  const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
+  const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
+  const { data: chartData, isLoading: chartIsLoading } =
+    useGetTransactionStatsByDateQuery({
+      type: 'expense',
+      startDate: startDate.toISOString(),
+      endDate: endDate.toISOString(),
+    });
+
+  const chartConfig = {
+    totalAmount: {
+      label: 'Total',
+    },
+    date: {
+      label: 'Expense',
+    },
+    transactionCount: {
+      label: 'Transaction Count',
+    },
+  } satisfies ChartConfig;
+
   return (
     <div
       className={cn(
@@ -69,9 +169,41 @@ export function ExpenseCard({ className }: { className?: string }) {
         {/* <ExternalLink className='size-4' /> */}
       </div>
       <div>
-        {/* TODO: Add chart here */}
+        <div className='flex flex-col'>
+          {chartIsLoading && !isMobile && (
+            <div className='text-muted flex h-full flex-row items-center justify-center gap-2'>
+              <Loader2 className='animate-spin' />
+              <span>Loading chart...</span>
+            </div>
+          )}
+          {chartData && !isMobile && (
+            <ChartContainer config={chartConfig} className='h-10 w-full'>
+              <AreaChart
+                accessibilityLayer
+                data={chartData}
+                margin={{
+                  bottom: 10,
+                }}
+              >
+                <Area
+                  dataKey='totalAmount'
+                  type='natural'
+                  fill='url(#fillIncome)'
+                  fillOpacity={0.1}
+                  stroke='var(--color-red-500)'
+                  stackId='a'
+                />
+                <ChartTooltip
+                  cursor={false}
+                  includeHidden
+                  content={<ChartTooltipContent />}
+                />
+              </AreaChart>
+            </ChartContainer>
+          )}
+        </div>
         <h1 className='mb-1 text-xl font-semibold text-red-400 md:text-2xl'>
-          ${data?.totalExpense ?? '...'}
+          ${data?.totalExpense.toFixed(2) ?? '...'}
         </h1>
         <div className='text-muted-foreground flex flex-row items-center gap-1'>
           {data && data?.expenseDifference >= 0 ? (

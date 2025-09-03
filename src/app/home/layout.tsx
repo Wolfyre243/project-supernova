@@ -21,16 +21,18 @@ export default async function UserHomeLayout({
         defaultOpen={defaultOpen}
         style={
           {
-            '--sidebar-width': 'calc(var(--spacing) * 72)',
+            '--sidebar-width': 'calc(var(--spacing) * 60)',
             '--header-height': 'calc(var(--spacing) * 13)',
           } as React.CSSProperties
         }
       >
         <AppSidebar />
         <SidebarInset>
-          <main className='bg-homepage-gradient flex max-h-screen flex-1 flex-col lg:bg-none'>
+          <main className='bg-homepage-gradient flex flex-1 flex-col lg:bg-none'>
             <SiteHeader />
-            <div className='flex min-h-screen flex-1 flex-col'>{children}</div>
+            <div className='flex h-full min-h-screen flex-1 flex-col'>
+              {children}
+            </div>
           </main>
           <div className='fixed right-0 bottom-0 left-0 z-50 w-full md:hidden'>
             <BottomBar />

@@ -16,20 +16,29 @@ export default function UserHomePage() {
         <BalanceCardMobile />
       </header>
 
-      <section className='bg-background flex min-h-full flex-col gap-4 rounded-t-3xl p-6 md:flex-row md:rounded-none'>
-        <div className='flex w-full flex-col gap-4 md:w-3/4'>
-          <div className='flex w-full flex-row gap-4'>
+      <section className='bg-background flex flex-col gap-4 rounded-t-3xl p-6 pb-24 md:flex-row md:rounded-none md:pb-6'>
+        <div className='flex h-full w-full flex-col gap-4 md:w-[80%]'>
+          <div className='flex w-full flex-row items-center gap-4'>
             <BalanceCard />
             <IncomeCard />
             <ExpenseCard />
           </div>
           <div className='flex w-full flex-row gap-4'>
             <AccountsCard />
+            <div className='bg-card hidden w-full rounded-2xl border p-4 md:flex'>
+              Savings Card
+            </div>
+            <div className='bg-card hidden min-w-1/4 rounded-2xl border p-4 md:flex'>
+              Quick Add Card
+            </div>
+          </div>
+          <div className='bg-card h-100 w-full rounded-2xl border p-4'>
+            Chart here
           </div>
         </div>
 
         {/* Right Column, hidden on mobile */}
-        <div className='w-1/4'></div>
+        <div className='bg-card hidden w-[20%] rounded-2xl border p-4 md:flex'></div>
       </section>
     </>
   );
