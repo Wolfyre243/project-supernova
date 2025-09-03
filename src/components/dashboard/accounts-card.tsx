@@ -26,6 +26,7 @@ import { truncateString } from '@/utils/formatters';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
+import { NewAccountButton } from './new-account-dialog';
 
 function AccountCardSkeleton() {
   return (
@@ -115,9 +116,7 @@ export function AccountsCard({ className }: { className?: string }) {
         <h1 className='text-xl font-semibold text-nowrap md:text-base md:font-normal'>
           Accounts
         </h1>
-        <Button size={'icon'} variant={'ghost'}>
-          <Plus className='size-5' />
-        </Button>
+        <NewAccountButton />
       </div>
       <div className='flex w-full flex-row items-center justify-center gap-2'>
         <button

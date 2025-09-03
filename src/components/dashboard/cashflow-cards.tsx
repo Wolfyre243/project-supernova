@@ -58,7 +58,7 @@ export function IncomeCard({ className }: { className?: string }) {
         {/* <ExternalLink className='size-4' /> */}
       </div>
       <div>
-        <div className='flex h-10 flex-col'>
+        <div className='flex flex-col'>
           {chartIsLoading && !isMobile && (
             <div className='text-muted flex h-full flex-row items-center justify-center gap-2'>
               <Loader2 className='animate-spin' />
@@ -66,7 +66,7 @@ export function IncomeCard({ className }: { className?: string }) {
             </div>
           )}
           {chartData && !isMobile && (
-            <ChartContainer config={chartConfig} className='h-full w-full'>
+            <ChartContainer config={chartConfig} className='h-10 w-full'>
               <AreaChart
                 accessibilityLayer
                 data={chartData}
@@ -74,21 +74,6 @@ export function IncomeCard({ className }: { className?: string }) {
                   bottom: 10,
                 }}
               >
-                {/* <CartesianGrid /> */}
-                {/* <defs>
-                  <linearGradient id='fillIncome' x1='2' y1='0' x2='1' y2='2'>
-                    <stop
-                      offset='5%'
-                      stopColor='var(--color-green-500)'
-                      stopOpacity={0.8}
-                    />
-                    <stop
-                      offset='95%'
-                      stopColor='var(--color-green-500)'
-                      stopOpacity={0}
-                    />
-                  </linearGradient>
-                </defs> */}
                 <Area
                   dataKey='totalAmount'
                   type='natural'

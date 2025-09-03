@@ -22,6 +22,16 @@ export async function GET() {
   try {
     const activeStatus = Status.ACTIVE;
 
+    const calcTotal =
+      sql`
+      COALESCE(
+        SUM(
+          CASE 
+            WHEN ${transaction.type} = 'income' THEN ${transaction.amount} 
+            WHEN ${transaction.type} = 'expense' THEN -${transaction.amount} 
+            ELSE 0 
+          END), 0)::numeric`.mapWith(Number) || 0;
+
     const result: Partial<Account>[] = await db
       .select({
         accountId: account.accountId,
@@ -33,15 +43,7 @@ export async function GET() {
         isSavings: account.isSavings,
         createdAt: account.createdAt,
         updatedAt: account.updatedAt,
-        total:
-          sql`
-          COALESCE(
-            SUM(
-              CASE 
-                WHEN ${transaction.type} = 'income' THEN ${transaction.amount} 
-                WHEN ${transaction.type} = 'expense' THEN -${transaction.amount} 
-                ELSE 0 
-              END), 0)::numeric`.mapWith(Number) || 0,
+        total: calcTotal,
       })
       .from(account)
       .leftJoin(
@@ -55,7 +57,7 @@ export async function GET() {
         and(eq(account.userId, user.id), eq(account.statusId, activeStatus)),
       )
       .groupBy(account.accountId)
-      .orderBy(asc(account.isSavings), desc(account.createdAt));
+      .orderBy(desc(calcTotal), desc(account.createdAt));
 
     if (!result || result.length === 0) {
       throw new APIError('No accounts found for user', 404);
