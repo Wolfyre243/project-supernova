@@ -1,12 +1,11 @@
 'use client';
 
-import { ChevronDown, ChevronsDown, Plus } from 'lucide-react';
+import { ChevronsDown, Plus } from 'lucide-react';
 import {
   Drawer,
   DrawerClose,
   DrawerContent,
   DrawerDescription,
-  DrawerFooter,
   DrawerHeader,
   DrawerTrigger,
 } from './ui/drawer';

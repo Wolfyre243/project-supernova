@@ -252,10 +252,10 @@
     @apply bg-background text-foreground;
     /* @apply transition-colors duration-150 ease-out; */
     letter-spacing: var(--tracking-normal);
-    overscroll-behavior: none;
   }
   html {
     scroll-behavior: smooth;
+    overscroll-behavior: none;
   }
 }
 
@@ -272,12 +272,18 @@
   }
 }
 
-/* @view-transition {
-  navigation: auto;
+.rainbow-gradient {
+  background: linear-gradient(
+    190deg,
+    rgba(255, 99, 99, 1) 0%,
+    rgba(255, 172, 84, 1) 15%,
+    rgba(255, 238, 84, 1) 30%,
+    rgba(138, 255, 112, 1) 45%,
+    rgba(97, 255, 244, 1) 60%,
+    rgba(143, 158, 255, 1) 83%,
+    rgba(203, 148, 255, 1) 100%
+  );
+  background-size: cover;
+  background-position: center;
+  background-clip: border-box;
 }
-
-::view-transition-old { animation: fade-out .3s ease-out; }
-::view-transition-new { animation: fade-in  .3s ease-out;  }
-
-@keyframes fade-in  { from {opacity:0} to {opacity:1} }
-@keyframes fade-out { from {opacity:1} to {opacity:0} } */

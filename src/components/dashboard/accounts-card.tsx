@@ -1,32 +1,28 @@
 'use client';
 
-import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/utils/cn';
 import {
   Carousel,
   CarouselApi,
   CarouselContent,
   CarouselItem,
-  CarouselNext,
-  CarouselPrevious,
 } from '../ui/carousel';
 import { useCallback, useEffect, useState } from 'react';
 import {
   ChevronLeft,
   ChevronRight,
   HeartCrack,
-  Plus,
   RotateCcw,
   SearchX,
 } from 'lucide-react';
 import { useGetAccountsQuery } from '@/app/state/account/accountsApi';
 import { Account } from '@/lib/models';
 import { IconMap } from '@/config/iconMap';
-import { truncateString } from '@/utils/formatters';
 import { formatDistanceToNowStrict } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
 import { NewAccountButton } from './new-account-dialog';
+import { AspectRatio } from '../ui/aspect-ratio';
 
 function AccountCardSkeleton() {
   return (
@@ -36,7 +32,7 @@ function AccountCardSkeleton() {
         <Skeleton className='h-4 w-36 rounded-3xl' />
         <Skeleton className='h-5 w-30 rounded-4xl' />
       </div>
-      <Skeleton className='h-3 w-40 rounded-full' />
+      <Skeleton className='h-4 w-40 rounded-full' />
     </div>
   );
 }
@@ -57,8 +53,8 @@ function SingleAccountCard({ account }: { account: Partial<Account> }) {
           })()}
       </div>
       <div>
-        <h2 className='text-muted-foreground'>
-          {truncateString(account.name ?? '', 24)}
+        <h2 className='text-muted-foreground max-w-full truncate text-base'>
+          {account.name}
         </h2>
         <h1 className='text-2xl font-semibold'>${account.total?.toFixed(2)}</h1>
       </div>
@@ -113,7 +109,7 @@ export function AccountsCard({ className }: { className?: string }) {
       )}
     >
       <div className='flex flex-row items-center justify-between'>
-        <h1 className='text-xl font-semibold text-nowrap md:text-base md:font-normal'>
+        <h1 className='text-xl font-semibold text-nowrap md:text-base md:font-semibold'>
           Accounts
         </h1>
         <NewAccountButton />
@@ -177,23 +173,25 @@ export function AccountsCard({ className }: { className?: string }) {
       </div>
       {/* Indicators */}
       <div className='flex w-full flex-row items-center justify-center gap-2'>
-        {Array.from({ length: data?.length as number }).map((item, i) => {
-          if (i + 1 === current) {
+        {Array.from({ length: (data?.length as number) || 1 }).map(
+          (item, i) => {
+            if (i + 1 === current) {
+              return (
+                <button
+                  key={crypto.randomUUID()}
+                  className='bg-muted-foreground h-2 w-2 rounded-full'
+                />
+              );
+            }
             return (
               <button
                 key={crypto.randomUUID()}
-                className='bg-muted-foreground h-2 w-2 rounded-full'
+                className='border-muted-foreground h-2 w-2 rounded-full border'
+                onClick={() => scrollTo(i)}
               />
             );
-          }
-          return (
-            <button
-              key={crypto.randomUUID()}
-              className='border-muted-foreground h-2 w-2 rounded-full border'
-              onClick={() => scrollTo(i)}
-            />
-          );
-        })}
+          },
+        )}
       </div>
     </div>
   );
