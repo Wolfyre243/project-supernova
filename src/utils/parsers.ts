@@ -1,8 +1,8 @@
 import { APIError } from '@/lib/exceptions';
 
 /**
- * Parses the granularity string and returns the corresponding date range.
- * @param granularity The granularity string (e.g., "day", "week", "month", "year").
+ * Parses the scope string and returns the corresponding date range.
+ * @param scope The scope string (e.g., "day", "week", "month", "year").
  * @returns An object containing the start and end dates for the current and previous periods.
  */
 export function parseScope(
@@ -57,7 +57,9 @@ export function parseScope(
   } else if (scope === 'week') {
     const dayOfWeek = currentDate.getDay();
     startDate = new Date(currentDate);
-    startDate.setDate(currentDate.getDate() - (dayOfWeek || 7) + 1);
+    startDate.setDate(
+      currentDate.getDate() - (dayOfWeek === 0 ? 7 : dayOfWeek) + 1,
+    );
     startDate.setHours(0, 0, 0, 0);
     endDate = new Date(startDate);
     endDate.setDate(startDate.getDate() + 7);
