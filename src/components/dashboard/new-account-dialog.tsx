@@ -30,6 +30,8 @@ import { Switch } from '../ui/switch';
 import { IconMap } from '@/config/iconMap';
 import { IconSelector } from '../icon-select';
 import { ColorSelector } from '../color-select';
+import { useCreateAccountMutation } from '@/app/state/account/accountsApi';
+import { toast } from 'sonner';
 
 const formSchema = z.object({
   name: z
@@ -53,7 +55,9 @@ const formSchema = z.object({
   isSavings: z.boolean(),
 });
 
-function NewAccountForm() {
+function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
+  const [createAccountMutation] = useCreateAccountMutation();
+
   const form = useForm<z.infer<typeof formSchema>>({
     resolver: zodResolver(formSchema),
     defaultValues: {
@@ -79,7 +83,20 @@ function NewAccountForm() {
     name: 'color',
   });
 
-  async function onSubmit(data: z.infer<typeof formSchema>) {}
+  async function onSubmit(data: z.infer<typeof formSchema>) {
+    try {
+      await createAccountMutation(data);
+      setIsOpen(false);
+      toast.success(`Created account successfully!`, {
+        position: 'top-center',
+      });
+    } catch (error) {
+      console.error(error);
+      return setError('root', { message: 'Something went wrong!' });
+    } finally {
+      form.reset();
+    }
+  }
 
   return (
     <Form {...form}>
@@ -256,7 +273,7 @@ export function NewAccountButton() {
           Create a new spending / savings account to track spending
         </DialogDescription>
         <div className='mt-8 flex h-full w-full flex-col'>
-          <NewAccountForm />
+          <NewAccountForm setIsOpen={setIsOpen} />
         </div>
       </DialogContent>
     </Dialog>

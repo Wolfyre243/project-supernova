@@ -5,9 +5,17 @@ export const accountsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
     getAccounts: builder.query<Partial<Account>[], void>({
       query: () => `/account`,
-      providesTags: ['Accounts', 'Transactions'],
+      providesTags: ['Accounts'],
+    }),
+    createAccount: builder.mutation<Account, Partial<Account>>({
+      query: (account) => ({
+        url: `/account`,
+        method: 'POST',
+        body: account,
+      }),
+      invalidatesTags: ['Accounts'],
     }),
   }),
 });
 
-export const { useGetAccountsQuery } = accountsApi;
+export const { useGetAccountsQuery, useCreateAccountMutation } = accountsApi;

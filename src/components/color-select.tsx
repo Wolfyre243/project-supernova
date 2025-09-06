@@ -33,11 +33,8 @@ export function ColorSelector({
           Edit Color
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent
-        className='mx-4 flex w-[92vw] rounded border p-2 shadow-lg'
-        align='end'
-      >
-        <div className='flex flex-row flex-wrap'>
+      <DropdownMenuContent className='mx-4 flex w-[92vw] rounded border p-2 shadow-lg md:w-80'>
+        <div className='flex flex-row flex-wrap gap-1'>
           {ColorOptions.map((hexColor: string) => {
             return (
               <Button
@@ -45,13 +42,10 @@ export function ColorSelector({
                 variant={'ghost'}
                 type='button'
                 key={crypto.randomUUID()}
+                className='h-8 w-8 rounded-full'
+                style={{ backgroundColor: hexColor }}
                 onClick={() => handleOptionClick(hexColor)}
-              >
-                <div
-                  className='h-8 w-8 rounded-full'
-                  style={{ backgroundColor: hexColor }}
-                />
-              </Button>
+              />
             );
           })}
           {/* TODO: Custom color picker, PREMIUM only */}

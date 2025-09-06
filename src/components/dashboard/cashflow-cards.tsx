@@ -82,11 +82,11 @@ export function IncomeCard({ className }: { className?: string }) {
                   stroke='var(--color-green-500)'
                   stackId='a'
                 />
-                <ChartTooltip
+                {/* <ChartTooltip
                   cursor={false}
                   includeHidden
                   content={<ChartTooltipContent />}
-                />
+                /> */}
               </AreaChart>
             </ChartContainer>
           )}
@@ -178,11 +178,11 @@ export function ExpenseCard({ className }: { className?: string }) {
                   stroke='var(--color-red-500)'
                   stackId='a'
                 />
-                <ChartTooltip
+                {/* <ChartTooltip
                   cursor={false}
                   includeHidden
                   content={<ChartTooltipContent />}
-                />
+                /> */}
               </AreaChart>
             </ChartContainer>
           )}

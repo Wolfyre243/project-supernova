@@ -22,7 +22,6 @@ import { formatDistanceToNowStrict } from 'date-fns';
 import { Skeleton } from '../ui/skeleton';
 import { Button } from '../ui/button';
 import { NewAccountButton } from './new-account-dialog';
-import { AspectRatio } from '../ui/aspect-ratio';
 
 function AccountCardSkeleton() {
   return (

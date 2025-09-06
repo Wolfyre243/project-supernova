@@ -98,7 +98,8 @@ export function AccountSelector({
         </div>
       </DropdownMenuTrigger>
 
-      <DropdownMenuContent className='w-76'>
+      {/* TODO: Implement search (low priority because limit is 3 accoutns anyway) */}
+      <DropdownMenuContent className='max-h-[25vh] w-76 overflow-y-scroll'>
         {data &&
           data.length > 0 &&
           data.map((accountOption: Partial<Account>) => (

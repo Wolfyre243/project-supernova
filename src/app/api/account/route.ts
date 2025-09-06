@@ -6,8 +6,8 @@ import { account, transaction } from '@/db/schema';
 import { APIError } from '@/lib/exceptions';
 import { Account } from '@/lib/models';
 import { createClient } from '@/utils/supabase/server';
-import { and, asc, desc, eq, sql, sum } from 'drizzle-orm';
-import { NextResponse } from 'next/server';
+import { and, desc, eq, sql } from 'drizzle-orm';
+import { NextRequest, NextResponse } from 'next/server';
 
 export async function GET() {
   const supabase = await createClient();
@@ -74,5 +74,48 @@ export async function GET() {
     }
 
     return NextResponse.json({ error: 'Unknown error' }, { status: 500 });
+  }
+}
+
+export async function POST(request: NextRequest) {
+  const supabase = await createClient();
+  const {
+    data: { user },
+  } = await supabase.auth.getUser();
+
+  if (!user) {
+    return NextResponse.json({ error: 'Unauthorized' }, { status: 401 });
+  }
+
+  try {
+    const body = await request.json();
+
+    const newAccount = await db
+      .insert(account)
+      .values({
+        ...body,
+        userId: user.id,
+      })
+      .returning();
+
+    console.log('Successfully created account:', newAccount);
+
+    return NextResponse.json(
+      { message: 'Account created successfully', account: newAccount },
+      { status: 200 },
+    );
+  } catch (error) {
+    console.error(error);
+    if (error instanceof APIError) {
+      return NextResponse.json(
+        { error: error.message },
+        { status: error.status },
+      );
+    }
+
+    return NextResponse.json(
+      { error: 'Failed to create account' },
+      { status: 500 },
+    );
   }
 }

@@ -33,7 +33,7 @@ export function IconSelector({
           Edit Icon
         </Button>
       </DropdownMenuTrigger>
-      <DropdownMenuContent className='mx-4 flex w-[92vw] rounded border p-2 shadow-lg'>
+      <DropdownMenuContent className='mx-4 flex w-[92vw] rounded border p-2 shadow-lg md:w-80'>
         <div className='flex flex-row flex-wrap'>
           {Object.values(IconMap).map((iconItem: LucideIcon) => {
             return (
