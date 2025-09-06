@@ -10,10 +10,14 @@ import {
   pgEnum,
   pgSchema,
   primaryKey,
+  boolean,
+  numeric,
+  timestamp,
 } from 'drizzle-orm/pg-core';
 import { sql } from 'drizzle-orm';
 import { timestamps } from './columns.helpers';
 import { PgRoles, Roles } from '@/config/authConfig';
+import { Status } from '@/config/statusConfig';
 
 const authSchema = pgSchema('auth');
 
@@ -22,6 +26,41 @@ export const users = authSchema.table('users', {
 });
 
 export const gender = pgEnum('gender', ['M', 'F']);
+export const transactionType = pgEnum('transaction_type', [
+  'income',
+  'expense',
+]);
+export const frequency = pgEnum('frequency', [
+  'daily',
+  'weekly',
+  'monthly',
+  'yearly',
+]);
+
+export const status = pgTable(
+  'status',
+  {
+    statusId: integer('status_id').primaryKey(),
+    name: text().notNull(),
+  },
+  () => [
+    pgPolicy('Enable read access for authenticated users', {
+      as: 'permissive',
+      for: 'select',
+      to: [PgRoles.AUTHENTICATED, PgRoles.SUPABASE_AUTH_ADMIN],
+    }),
+    pgPolicy('Allow only supabase_admin to insert statuses', {
+      as: 'permissive',
+      for: 'insert',
+      to: [PgRoles.SUPABASE_ADMIN, PgRoles.SUPABASE_AUTH_ADMIN],
+    }),
+    pgPolicy('Allow only supabase_admin to update statuses', {
+      as: 'permissive',
+      for: 'update',
+      to: [PgRoles.SUPABASE_ADMIN, PgRoles.SUPABASE_AUTH_ADMIN],
+    }),
+  ],
+);
 
 export const profile = pgTable(
   'profile',
@@ -31,6 +70,7 @@ export const profile = pgTable(
     dob: date(),
     gender: gender(),
     username: text().notNull(),
+    statusId: integer('status_id').notNull().default(Status.ACTIVE),
     ...timestamps,
   },
   (table) => [
@@ -41,6 +81,10 @@ export const profile = pgTable(
     })
       .onUpdate('cascade')
       .onDelete('cascade'),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    }),
     unique('profile_username_key').on(table.username),
     pgPolicy('Users can update their own profile', {
       as: 'permissive',
@@ -113,11 +157,15 @@ export const userRole = pgTable(
     foreignKey({
       columns: [table.roleId],
       foreignColumns: [roles.roleId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     foreignKey({
       columns: [table.userId],
       foreignColumns: [profile.userId],
-    }),
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
     pgPolicy('Enable read access for authenticated users', {
       as: 'permissive',
       for: 'select',
@@ -146,28 +194,267 @@ export const userRole = pgTable(
   ],
 );
 
-// export const permissions = pgTable('permissions', {
-//   permissionId: integer('permission_id').primaryKey().notNull(),
-//   name: text().notNull().unique(),
-//   ...timestamps,
-// });
+export const account = pgTable(
+  'account',
+  {
+    accountId: uuid('account_id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').notNull(),
+    name: text().notNull(),
+    description: text(),
+    icon: text().notNull(),
+    color: text().notNull(),
+    isSavings: boolean('is_savings').notNull().default(false),
+    statusId: integer('status_id').notNull().default(Status.ACTIVE),
+    ...timestamps,
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [profile.userId],
+      name: 'account_user_id_fkey',
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    pgPolicy('Users can manage their own accounts', {
+      as: 'permissive',
+      for: 'all',
+      to: [PgRoles.AUTHENTICATED],
+      using: sql`((select auth.uid()) = user_id)`,
+      withCheck: sql`((select auth.uid()) = user_id)`,
+    }),
+  ],
+);
 
-// export const rolePermissions = pgTable(
-//   'role_permissions',
+export const category = pgTable(
+  'category',
+  {
+    categoryId: uuid('category_id').primaryKey().defaultRandom(),
+    userId: uuid('user_id').notNull(),
+    name: text().notNull(),
+    type: transactionType().notNull(),
+    icon: text().notNull(),
+    color: text().notNull(),
+    description: text(),
+    statusId: integer('status_id').notNull().default(Status.ACTIVE),
+    ...timestamps,
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.userId],
+      foreignColumns: [profile.userId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    pgPolicy('Users can manage their own categories', {
+      as: 'permissive',
+      for: 'all',
+      to: [PgRoles.AUTHENTICATED],
+      using: sql`((select auth.uid()) = user_id)`,
+      withCheck: sql`((select auth.uid()) = user_id)`,
+    }),
+  ],
+);
+
+export const transaction = pgTable(
+  'transaction',
+  {
+    transactionId: uuid('transaction_id').primaryKey().defaultRandom(),
+    accountId: uuid('account_id').notNull(),
+    categoryId: uuid('category_id').notNull(),
+    type: transactionType().notNull(),
+    amount: numeric().notNull(),
+    date: timestamp({ withTimezone: true, mode: 'date' })
+      .notNull()
+      .defaultNow(),
+    notes: text(),
+    statusId: integer('status_id').notNull().default(Status.ACTIVE),
+    ...timestamps,
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.accountId],
+      foreignColumns: [account.accountId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.categoryId],
+      foreignColumns: [category.categoryId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    pgPolicy('Users can manage their own transactions', {
+      as: 'permissive',
+      for: 'all',
+      to: [PgRoles.AUTHENTICATED],
+      using: sql`EXISTS (
+        SELECT 1 FROM account 
+        WHERE 
+          account.account_id = ${table.accountId} AND 
+          account.user_id = auth.uid()
+      )`,
+      withCheck: sql`EXISTS (
+        SELECT 1 FROM account 
+        WHERE 
+          account.account_id = ${table.accountId} AND 
+          account.user_id = auth.uid()
+      )`,
+    }),
+  ],
+);
+
+// export const expense = pgTable(
+//   'expense',
 //   {
-//     roleId: integer('role_id').notNull(),
-//     permissionId: integer('permission_id').notNull(),
+//     expenseId: uuid('expense_id').primaryKey().defaultRandom(),
+//     accountId: uuid('account_id').notNull(),
+//     categoryId: uuid('category_id').notNull(),
+//     amount: numeric().notNull(),
+//     date: date().notNull().defaultNow(),
+//     notes: text(),
+//     statusId: integer('status_id').notNull().default(Status.ACTIVE),
 //     ...timestamps,
 //   },
 //   (table) => [
-//     primaryKey({ columns: [table.roleId, table.permissionId] }),
 //     foreignKey({
-//       columns: [table.roleId],
-//       foreignColumns: [roles.roleId],
-//     }),
+//       columns: [table.accountId],
+//       foreignColumns: [account.accountId],
+//     })
+//       .onDelete('cascade')
+//       .onUpdate('cascade'),
 //     foreignKey({
-//       columns: [table.permissionId],
-//       foreignColumns: [permissions.permissionId],
+//       columns: [table.categoryId],
+//       foreignColumns: [category.categoryId],
+//     })
+//       .onDelete('cascade')
+//       .onUpdate('cascade'),
+//     foreignKey({
+//       columns: [table.statusId],
+//       foreignColumns: [status.statusId],
+//     })
+//       .onDelete('cascade')
+//       .onUpdate('cascade'),
+//     pgPolicy('Users can manage their own expenses', {
+//       as: 'permissive',
+//       for: 'all',
+//       to: [PgRoles.AUTHENTICATED],
+//       using: sql`EXISTS (
+//         SELECT 1 FROM account
+//         WHERE
+//           account.account_id = ${table.accountId} AND
+//           account.user_id = auth.uid()
+//       )`,
+//       withCheck: sql`EXISTS (
+//         SELECT 1 FROM account
+//         WHERE
+//           account.account_id = ${table.accountId} AND
+//           account.user_id = auth.uid()
+//       )`,
 //     }),
 //   ],
 // );
+
+export const savingsGoal = pgTable(
+  'savings_goal',
+  {
+    savingsGoalId: uuid('savings_goal_id').primaryKey().defaultRandom(),
+    accountId: uuid('account_id').notNull(),
+    name: text().notNull(),
+    targetAmount: numeric('target_amount').notNull(),
+    statusId: integer('status_id').notNull().default(Status.ACTIVE),
+    ...timestamps,
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.accountId],
+      foreignColumns: [account.accountId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    pgPolicy('Users can manage their own savings goals', {
+      as: 'permissive',
+      for: 'all',
+      to: [PgRoles.AUTHENTICATED],
+      using: sql`EXISTS (
+        SELECT 1 FROM account 
+        WHERE 
+          account.account_id = ${table.accountId} AND 
+          account.user_id = auth.uid()
+      )`,
+      withCheck: sql`EXISTS (
+        SELECT 1 FROM account 
+        WHERE 
+          account.account_id = ${table.accountId} AND 
+          account.user_id = auth.uid()
+      )`,
+    }),
+  ],
+);
+
+export const budget = pgTable(
+  'budget',
+  {
+    budgetId: uuid('budget_id').primaryKey().defaultRandom(),
+    categoryId: uuid('category_id').notNull(),
+    allocatedAmount: numeric('allocated_amount').notNull(),
+    period: frequency().notNull().default('monthly'),
+    description: text(),
+    statusId: integer('status_id').notNull().default(Status.ACTIVE),
+    ...timestamps,
+  },
+  (table) => [
+    foreignKey({
+      columns: [table.categoryId],
+      foreignColumns: [category.categoryId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    foreignKey({
+      columns: [table.statusId],
+      foreignColumns: [status.statusId],
+    })
+      .onDelete('cascade')
+      .onUpdate('cascade'),
+    pgPolicy('Users can manage their own budgets', {
+      as: 'permissive',
+      for: 'all',
+      to: [PgRoles.AUTHENTICATED],
+      using: sql`EXISTS (
+        SELECT 1 FROM category
+        WHERE
+          category.category_id = ${table.categoryId} AND
+          category.user_id = auth.uid()
+      )`,
+      withCheck: sql`EXISTS (
+        SELECT 1 FROM category
+        WHERE
+          category.category_id = ${table.categoryId} AND
+          category.user_id = auth.uid()
+      )`,
+    }),
+  ],
+);

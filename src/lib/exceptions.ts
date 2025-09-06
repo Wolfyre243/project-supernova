@@ -13,3 +13,16 @@ export class UnauthorisedError extends Error {
     this.name = 'UnauthorisedError';
   }
 }
+
+export class APIError extends Error {
+  status: number;
+
+  constructor(
+    message: string = 'An error occurred while processing your request.',
+    status: number = 500,
+  ) {
+    super(message);
+    this.name = 'APIError';
+    this.status = status;
+  }
+}

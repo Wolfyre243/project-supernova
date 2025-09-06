@@ -1,0 +1,1 @@
+ALTER TABLE "profile" ADD COLUMN "status_id" integer DEFAULT 1 NOT NULL;

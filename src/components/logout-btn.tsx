@@ -4,9 +4,11 @@ import useAuth from '@/hooks/useAuth';
 import { cn } from '@/utils/cn';
 import { LogOut } from 'lucide-react';
 import { redirect } from 'next/navigation';
+import { useSidebar } from './ui/sidebar';
 
 export default function LogOutButton({ className }: { className?: string }) {
   const { signOut } = useAuth();
+  const { state } = useSidebar();
 
   return (
     <button
@@ -21,7 +23,14 @@ export default function LogOutButton({ className }: { className?: string }) {
       }}
     >
       <LogOut className='text-destructive size-4' />
-      <span className='text-sm'>Log Out</span>
+      <span
+        className={cn(
+          'text-sm transition-all transition-discrete duration-150 ease-in-out',
+          state === 'collapsed' && 'hidden opacity-0',
+        )}
+      >
+        Log Out
+      </span>
     </button>
   );
 }

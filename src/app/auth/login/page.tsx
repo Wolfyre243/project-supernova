@@ -20,7 +20,6 @@ import {
   FormMessage,
 } from '@/components/ui/form';
 import { Eye, EyeClosed } from 'lucide-react';
-import Link from 'next/link';
 import Image from 'next/image';
 
 import { createClient } from '@/utils/supabase/client';

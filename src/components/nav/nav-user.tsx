@@ -1,8 +1,7 @@
 'use client';
 
-import React, { useCallback, useEffect, useState } from 'react';
+import React from 'react';
 import { Avatar, AvatarFallback, AvatarImage } from '../ui/avatar';
-import axios from 'axios';
 import {
   DropdownMenu,
   DropdownMenuContent,
@@ -14,28 +13,18 @@ import {
 import { Skeleton } from '../ui/skeleton';
 import { useSidebar } from '../ui/sidebar';
 import Link from 'next/link';
-import { LogOut, Settings2 } from 'lucide-react';
-import useAuth from '@/hooks/useAuth';
-import { redirect } from 'next/navigation';
+import { Settings2 } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import LogOutButton from '../logout-btn';
+import { useGetUserDetailsQuery } from '@/app/state/user/userApi';
+import { UserDetails } from '@/lib/models';
 
-// TODO: Should take reference from main User type instead
-export type NavUserType = {
-  // userId: string;
-  username: string;
-  name: string;
-  email: string;
-  role: number;
-  avatarUrl?: string | null;
-};
-
-function UserHeader({ user }: { user: NavUserType }) {
+function UserHeader({ user }: { user: UserDetails }) {
   return (
     <div className='flex flex-row items-center gap-2'>
       <Avatar className='h-8 w-8 rounded-full shadow-lg'>
         <AvatarImage src={user.avatarUrl ?? ''} />
-        <AvatarFallback>{user.name.charAt(0)}</AvatarFallback>
+        <AvatarFallback>{user.name?.charAt(0)}</AvatarFallback>
       </Avatar>
       <span className='text-muted-foreground truncate leading-tight font-medium'>
         {user.name}
@@ -57,40 +46,33 @@ export function NavUserSkeleton() {
 }
 
 export function NavUser() {
-  const [user, setUser] = useState<NavUserType | null>(null);
-  const [loading, setLoading] = useState(true);
-  const { signOut } = useAuth();
   const isMobile = useIsMobile();
 
-  const fetchUser = useCallback(
-    async function fetchUser() {
-      if (isMobile) return;
-      setLoading(true);
-      try {
-        const res = await axios.get('/api/user');
-        setUser(res.data);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [setUser, isMobile],
-  );
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+  const { data, isError, isLoading, error } = useGetUserDetailsQuery();
 
   // Do not render on mobile
   if (isMobile) return null;
 
-  if (loading || !user) return <NavUserSkeleton />;
+  if (isLoading) return <NavUserSkeleton />;
+  if (isError || !data) {
+    console.error(error);
+    return (
+      <div className='flex flex-row items-center gap-2'>
+        {/* TODO: Replace will fallback error pfp */}
+        <div className='bg-muted/50 flex h-8 w-8 items-center justify-center rounded-full'>
+          !
+        </div>
+        <div className='space-y-1'>
+          <p>Unknown</p>
+        </div>
+      </div>
+    );
+  }
 
   return (
     <DropdownMenu>
       <DropdownMenuTrigger className='cursor-pointer outline-0'>
-        <UserHeader user={user} />
+        <UserHeader user={data} />
         {/* <ChevronDown className='size-4' /> */}
       </DropdownMenuTrigger>
       <DropdownMenuContent
@@ -120,43 +102,33 @@ export function NavUser() {
 }
 
 export function NavUserMobile() {
-  const [user, setUser] = useState<NavUserType | null>(null);
-  const [loading, setLoading] = useState(true);
   const { toggleSidebar } = useSidebar();
   const isMobile = useIsMobile();
 
-  const fetchUser = useCallback(
-    async function fetchUser() {
-      if (!isMobile) return;
-      setLoading(true);
-      try {
-        const res = await axios.get('/api/user');
-        setUser(res.data);
-      } catch {
-        setUser(null);
-      } finally {
-        setLoading(false);
-      }
-    },
-    [setUser, isMobile],
-  );
-
-  useEffect(() => {
-    fetchUser();
-  }, [fetchUser]);
+  const { data, isError, isLoading, error } = useGetUserDetailsQuery();
 
   // Do not render on desktop
   if (!isMobile) return null;
 
-  if (loading || !user)
+  if (isLoading)
     return <Skeleton className='bg-accent h-10 w-10 rounded-full' />;
+  if (isError || !data) {
+    console.error(error);
+    return (
+      <Avatar className='h-10 w-10 rounded-full shadow-lg'>
+        {/* TODO: Add fallback avatar for error */}
+        <AvatarImage src={''} />
+        <AvatarFallback className='text-lg'>{'!'}</AvatarFallback>
+      </Avatar>
+    );
+  }
 
   return (
     <button onClick={() => toggleSidebar()}>
       <Avatar className='h-10 w-10 rounded-full shadow-lg'>
-        <AvatarImage src={user.avatarUrl ?? ''} />
+        <AvatarImage src={data?.avatarUrl ?? ''} />
         <AvatarFallback className='text-lg'>
-          {user.name.charAt(0)}
+          {data?.name?.charAt(0)}
         </AvatarFallback>
       </Avatar>
     </button>

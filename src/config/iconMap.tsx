@@ -1,0 +1,32 @@
+import {
+  CreditCard,
+  DollarSign,
+  Drumstick,
+  FerrisWheel,
+  Gem,
+  GraduationCap,
+  Hospital,
+  House,
+  LucideIcon,
+  PiggyBank,
+  Shirt,
+  SquareActivity,
+  Users,
+  UtensilsCrossed,
+} from 'lucide-react';
+
+export const IconMap: Record<string, LucideIcon> = {
+  [CreditCard.displayName as string]: CreditCard,
+  [PiggyBank.displayName as string]: PiggyBank,
+  [UtensilsCrossed.displayName as string]: UtensilsCrossed,
+  [Shirt.displayName as string]: Shirt,
+  [DollarSign.displayName as string]: DollarSign,
+  [Drumstick.displayName as string]: Drumstick,
+  [FerrisWheel.displayName as string]: FerrisWheel,
+  [Gem.displayName as string]: Gem,
+  [GraduationCap.displayName as string]: GraduationCap,
+  [House.displayName as string]: House,
+  [Hospital.displayName as string]: Hospital,
+  [SquareActivity.displayName as string]: SquareActivity,
+  [Users.displayName as string]: Users,
+};

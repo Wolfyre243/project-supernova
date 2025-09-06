@@ -5,6 +5,7 @@ import './globals.css';
 import { ThemeMetaUpdater, ThemeProvider } from '@/components/theme-provider';
 import { Toaster } from '@/components/ui/sonner';
 import { AuthProvider } from '@/context/authProvider';
+
 // import RootLayoutClient from '@/components/root-layout-client';
 import {
   APP_NAME,
@@ -12,6 +13,7 @@ import {
   APP_TITLE_TEMPLATE,
   APP_DESCRIPTION,
 } from '@/config/appInfoConfig';
+import StoreProvider from './state/StoreProvider';
 
 const outfit = Outfit({
   variable: '--font-outfit',
@@ -129,12 +131,19 @@ export default function RootLayout({
           enableColorScheme
         >
           <AuthProvider>
-            <main className='flex max-w-screen flex-col items-center justify-center'>
-              <ThemeMetaUpdater />
-              {children}
-            </main>
+            <StoreProvider>
+              <main className='flex max-w-screen flex-col items-center justify-center'>
+                <ThemeMetaUpdater />
+                {children}
+              </main>
+            </StoreProvider>
           </AuthProvider>
-          <Toaster richColors closeButton expand={true} />
+          <Toaster
+            swipeDirections={['left', 'right']}
+            richColors
+            closeButton
+            expand={true}
+          />
         </ThemeProvider>
       </body>
     </html>

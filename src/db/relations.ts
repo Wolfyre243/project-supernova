@@ -1,5 +1,16 @@
 import { relations } from 'drizzle-orm/relations';
-import { users, profile, userRole, roles } from './schema';
+import {
+  users,
+  profile,
+  userRole,
+  roles,
+  status,
+  account,
+  category,
+  transaction,
+  savingsGoal,
+  budget,
+} from './schema';
 
 // Users table relations (auth schema)
 export const usersRelations = relations(users, ({ one }) => ({
@@ -9,17 +20,28 @@ export const usersRelations = relations(users, ({ one }) => ({
   }),
 }));
 
+// Status table relations
+export const statusRelations = relations(status, ({ many }) => ({
+  profiles: many(profile),
+  accounts: many(account),
+  categories: many(category),
+  transactions: many(transaction),
+  savingsGoals: many(savingsGoal),
+  budgets: many(budget),
+}));
+
 // Profile table relations
-export const profileRelations = relations(profile, ({ one }) => ({
+export const profileRelations = relations(profile, ({ one, many }) => ({
   user: one(users, {
     fields: [profile.userId],
     references: [users.id],
   }),
-  // userRole: one(userRole, {
-  //   fields: [profile.userId],
-  //   references: [userRole.userId],
-  // }),
   userRole: one(userRole),
+  status: one(status, {
+    fields: [profile.statusId],
+    references: [status.statusId],
+  }),
+  accounts: many(account),
 }));
 
 // Roles table relations
@@ -36,5 +58,65 @@ export const userRoleRelations = relations(userRole, ({ one }) => ({
   profile: one(profile, {
     fields: [userRole.userId],
     references: [profile.userId],
+  }),
+}));
+
+// Account table relations
+export const accountRelations = relations(account, ({ one, many }) => ({
+  user: one(profile, {
+    fields: [account.userId],
+    references: [profile.userId],
+  }),
+  transactions: many(transaction),
+  status: one(status, {
+    fields: [account.statusId],
+    references: [status.statusId],
+  }),
+}));
+
+// Category table relations
+export const categoryRelations = relations(category, ({ one, many }) => ({
+  user: one(profile, {
+    fields: [category.userId],
+    references: [profile.userId],
+  }),
+  status: one(status, {
+    fields: [category.statusId],
+    references: [status.statusId],
+  }),
+  transactions: many(transaction),
+}));
+
+// Transaction table relations
+export const transactionRelations = relations(transaction, ({ one }) => ({
+  account: one(account, {
+    fields: [transaction.accountId],
+    references: [account.accountId],
+  }),
+  category: one(category, {
+    fields: [transaction.categoryId],
+    references: [category.categoryId],
+  }),
+}));
+
+export const savingsGoalRelations = relations(savingsGoal, ({ one }) => ({
+  account: one(account, {
+    fields: [savingsGoal.accountId],
+    references: [account.accountId],
+  }),
+  status: one(status, {
+    fields: [savingsGoal.statusId],
+    references: [status.statusId],
+  }),
+}));
+
+export const budgetRelations = relations(budget, ({ one }) => ({
+  category: one(category, {
+    fields: [budget.categoryId],
+    references: [category.categoryId],
+  }),
+  status: one(status, {
+    fields: [budget.statusId],
+    references: [status.statusId],
   }),
 }));

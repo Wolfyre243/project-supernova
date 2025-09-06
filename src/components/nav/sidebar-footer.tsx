@@ -7,9 +7,9 @@ export default function AppSidebarFooter() {
   // const isMobile = useIsMobile();
 
   return (
-    <div className='px-2 py-4'>
+    <div className=''>
       {/* TODO: Design & add more stuff in footer */}
-      <LogOutButton className='bg-muted/30 justify-center p-2' />
+      <LogOutButton className='bg-muted/30 my-4 justify-center p-2' />
     </div>
   );
 }

@@ -16,17 +16,3 @@ export function AppHeader() {
     </nav>
   );
 }
-
-export function BalanceHeader() {
-  // TODO: Fetch actual balance data here
-
-  return (
-    <div className='flex flex-col gap-4 text-[#f9f9f9]'>
-      <h2 className='text-2xl font-semibold'>Hello, Wolfyre 👋</h2>
-      <div>
-        <h4>Total Balance</h4>
-        <h1 className='text-4xl font-semibold'>$24,300.89</h1>
-      </div>
-    </div>
-  );
-}

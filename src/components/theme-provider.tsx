@@ -17,7 +17,6 @@ export function ThemeMetaUpdater() {
 
   useEffect(() => {
     const metaTag = document.querySelector('meta[name="theme-color"]');
-    console.log('meta tag:', metaTag);
     if (metaTag) {
       if (resolvedTheme === 'dark') {
         metaTag.setAttribute('content', '#050505');

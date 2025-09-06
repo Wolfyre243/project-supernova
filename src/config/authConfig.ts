@@ -11,5 +11,3 @@ export const PgRoles = {
   SUPABASE_AUTH_ADMIN: 'supabase_auth_admin', // PgRoles.SUPABASE_AUTH_ADMIN
   AUTHENTICATOR: 'authenticator', // PgRoles.AUTHENTICATOR
 };
-
-export const Permissions = {};

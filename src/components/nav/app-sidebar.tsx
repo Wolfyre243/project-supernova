@@ -11,7 +11,6 @@ import {
 import { navItems, navSecondaryItems } from '@/config/navConfig';
 import { NavGroup, NavGroupSecondary } from './nav-group';
 import { AppSidebarHeader } from './sidebar-header';
-import LogOutButton from '../logout-btn';
 import AppSidebarFooter from './sidebar-footer';
 
 export function AppSidebar() {
