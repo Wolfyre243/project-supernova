@@ -26,7 +26,7 @@ export const navItems: Array<NavItem> = [
   },
   {
     title: 'Accounts',
-    url: '#',
+    url: '/home/account',
     icon: 'wallet',
   },
   {
