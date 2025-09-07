@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from '../ui/dialog';
 import { Button } from '../ui/button';
-import { CircleX, Edit2, PiggyBank, Plus, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/utils/cn';
 import { useState } from 'react';
@@ -32,6 +32,7 @@ import { IconSelector } from '../icon-select';
 import { ColorSelector } from '../color-select';
 import { useCreateAccountMutation } from '@/app/state/account/accountsApi';
 import { toast } from 'sonner';
+import { ColorOptions } from '@/config/colorOptions';
 
 const formSchema = z.object({
   name: z
@@ -63,7 +64,7 @@ function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
     defaultValues: {
       name: '',
       icon: 'CreditCard',
-      color: '#f9f9f9',
+      color: ColorOptions[0],
       isSavings: false,
     },
   });

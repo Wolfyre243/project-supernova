@@ -5,11 +5,12 @@ import {
 } from '@reduxjs/toolkit';
 import { listenerMiddleware } from './listenerMiddleware';
 import { apiSlice } from './mainApiSlice';
+import { chartFiltersSlice } from './chartFiltersSlice';
 
 export const makeStore = () => {
   return configureStore({
     reducer: {
-      // users: usersReducer <- example if not using createApi
+      chartFilters: chartFiltersSlice.reducer,
       [apiSlice.reducerPath]: apiSlice.reducer,
     },
     middleware: (getDefaultMiddleware) =>

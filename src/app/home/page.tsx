@@ -5,6 +5,7 @@ import {
   BalanceCardMobile,
 } from '@/components/dashboard/balance-card';
 import { ExpenseCard, IncomeCard } from '@/components/dashboard/cashflow-cards';
+import { TransactionChartCard } from '@/components/transactions/statistics-card';
 import React from 'react';
 
 export default function UserHomePage() {
@@ -32,9 +33,7 @@ export default function UserHomePage() {
               Quick Add Card
             </div>
           </div>
-          <div className='bg-card h-100 w-full rounded-2xl border p-4'>
-            Chart here
-          </div>
+          <TransactionChartCard />
         </div>
 
         {/* Right Column, hidden on mobile */}

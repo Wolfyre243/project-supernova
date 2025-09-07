@@ -2,7 +2,7 @@ import { Transaction } from '@/lib/models';
 import { apiSlice } from '../mainApiSlice';
 
 type Granularity = 'day' | 'week' | 'month' | 'year';
-type Scope = 'day' | 'week' | 'month' | 'yearly';
+type Scope = 'week' | 'month' | 'year' | 'all';
 type TransactionType = 'income' | 'expense';
 
 export const transactionsApi = apiSlice.injectEndpoints({
@@ -41,22 +41,34 @@ export const transactionsApi = apiSlice.injectEndpoints({
       query: (granularity) => `/transaction/expense?granularity=${granularity}`,
       providesTags: ['Transactions'],
     }),
-    getTransactionStatsByScope: builder.query<
+    getTransactionStats: builder.query<
       { totalAmount: number | null; date: string; transactionCount: number }[],
-      { scope: Scope; type: TransactionType }
+      {
+        scope?: Scope;
+        type?: TransactionType;
+        startDate?: string;
+        endDate?: string;
+      }
     >({
-      query: ({ scope, type }) =>
-        `/transaction/stats?scope=${scope}&type=${type}`,
+      query: ({ scope, type, startDate, endDate }) => {
+        const url = '/transaction/stats';
+        const params = new URLSearchParams();
+        if (scope) params.append('scope', scope);
+        if (type) params.append('type', type);
+        if (startDate) params.append('startDate', startDate);
+        if (endDate) params.append('endDate', endDate);
+        return `${url}?${params.toString()}`;
+      },
       providesTags: ['Transactions'],
     }),
-    getTransactionStatsByDate: builder.query<
-      { totalAmount: number | null; date: string; transactionCount: number }[],
-      { type: TransactionType; startDate: string; endDate: string }
-    >({
-      query: ({ type, startDate, endDate }) =>
-        `/transaction/stats?type=${type}&startDate=${startDate}&endDate=${endDate}`,
-      providesTags: ['Transactions'],
-    }),
+    // getTransactionStatsByDate: builder.query<
+    //   { totalAmount: number | null; date: string; transactionCount: number }[],
+    //   { type: TransactionType; startDate: string; endDate: string }
+    // >({
+    //   query: ({ type, startDate, endDate }) =>
+    //     `/transaction/stats?type=${type}&startDate=${startDate}&endDate=${endDate}`,
+    //   providesTags: ['Transactions'],
+    // }),
   }),
 });
 // Export the auto-generated hooks
@@ -66,6 +78,5 @@ export const {
   useGetBalanceQuery,
   useGetIncomeTotalQuery,
   useGetExpenseTotalQuery,
-  useGetTransactionStatsByDateQuery,
-  useGetTransactionStatsByScopeQuery,
+  useGetTransactionStatsQuery,
 } = transactionsApi;

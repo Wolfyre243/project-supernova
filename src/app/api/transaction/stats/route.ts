@@ -23,29 +23,56 @@ import { NextRequest, NextResponse } from 'next/server';
 type TransactionType = 'income' | 'expense';
 // E.g. THIS week, THIS month, etc
 // If scope is provided, override start and end dates
-type Scope = 'day' | 'week' | 'month' | 'year';
+type Scope = 'week' | 'month' | 'year' | 'all';
 // E.g. day means every day within the time period, month means every month within the time period, grouped into days and months respectively
 // type Granularity = 'day' | 'month' | 'year';
-
+const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 // Function to format date based on scope
 const getDateExpression = (scope: Scope) => {
-  const timezone = Intl.DateTimeFormat().resolvedOptions().timeZone;
-
   switch (scope) {
-    case 'day':
-      return sql`to_char(${transaction.date}::timestamptz AT TIME ZONE ${sql.raw(`'${timezone}'`)}, 'YYYY-MM-DD')`;
     case 'week':
-      // Format date as day name (e.g., 'Monday', 'Tuesday')
-      return sql`to_char(${transaction.date}::timestamptz AT TIME ZONE ${sql.raw(`'${timezone}'`)}, 'Day')`;
+      // Format date as full date (YYYY-MM-DD) for grouping, but will also provide day name in response
+      return sql`to_char(${transaction.date}::timestamptz AT TIME ZONE ${sql.raw(`'${timezone}'`)}, 'YYYY-MM-DD')`;
     case 'month':
-      // Format date as month name (e.g., 'January', 'February')
-      return sql`to_char(${transaction.date}::timestamptz AT TIME ZONE ${sql.raw(`'${timezone}'`)}, 'Month')`;
+      return sql`to_char(${transaction.date}::timestamptz AT TIME ZONE ${sql.raw(`'${timezone}'`)}, 'YYYY-MM-DD')`;
     case 'year':
-      // Format date as year (e.g., '2020', '2021')
+      return sql`to_char(${transaction.date}::timestamptz AT TIME ZONE ${sql.raw(`'${timezone}'`)}, 'Month')`;
+    case 'all':
       return sql`to_char(${transaction.date}::timestamptz AT TIME ZONE ${sql.raw(`'${timezone}'`)}, 'YYYY')`;
     default:
       throw new Error(`Unsupported scope: ${scope}`);
   }
+};
+
+const fillEntries = async (
+  startRange: Date,
+  endRange: Date,
+  data: Array<{
+    totalAmount: number;
+    date: unknown;
+    transactionCount: number;
+  }>,
+) => {
+  const filled = [];
+  while (startRange <= endRange) {
+    // console.log(startRange.toLocaleDateString('en-CA'));
+    const entry = data.find(
+      (d) => d.date === startRange.toLocaleDateString('en-CA'),
+    );
+    filled.push(
+      entry || {
+        date: startRange.toLocaleDateString('en-CA', {
+          year: 'numeric',
+          month: '2-digit',
+          day: '2-digit',
+        }),
+        totalAmount: 0,
+        transactionCount: 0,
+      },
+    );
+    startRange.setDate(startRange.getDate() + 1);
+  }
+  return filled;
 };
 
 const queryTransactionsByType = async (
@@ -62,18 +89,10 @@ const queryTransactionsByType = async (
     endDate = parsed.endDate;
   }
 
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(23, 59, 59, 999);
-
-  console.log({
-    startDate: startDate.toISOString(),
-    endDate: endDate.toISOString(),
-  });
-
   const query = db
     .select({
       totalAmount: sum(transaction.amount).mapWith(Number),
-      date: scope ? getDateExpression(scope) : getDateExpression('day'),
+      date: scope ? getDateExpression(scope) : getDateExpression('month'),
       transactionCount: countDistinct(transaction.transactionId).mapWith(
         Number,
       ),
@@ -89,8 +108,10 @@ const queryTransactionsByType = async (
         lt(transaction.date, endDate),
       ),
     )
-    .groupBy(scope ? getDateExpression(scope) : getDateExpression('day'))
-    .orderBy(asc(scope ? getDateExpression(scope) : getDateExpression('day')));
+    .groupBy(scope ? getDateExpression(scope) : getDateExpression('month'))
+    .orderBy(
+      asc(scope ? getDateExpression(scope) : getDateExpression('month')),
+    );
 
   return await query;
 };
@@ -108,11 +129,10 @@ const queryAllTransactions = async (
     endDate = parsed.endDate;
   }
 
-  startDate.setHours(0, 0, 0, 0);
-  endDate.setHours(23, 59, 59, 999);
-
   // Get all unique days in the range
-  const dateExpr = scope ? getDateExpression(scope) : getDateExpression('day');
+  const dateExpr = scope
+    ? getDateExpression(scope)
+    : getDateExpression('month');
   const daysQuery = db
     .select({ date: dateExpr })
     .from(transaction)
@@ -130,21 +150,27 @@ const queryAllTransactions = async (
 
   const days = await daysQuery;
 
-  // For each day, calculate the running balance up to and including that day
+  // For each day, calculate the running balance up to and including that day using Drizzle ORM methods
   const results: {
     totalAmount: number;
     date: unknown;
     transactionCount: number;
   }[] = [];
+
+  let filledResults: {
+    totalAmount: number;
+    date: unknown;
+    transactionCount: number;
+  }[] = [];
+
   for (const day of days) {
-    // For each day, get the max date value for that group
     const dayValue = day.date;
-    // For the running balance, sum all transactions up to and including this day
+    // Use Drizzle ORM's .sum() and .case() for running balance
     const runningBalanceQuery = await db
       .select({
-        totalAmount: sql<number>`
-          SUM(CASE WHEN ${transaction.type} = 'income' THEN ${transaction.amount} ELSE -${transaction.amount} END)
-        `,
+        totalAmount: sum(
+          sql`CASE WHEN ${transaction.type} = 'income' THEN ${transaction.amount} ELSE -${transaction.amount} END`,
+        ).mapWith(Number),
         transactionCount: countDistinct(transaction.transactionId).mapWith(
           Number,
         ),
@@ -156,19 +182,31 @@ const queryAllTransactions = async (
           eq(account.userId, userId),
           eq(transaction.statusId, 1),
           lte(
-            scope ? getDateExpression(scope) : getDateExpression('day'),
+            scope ? getDateExpression(scope) : getDateExpression('month'),
             dayValue,
           ),
           lt(transaction.date, endDate),
         ),
       );
+
     results.push({
       totalAmount: runningBalanceQuery[0].totalAmount ?? 0,
       date: dayValue,
       transactionCount: runningBalanceQuery[0].transactionCount ?? 0,
     });
+
+    if (scope === 'week' || scope === 'month') {
+      filledResults = await fillEntries(
+        new Date(startDate ?? Date.now()),
+        new Date(endDate ?? Date.now()),
+        results,
+      );
+    } else {
+      filledResults = [...results];
+    }
   }
-  return results;
+  // Ensure an array is always returned
+  return filledResults;
 };
 
 export async function GET(request: NextRequest) {
@@ -196,7 +234,7 @@ export async function GET(request: NextRequest) {
     }
 
     let entries: {
-      totalAmount: number | null;
+      totalAmount: number;
       date: unknown;
       transactionCount: number;
     }[] = [];
@@ -218,7 +256,6 @@ export async function GET(request: NextRequest) {
       );
     }
 
-    console.log(entries);
     return NextResponse.json(entries, { status: 200 });
   } catch (error) {
     console.log(error);

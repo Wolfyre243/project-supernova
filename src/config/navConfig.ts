@@ -30,7 +30,7 @@ export const navItems: Array<NavItem> = [
     icon: 'wallet',
   },
   {
-    title: 'History',
+    title: 'Activity',
     url: '#',
     icon: 'receipt',
   },
@@ -66,7 +66,7 @@ export const mobileNavItems: NavIconItem[] = [
     icon: Wallet,
   },
   {
-    title: 'History',
+    title: 'Activity',
     url: '#',
     icon: Receipt,
   },
