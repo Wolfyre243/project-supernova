@@ -8,12 +8,22 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from '@/components/ui/dropdown-menu';
-import { ChevronDown } from 'lucide-react';
+import { ChevronDown, Plus, X } from 'lucide-react';
 import { useEffect, useState } from 'react';
 import { useGetAccountsQuery } from '@/app/state/account/accountsApi';
 import { Skeleton } from './ui/skeleton';
 import { toast } from 'sonner';
 import { IconMap } from '@/config/iconMap';
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogTitle,
+  DialogTrigger,
+} from './ui/dialog';
+import { Button } from './ui/button';
+import { NewAccountForm } from './dashboard/new-account-dialog';
+import { useIsMobile } from '@/hooks/use-mobile';
 
 function AccountSelectSkeleton({ className }: { className?: string }) {
   return (
@@ -39,6 +49,8 @@ export function AccountSelector({
   onValueChange: (value: string) => void;
   className?: string;
 }) {
+  const isMobile = useIsMobile();
+  const [isDialogOpen, setIsDialogOpen] = useState<boolean>(false);
   const [isOpen, setIsOpen] = useState<boolean>(false);
   const [selected, setSelected] = useState<Partial<Account> | undefined>(
     undefined,

@@ -56,7 +56,11 @@ const formSchema = z.object({
   isSavings: z.boolean(),
 });
 
-function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
+export function NewAccountForm({
+  setIsOpen,
+}: {
+  setIsOpen: (bool: boolean) => void;
+}) {
   const [createAccountMutation] = useCreateAccountMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -84,7 +88,15 @@ function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
     name: 'color',
   });
 
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(
+    data: z.infer<typeof formSchema>,
+    event?: React.BaseSyntheticEvent,
+  ) {
+    if (event) {
+      console.log(event);
+      event.preventDefault();
+      event.stopPropagation();
+    }
     try {
       await createAccountMutation(data);
       setIsOpen(false);
@@ -102,7 +114,7 @@ function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={(e) => form.handleSubmit(onSubmit)(e)}
         className='flex w-full flex-col gap-4'
         noValidate
       >
@@ -244,6 +256,7 @@ export function NewAccountButton() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
+          type='button'
           size={'icon'}
           variant={'ghost'}
           className='h-fit w-fit cursor-pointer hover:bg-transparent dark:hover:bg-transparent'
@@ -262,6 +275,7 @@ export function NewAccountButton() {
         <DialogTitle className='flex h-fit flex-row justify-between'>
           <span>Add Account</span>
           <Button
+            type='button'
             size={'icon'}
             variant={'ghost'}
             className='h-fit w-fit outline-0 hover:bg-none dark:hover:bg-transparent'

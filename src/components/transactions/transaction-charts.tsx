@@ -12,6 +12,7 @@ import { Area, AreaChart, CartesianGrid, XAxis, YAxis } from 'recharts';
 import { useLocale } from '@/hooks/useLocale';
 import { useAppSelector } from '@/hooks/redux-hooks';
 import { selectChartFilters } from '@/app/state/chartFiltersSlice';
+import { CircleX, Loader2 } from 'lucide-react';
 
 export function TransactionChart() {
   const isMobile = useIsMobile();
@@ -19,12 +20,16 @@ export function TransactionChart() {
 
   const scope = useAppSelector(selectChartFilters).scope;
 
-  const { data: chartData, isLoading: chartIsLoading } =
-    useGetTransactionStatsQuery({
-      // startDate: startDate,
-      // endDate: endDate,
-      scope,
-    });
+  const {
+    data: chartData,
+    isLoading: chartIsLoading,
+    error,
+    isError,
+  } = useGetTransactionStatsQuery({
+    // startDate: startDate,
+    // endDate: endDate,
+    scope,
+  });
 
   // TODO: Include more comprehensive data
   const chartConfig = {
@@ -38,6 +43,29 @@ export function TransactionChart() {
       label: 'Transactions',
     },
   } satisfies ChartConfig;
+
+  if (chartIsLoading) {
+    return (
+      <div className='flex aspect-auto h-[200px] w-full flex-col items-center justify-center gap-2 md:h-[300px]'>
+        <Loader2 className='text-muted animate-spin' />
+        <span className='text-muted animate-pulse'>
+          Hang tight, we&apos;re getting your data ready...
+        </span>
+      </div>
+    );
+  }
+
+  if (isError) {
+    console.error(error);
+    return (
+      <div className='flex aspect-auto h-[200px] w-full flex-col items-center justify-center gap-2 md:h-[300px]'>
+        <CircleX className='text-muted' />
+        <span className='text-muted'>
+          Oops! An error occured while processing your data...
+        </span>
+      </div>
+    );
+  }
 
   return (
     <ChartContainer
@@ -58,6 +86,7 @@ export function TransactionChart() {
           dataKey='date'
           tickLine={false}
           tickMargin={10}
+          minTickGap={12}
           axisLine={true}
           tickFormatter={(value) => {
             if (scope === 'month') {

@@ -54,11 +54,18 @@ const fillEntries = async (
   }>,
 ) => {
   const filled = [];
+  let previousTotal = 0;
+  const now = new Date();
   while (startRange <= endRange) {
     // console.log(startRange.toLocaleDateString('en-CA'));
     const entry = data.find(
       (d) => d.date === startRange.toLocaleDateString('en-CA'),
     );
+    // Hide future entries
+    if (entry) {
+      previousTotal = entry.totalAmount;
+    }
+
     filled.push(
       entry || {
         date: startRange.toLocaleDateString('en-CA', {
@@ -66,7 +73,7 @@ const fillEntries = async (
           month: '2-digit',
           day: '2-digit',
         }),
-        totalAmount: 0,
+        totalAmount: startRange <= now ? previousTotal : 0,
         transactionCount: 0,
       },
     );
