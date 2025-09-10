@@ -62,17 +62,17 @@ export const mobileNavItems: NavIconItem[] = [
   },
   {
     title: 'Accounts',
-    url: '#',
+    url: '/home/account',
     icon: Wallet,
   },
   {
     title: 'Activity',
-    url: '#',
+    url: '/home/activity',
     icon: Receipt,
   },
   {
     title: 'Statistics',
-    url: '#',
+    url: '/home/statistics',
     icon: ChartNoAxesColumnIncreasing,
   },
 ];

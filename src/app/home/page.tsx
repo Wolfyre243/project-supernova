@@ -17,7 +17,7 @@ export default function UserHomePage() {
         <BalanceCardMobile />
       </header>
 
-      <section className='bg-background flex flex-col gap-4 rounded-t-3xl p-6 pb-24 md:flex-row md:rounded-none md:pb-6'>
+      <section className='bg-background flex flex-col gap-4 rounded-t-3xl p-4 pb-24 md:flex-row md:rounded-none md:pb-6'>
         <div className='flex h-full w-full flex-col gap-4 md:w-[80%]'>
           <div className='flex w-full flex-row items-center gap-4'>
             <BalanceCard />
