@@ -26,18 +26,18 @@ export interface Category {
 }
 
 export interface Account {
-  accountId: string | null | undefined;
-  userId: string | null | undefined;
-  name: string | null | undefined;
-  icon: string | null | undefined;
-  color: string | null | undefined;
+  accountId: string;
+  userId: string;
+  name: string;
+  icon: string;
+  color: string;
   description: string | null | undefined;
   isSavings: boolean | null | undefined;
   total: number | null | undefined;
-  createdAt: Date | null | undefined;
-  updatedAt: Date | null | undefined;
-  deletedAt: Date | null | undefined;
-  status: string | null | undefined;
+  createdAt: Date;
+  updatedAt: Date;
+  deletedAt: Date;
+  status: string;
 }
 
 export interface Transaction {
