@@ -59,10 +59,10 @@ export function AccountPagination() {
         display those filters on desktop, and truncate to a badge on mobile
         showing how many active filters there are */}
         <div className='h-fit w-fit p-1'>
-          <Filter className='size-4' />
+          <Filter className='size-5' />
         </div>
         <div className='h-fit w-fit p-1'>
-          <ArrowUpDown className='size-4' />
+          <ArrowUpDown className='size-5' />
         </div>
       </div>
       <div className='flex w-full flex-col gap-4'>

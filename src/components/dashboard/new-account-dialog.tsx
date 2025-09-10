@@ -248,7 +248,7 @@ export function NewAccountForm({
 
 // Consider adapting to a drawer component in the future
 // Or add more features to the account entity and display as a separate creation page
-export function NewAccountButton() {
+export function NewAccountButton({ className }: { className?: string }) {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -261,7 +261,7 @@ export function NewAccountButton() {
           variant={'ghost'}
           className='h-fit w-fit cursor-pointer hover:bg-transparent dark:hover:bg-transparent'
         >
-          <Plus className='size-5' />
+          <Plus className={cn('size-5', className)} />
         </Button>
       </DialogTrigger>
       <DialogContent
