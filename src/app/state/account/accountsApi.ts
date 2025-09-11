@@ -16,14 +16,18 @@ export const accountsApi = apiSlice.injectEndpoints({
       {
         page: number;
         limit: number;
+        searchTerm?: string;
         sortBy?: string;
         sortOrder?: 'asc' | 'desc';
       }
     >({
-      query: ({ page, limit, sortBy, sortOrder }) => {
+      query: ({ page, limit, searchTerm, sortBy, sortOrder }) => {
         const params = new URLSearchParams();
         params.set('page', page.toString());
         params.set('limit', limit.toString());
+        if (searchTerm) {
+          params.set('search', searchTerm);
+        }
         if (sortBy) {
           params.set('sortBy', sortBy);
         }

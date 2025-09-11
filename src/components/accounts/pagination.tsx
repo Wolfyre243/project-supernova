@@ -6,6 +6,8 @@ import { Badge } from '../ui/badge';
 import { useGetAccountPaginationQuery } from '@/app/state/account/accountsApi';
 import { PaginationSearch } from '../pagination-search';
 import { ArrowUpDown, Filter } from 'lucide-react';
+import { useState } from 'react';
+import { AccountPaginationSortBy } from './pagination-filters';
 
 export function AccountPaginationItem({
   account,
@@ -30,7 +32,7 @@ export function AccountPaginationItem({
             {account.name}
           </h1>
           {account.isSavings && (
-            <Badge className='bg-accent text-accent-foreground rounded-full px-2 py-0.5 text-sm'>
+            <Badge className='bg-accent text-accent-foreground rounded-full px-2 py-0.5'>
               Savings
             </Badge>
           )}
@@ -44,26 +46,28 @@ export function AccountPaginationItem({
 }
 
 export function AccountPagination() {
+  const [searchTerm, setSearchTerm] = useState<string | undefined>();
+  const [sort, setSort] = useState<string>('total,desc');
+
   const { data: result } = useGetAccountPaginationQuery({
     page: 1,
     limit: 10,
-    sortBy: 'total',
-    sortOrder: 'desc',
+    searchTerm,
+    sortBy: sort.split(',')[0],
+    sortOrder: sort.split(',')[1] as 'asc' | 'desc',
   });
 
   return (
     <div className='flex w-full flex-col gap-4'>
       <div className='flex flex-row items-center gap-2'>
-        <PaginationSearch />
+        <PaginationSearch onChange={(e) => setSearchTerm(e.target.value)} />
         {/* TODO: Turn into dropdown menus for multiple filters etc, 
         display those filters on desktop, and truncate to a badge on mobile
         showing how many active filters there are */}
-        <div className='h-fit w-fit p-1'>
+        {/* <div className='h-fit w-fit p-1'>
           <Filter className='size-5' />
-        </div>
-        <div className='h-fit w-fit p-1'>
-          <ArrowUpDown className='size-5' />
-        </div>
+        </div> */}
+        <AccountPaginationSortBy value={sort} onValueChange={setSort} />
       </div>
       <div className='flex w-full flex-col gap-4'>
         {result?.data &&

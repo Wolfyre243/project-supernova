@@ -4,7 +4,7 @@ import { account, transaction } from '@/db/schema';
 import { APIError } from '@/lib/exceptions';
 import { Account } from '@/lib/models';
 import { createClient } from '@/utils/supabase/server';
-import { and, desc, eq, SQL, sql } from 'drizzle-orm';
+import { and, desc, eq, ilike, or, SQL, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
 
 const activeStatus = Status.ACTIVE;
@@ -23,7 +23,8 @@ export async function GET(request: NextRequest) {
     const { searchParams } = new URL(request.url);
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
-    const name = searchParams.get('name');
+    const searchTerm = searchParams.get('search') || '';
+    console.log('Search Term:', searchTerm);
     const sortBy = searchParams.get('sortBy');
     const sortOrder =
       searchParams.get('sortOrder')?.toLowerCase() === 'asc' ? 'asc' : 'desc';
@@ -46,11 +47,14 @@ export async function GET(request: NextRequest) {
       eq(account.userId, user.id),
       eq(account.statusId, activeStatus),
     ];
-    // Filtering by type is not supported (no 'type' column in account)
-    if (name) {
-      // Case-insensitive substring search
+
+    if (typeof searchTerm === 'string' && searchTerm.trim() !== '') {
       filters.push(
-        sql`LOWER(${account.name}) LIKE '%' || LOWER(${name}) || '%'`,
+        // @ts-expect-error - Drizzle ORM types are being difficult here
+        or(
+          ilike(account.name, `%${searchTerm}%`),
+          ilike(account.description, `%${searchTerm}%`),
+        ),
       );
     }
 
@@ -67,9 +71,6 @@ export async function GET(request: NextRequest) {
     } else if (sortBy === 'createdAt') {
       orderByClause =
         sortOrder === 'asc' ? [account.createdAt] : [desc(account.createdAt)];
-    } else if (sortBy === 'updatedAt') {
-      orderByClause =
-        sortOrder === 'asc' ? [account.updatedAt] : [desc(account.updatedAt)];
     } else {
       orderByClause = [desc(calcTotal), desc(account.createdAt)];
     }

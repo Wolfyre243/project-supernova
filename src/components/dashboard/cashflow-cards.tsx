@@ -66,7 +66,7 @@ export function IncomeCard({ className }: { className?: string }) {
                 accessibilityLayer
                 data={chartData}
                 margin={{
-                  bottom: 10,
+                  bottom: 12,
                 }}
               >
                 <Area
@@ -162,7 +162,7 @@ export function ExpenseCard({ className }: { className?: string }) {
                 accessibilityLayer
                 data={chartData}
                 margin={{
-                  bottom: 10,
+                  bottom: 12,
                 }}
               >
                 <Area
