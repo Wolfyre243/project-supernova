@@ -1,5 +1,5 @@
 import db from '@/db/db';
-import { account, transaction } from '@/db/schema';
+import { account, transaction, category } from '@/db/schema';
 import { APIError } from '@/lib/exceptions';
 import { Account } from '@/lib/models';
 import { createClient } from '@/utils/supabase/server';
@@ -41,13 +41,111 @@ export async function GET(
         createdAt: account.createdAt,
         updatedAt: account.updatedAt,
         total: calcTotal,
+        transactionCount: sql`COUNT(${transaction.transactionId})::int`.mapWith(
+          Number,
+        ),
       })
       .from(account)
       .where(and(eq(account.accountId, accountId), eq(account.userId, user.id)))
       .leftJoin(transaction, eq(account.accountId, transaction.accountId))
       .groupBy(account.accountId);
 
-    return NextResponse.json(accountData, { status: 200 });
+    // Aggregate total income for this account
+    const [incomeTotal] = await db
+      .select({
+        total: sql`COALESCE(SUM(${transaction.amount}), 0)::numeric`.mapWith(
+          Number,
+        ),
+      })
+      .from(transaction)
+      .where(
+        and(
+          eq(transaction.accountId, accountId),
+          eq(transaction.type, 'income'),
+        ),
+      );
+
+    const [expenseTotal] = await db
+      .select({
+        total: sql`COALESCE(SUM(${transaction.amount}), 0)::numeric`.mapWith(
+          Number,
+        ),
+      })
+      .from(transaction)
+      .where(
+        and(
+          eq(transaction.accountId, accountId),
+          eq(transaction.type, 'expense'),
+        ),
+      );
+
+    // Get category distribution for income transactions
+    const incomeCategoryDistribution = await db
+      .select({
+        categoryName: category.name,
+        categoryId: category.categoryId,
+        count: sql`COUNT(*)::int`.mapWith(Number),
+        color: category.color,
+        icon: category.icon,
+      })
+      .from(transaction)
+      .innerJoin(category, eq(transaction.categoryId, category.categoryId))
+      .where(
+        and(
+          eq(transaction.accountId, accountId),
+          eq(transaction.type, 'income'),
+          eq(category.userId, user.id),
+        ),
+      )
+      .groupBy(
+        category.categoryId,
+        category.name,
+        category.color,
+        category.icon,
+      );
+
+    const expenseCategoryDistribution = await db
+      .select({
+        categoryName: category.name,
+        categoryId: category.categoryId,
+        count: sql`COUNT(*)::int`.mapWith(Number),
+        color: category.color,
+        icon: category.icon,
+      })
+      .from(transaction)
+      .innerJoin(category, eq(transaction.categoryId, category.categoryId))
+      .where(
+        and(
+          eq(transaction.accountId, accountId),
+          eq(transaction.type, 'expense'),
+          eq(category.userId, user.id),
+        ),
+      )
+      .groupBy(
+        category.categoryId,
+        category.name,
+        category.color,
+        category.icon,
+      );
+
+    const accountIncomeData = {
+      total: incomeTotal?.total || 0,
+      categoryDistribution: incomeCategoryDistribution,
+    };
+
+    const accountExpenseData = {
+      total: expenseTotal?.total || 0,
+      categoryDistribution: expenseCategoryDistribution,
+    };
+
+    return NextResponse.json(
+      {
+        ...accountData,
+        income: accountIncomeData,
+        expense: accountExpenseData,
+      },
+      { status: 200 },
+    );
   } catch (error) {
     console.error(error);
     if (error instanceof APIError) {

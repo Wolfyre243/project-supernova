@@ -1,5 +1,16 @@
-import { Account } from '@/lib/models';
+import { Account, Category } from '@/lib/models';
 import { apiSlice } from '../mainApiSlice';
+
+interface AccountStats extends Partial<Account> {
+  income?: {
+    total: number;
+    categoryDistribution: Partial<Category>[];
+  };
+  expense?: {
+    total: number;
+    categoryDistribution: Partial<Category>[];
+  };
+}
 
 export const accountsApi = apiSlice.injectEndpoints({
   endpoints: (builder) => ({
@@ -38,7 +49,7 @@ export const accountsApi = apiSlice.injectEndpoints({
       },
       providesTags: ['Accounts', 'Transactions'],
     }),
-    getSingleAccount: builder.query<Partial<Account>, string>({
+    getSingleAccount: builder.query<AccountStats, string>({
       query: (accountId: string) => `/account/${accountId}`,
       providesTags: ['Accounts', 'Transactions'],
     }),
