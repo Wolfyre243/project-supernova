@@ -4,11 +4,11 @@ import { apiSlice } from '../mainApiSlice';
 interface AccountStats extends Partial<Account> {
   income?: {
     total: number;
-    categoryDistribution: Partial<Category>[];
+    categoryDistribution: (Partial<Category> & { count: number })[];
   };
   expense?: {
     total: number;
-    categoryDistribution: Partial<Category>[];
+    categoryDistribution: (Partial<Category> & { count: number })[];
   };
 }
 

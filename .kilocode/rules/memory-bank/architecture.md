@@ -66,3 +66,31 @@ experience across devices.
 - Budget and transaction CRUD operations.
 - Dashboard data aggregation and chart rendering.
 - Responsive layout and mobile-first design.
+
+---
+
+## Architectural Improvement Plan (2025-09-12)
+
+**Identified Areas for Improvement:**
+
+- API versioning and extensibility
+- State management modularity
+- Database migration and rollback safety
+- Authentication edge cases
+- Documentation and onboarding
+- Automated testing and coverage
+- Performance optimization (PWA/mobile)
+- Error handling and observability
+
+**Actionable Recommendations:**
+
+1. Document and implement a clear API versioning strategy (e.g., `/api/v1/...`).
+2. Refactor Redux slices into feature-based modules; document state shape.
+3. Add automated migration rollback scripts and CI checks for Drizzle ORM.
+4. Expand authentication flows to cover MFA, password reset, session expiry.
+5. Create onboarding docs and Mermaid diagrams for workflows.
+6. Set up automated testing with coverage thresholds (Jest/Testing Library).
+7. Integrate Lighthouse audits and bundle analysis into CI for performance.
+8. Add centralized error logging and monitoring (e.g., Sentry).
+
+These steps will improve maintainability, scalability, and developer experience.

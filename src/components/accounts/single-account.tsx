@@ -1,10 +1,67 @@
 'use client';
 
+import React from 'react';
 import { useGetSingleAccountQuery } from '@/app/state/account/accountsApi';
 import { IconMap } from '@/config/iconMap';
 import { Skeleton } from '../ui/skeleton';
-import { ExpenseCard, IncomeCard } from '../dashboard/cashflow-cards';
 import { formatDistanceToNowStrict } from 'date-fns';
+import { Tabs, TabsList, TabsTrigger, TabsContent } from '../ui/tabs';
+import { Category } from '@/lib/models';
+
+// Horizontal Bar Chart for Category Distribution
+// TODO: Refactor into pie chart for now
+function CategoryBarChart({
+  data,
+}: {
+  data: (Partial<Category> & { count: number })[];
+}) {
+  if (!data || data.length === 0) {
+    return (
+      <div className='text-muted-foreground text-sm'>No data available.</div>
+    );
+  }
+  const maxCount = Math.max(...data.map((c) => c.count), 1);
+  return (
+    <div className='flex flex-col gap-2'>
+      {data.map((cat) => (
+        <div key={cat.name} className='flex items-center gap-2'>
+          {/* Icon */}
+          {cat.icon && (
+            <span
+              className='flex h-6 w-6 items-center justify-center rounded-full'
+              style={{ background: cat.color ?? '#e5e7eb' }}
+            >
+              {/* If IconMap is available, render icon, else fallback */}
+              {typeof cat.icon === 'string' && IconMap[cat.icon] ? (
+                React.createElement(IconMap[cat.icon])
+              ) : (
+                <span />
+              )}
+            </span>
+          )}
+          {/* Name */}
+          <span className='min-w-[80px] flex-1 text-sm'>{cat.name}</span>
+          {/* Bar */}
+          <div className='flex-1'>
+            <div
+              className='bg-opacity-70 h-3 rounded'
+              style={{
+                width: `${(cat.count / maxCount) * 100}%`,
+                background: cat.color ?? '#a3a3a3',
+                minWidth: 8,
+                transition: 'width 0.3s',
+              }}
+            />
+          </div>
+          {/* Count */}
+          <span className='text-muted-foreground ml-2 text-xs'>
+            {cat.count}
+          </span>
+        </div>
+      ))}
+    </div>
+  );
+}
 
 export function SingleAccountBlock({ accountId }: { accountId: string }) {
   const { data: accountData, isLoading } = useGetSingleAccountQuery(accountId);
@@ -66,8 +123,6 @@ export function SingleAccountBlock({ accountId }: { accountId: string }) {
         {/* Income / Expense */}
         <div className='flex h-fit w-full flex-row gap-4'>
           {/* TODO: Replace with actual cards */}
-          <IncomeCard />
-          <ExpenseCard />
         </div>
       </div>
     </div>
