@@ -5,9 +5,11 @@ import { Account } from '@/lib/models';
 import { Badge } from '../ui/badge';
 import { useGetAccountPaginationQuery } from '@/app/state/account/accountsApi';
 import { PaginationSearch } from '../pagination-search';
-import { ArrowUpDown, Filter } from 'lucide-react';
 import { useState } from 'react';
 import { AccountPaginationSortBy } from './pagination-filters';
+import { Skeleton } from '../ui/skeleton';
+import { SearchX } from 'lucide-react';
+import Link from 'next/link';
 
 export function AccountPaginationItem({
   account,
@@ -15,7 +17,10 @@ export function AccountPaginationItem({
   account: Partial<Account>;
 }) {
   return (
-    <div className='flex w-full flex-row items-center gap-4'>
+    <Link
+      href={`/home/account/${account.accountId}`}
+      className='flex w-full flex-row items-center gap-4'
+    >
       <div
         className='flex h-fit w-fit flex-row items-center justify-center rounded-full p-2'
         style={{ backgroundColor: account.color }}
@@ -28,7 +33,7 @@ export function AccountPaginationItem({
       </div>
       <div className='flex w-fit flex-col'>
         <div className='flex flex-row items-center gap-2'>
-          <h1 className='text-muted-foreground max-w-[160px] truncate overflow-hidden text-sm whitespace-nowrap'>
+          <h1 className='text-muted-foreground max-w-[90vw] truncate overflow-hidden text-sm whitespace-nowrap'>
             {account.name}
           </h1>
           {account.isSavings && (
@@ -41,7 +46,7 @@ export function AccountPaginationItem({
           ${account.total?.toFixed(2)}
         </span>
       </div>
-    </div>
+    </Link>
   );
 }
 
@@ -49,9 +54,9 @@ export function AccountPagination() {
   const [searchTerm, setSearchTerm] = useState<string | undefined>();
   const [sort, setSort] = useState<string>('total,desc');
 
-  const { data: result } = useGetAccountPaginationQuery({
+  const { data: result, isLoading } = useGetAccountPaginationQuery({
     page: 1,
-    limit: 10,
+    limit: 20,
     searchTerm,
     sortBy: sort.split(',')[0],
     sortOrder: sort.split(',')[1] as 'asc' | 'desc',
@@ -59,7 +64,7 @@ export function AccountPagination() {
 
   return (
     <div className='flex w-full flex-col gap-4'>
-      <div className='flex flex-row items-center gap-2'>
+      <div className='flex flex-row items-center gap-2 md:w-1/3'>
         <PaginationSearch onChange={(e) => setSearchTerm(e.target.value)} />
         {/* TODO: Turn into dropdown menus for multiple filters etc, 
         display those filters on desktop, and truncate to a badge on mobile
@@ -70,7 +75,27 @@ export function AccountPagination() {
         <AccountPaginationSortBy value={sort} onValueChange={setSort} />
       </div>
       <div className='flex w-full flex-col gap-4'>
+        {isLoading &&
+          Array.from({ length: 3 }).map((item) => (
+            <div
+              className='flex w-full flex-row items-center gap-4'
+              key={crypto.randomUUID()}
+            >
+              <Skeleton className='h-9 w-9 rounded-full' />
+              <div className='flex flex-col gap-2'>
+                <Skeleton className='h-2 w-20' />
+                <Skeleton className='h-4 w-28' />
+              </div>
+            </div>
+          ))}
+        {result?.data && result.data.length === 0 && (
+          <div className='text-muted flex flex-col items-center justify-center py-8'>
+            <SearchX />
+            <h1 className='text-xl'>Nothing to see here...</h1>
+          </div>
+        )}
         {result?.data &&
+          result.data.length > 0 &&
           result.data.map((account: Partial<Account>) => (
             <AccountPaginationItem
               account={account}

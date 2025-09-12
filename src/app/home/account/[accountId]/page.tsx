@@ -1,3 +1,7 @@
+import { SingleAccountBlock } from '@/components/accounts/single-account';
+import { BackButton } from '@/components/nav/control-buttons';
+import { MoreVertical } from 'lucide-react';
+
 export default async function DashboardSingleAccountPage({
   params,
 }: {
@@ -6,24 +10,13 @@ export default async function DashboardSingleAccountPage({
   const { accountId } = await params;
 
   return (
-    <div className='bg-background flex flex-col gap-4 rounded-t-3xl p-6 pb-24 md:rounded-none md:pb-6'>
-      {/* Row 1 */}
-      <div className='flex w-full flex-row gap-4'>
-        {/* Card Display */}
-        <div className='flex w-fit flex-col gap-2'>
-          {/* Account Card */}
-          <div className='bg-card flex w-[15vw] flex-col justify-center gap-2 rounded-2xl border p-4'>
-            <div className='bg-accent h-10 w-10 rounded-full' />
-            <div>
-              <h2 className='text-muted-foreground text-lg'>Debit Card</h2>
-              <h1 className='text-3xl font-semibold'>$2,430.00</h1>
-            </div>
-          </div>
-
-          <span className='text-muted text-sm'>Last Updated: 2 mins ago</span>
-          <span className='text-muted text-sm'>{accountId}</span>
-        </div>
+    <div className='bg-background flex h-full flex-col gap-4 p-4 pb-24 md:pb-4'>
+      <div className='text-muted-foreground mb-2 flex flex-row justify-between'>
+        <BackButton />
+        {/* TODO: Replace with real dropdown menu */}
+        <MoreVertical className='size-5' />
       </div>
+      <SingleAccountBlock accountId={accountId} />
     </div>
   );
 }

@@ -38,6 +38,10 @@ export const accountsApi = apiSlice.injectEndpoints({
       },
       providesTags: ['Accounts', 'Transactions'],
     }),
+    getSingleAccount: builder.query<Partial<Account>, string>({
+      query: (accountId: string) => `/account/${accountId}`,
+      providesTags: ['Accounts', 'Transactions'],
+    }),
     createAccount: builder.mutation<Account, Partial<Account>>({
       query: (account) => ({
         url: `/account`,
@@ -52,5 +56,6 @@ export const accountsApi = apiSlice.injectEndpoints({
 export const {
   useGetAccountsQuery,
   useGetAccountPaginationQuery,
+  useGetSingleAccountQuery,
   useCreateAccountMutation,
 } = accountsApi;

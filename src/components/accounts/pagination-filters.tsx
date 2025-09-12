@@ -1,4 +1,10 @@
-import { ArrowUpDown } from 'lucide-react';
+import {
+  ArrowUpDown,
+  BanknoteArrowDown,
+  BanknoteArrowUp,
+  ClockArrowDown,
+  ClockArrowUp,
+} from 'lucide-react';
 import { Button } from '../ui/button';
 import {
   DropdownMenu,
@@ -28,17 +34,21 @@ export function AccountPaginationSortBy({
         <DropdownMenuLabel>Sort By</DropdownMenuLabel>
         <DropdownMenuSeparator />
         <DropdownMenuRadioGroup value={value} onValueChange={onValueChange}>
-          <DropdownMenuRadioItem value='total,asc'>
-            Total Ascending
-          </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value='total,desc'>
-            Total Descending
+            Total
+            <BanknoteArrowDown />
           </DropdownMenuRadioItem>
-          <DropdownMenuRadioItem value='createdAt,asc'>
-            Created At Ascending
+          <DropdownMenuRadioItem value='total,asc'>
+            Total
+            <BanknoteArrowUp />
           </DropdownMenuRadioItem>
           <DropdownMenuRadioItem value='createdAt,desc'>
-            Created At Descending
+            Created At
+            <ClockArrowDown />
+          </DropdownMenuRadioItem>
+          <DropdownMenuRadioItem value='createdAt,asc'>
+            Created At
+            <ClockArrowUp />
           </DropdownMenuRadioItem>
         </DropdownMenuRadioGroup>
       </DropdownMenuContent>
