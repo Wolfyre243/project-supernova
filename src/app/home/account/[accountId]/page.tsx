@@ -10,7 +10,9 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from '@/components/ui/tabs';
 import {
   AccountExpenseStatCard,
   AccountIncomeStatCard,
-} from '@/components/accounts/single-account/stats-tabs';
+} from '@/components/accounts/single-account/stats-cards';
+import Link from 'next/link';
+import { AccountTransactionList } from '@/components/accounts/single-account/transaction-list';
 
 export default async function DashboardSingleAccountPage({
   params,
@@ -35,25 +37,45 @@ export default async function DashboardSingleAccountPage({
           <AccountDisplayCard accountId={accountId} />
 
           {/* Income / Expense */}
-          <div className='flex h-fit w-full flex-row gap-4'>
-            <Tabs defaultValue='income' className='w-full'>
-              <TabsList className='w-full bg-transparent'>
-                <TabsTrigger value='income'>
-                  <ChevronUp className='text-green-500' />
-                  Income
-                </TabsTrigger>
-                <TabsTrigger value='expense'>
-                  <ChevronDown className='text-red-500' />
-                  Expense
-                </TabsTrigger>
-              </TabsList>
-              <TabsContent value='income'>
-                <AccountIncomeStatCard accountId={accountId} />
-              </TabsContent>
-              <TabsContent value='expense'>
-                <AccountExpenseStatCard accountId={accountId} />
-              </TabsContent>
-            </Tabs>
+          <Tabs defaultValue='income' className='w-full'>
+            <TabsList className='w-full'>
+              <TabsTrigger
+                value='income'
+                className='rounded-r-none border-none'
+              >
+                <ChevronUp className='text-green-500' />
+                Income
+              </TabsTrigger>
+              <TabsTrigger
+                value='expense'
+                className='rounded-l-none border-none'
+              >
+                <ChevronDown className='text-red-500' />
+                Expense
+              </TabsTrigger>
+            </TabsList>
+            <TabsContent value='income'>
+              <AccountIncomeStatCard accountId={accountId} />
+            </TabsContent>
+            <TabsContent value='expense'>
+              <AccountExpenseStatCard accountId={accountId} />
+            </TabsContent>
+          </Tabs>
+        </div>
+        {/* Row 2 */}
+        <div className='flex w-full flex-col gap-4 md:flex-row'>
+          {/* Transactions */}
+          <div className='flex flex-col gap-4'>
+            <div className='flex flex-row items-end justify-between'>
+              <h1 className='text-xl'>Transactions</h1>
+              <Link
+                href={'/home/activity'}
+                className='text-muted-foreground text-xs underline'
+              >
+                See All
+              </Link>
+            </div>
+            <AccountTransactionList accountId={accountId} />
           </div>
         </div>
       </div>

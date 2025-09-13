@@ -3,6 +3,7 @@
 import { Category } from '@/lib/models';
 import { ColorOptions } from '@/config/colorOptions';
 import { useGetSingleAccountQuery } from '@/app/state/account/accountsApi';
+import { Loader2 } from 'lucide-react';
 
 // Horizontal Bar Chart for Category Distribution
 // TODO: Refactor into pie chart for now
@@ -72,11 +73,22 @@ function CategoryDistributionChart({
   );
 }
 
+function StatCardSkeleton() {
+  return (
+    <div className='text-muted flex flex-col items-center gap-2 p-4'>
+      <Loader2 className='animate-spin' />
+      <span className='text-sm'>Loading data...</span>
+    </div>
+  );
+}
+
 export function AccountIncomeStatCard({ accountId }: { accountId: string }) {
   const { data: accountData, isLoading } = useGetSingleAccountQuery(accountId);
 
+  if (isLoading) return <StatCardSkeleton />;
+
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 p-4'>
       <h1 className='text-xl font-semibold'>
         ${accountData?.income?.total.toFixed(2)}
       </h1>
@@ -90,8 +102,10 @@ export function AccountIncomeStatCard({ accountId }: { accountId: string }) {
 export function AccountExpenseStatCard({ accountId }: { accountId: string }) {
   const { data: accountData, isLoading } = useGetSingleAccountQuery(accountId);
 
+  if (isLoading) return <StatCardSkeleton />;
+
   return (
-    <div className='flex flex-col gap-2'>
+    <div className='flex flex-col gap-2 p-4'>
       <h1 className='text-xl font-semibold'>
         ${accountData?.expense?.total.toFixed(2)}
       </h1>

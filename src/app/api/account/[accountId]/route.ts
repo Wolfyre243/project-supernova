@@ -1,7 +1,6 @@
 import db from '@/db/db';
 import { account, transaction, category } from '@/db/schema';
 import { APIError } from '@/lib/exceptions';
-import { Account } from '@/lib/models';
 import { createClient } from '@/utils/supabase/server';
 import { and, eq, sql } from 'drizzle-orm';
 import { NextRequest, NextResponse } from 'next/server';
@@ -56,6 +55,7 @@ export async function GET(
         total: sql`COALESCE(SUM(${transaction.amount}), 0)::numeric`.mapWith(
           Number,
         ),
+        // TODO: Add total income transaction count
       })
       .from(transaction)
       .where(
@@ -154,7 +154,6 @@ export async function GET(
         { status: error.status },
       );
     }
-
     return NextResponse.json({ error: 'Unknown error' }, { status: 500 });
   }
 }
