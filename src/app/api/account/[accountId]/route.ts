@@ -82,7 +82,7 @@ export async function GET(
     // Get category distribution for income transactions
     const incomeCategoryDistribution = await db
       .select({
-        categoryName: category.name,
+        name: category.name,
         categoryId: category.categoryId,
         count: sql`COUNT(*)::int`.mapWith(Number),
         color: category.color,
@@ -106,7 +106,7 @@ export async function GET(
 
     const expenseCategoryDistribution = await db
       .select({
-        categoryName: category.name,
+        name: category.name,
         categoryId: category.categoryId,
         count: sql`COUNT(*)::int`.mapWith(Number),
         color: category.color,

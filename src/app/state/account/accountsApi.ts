@@ -1,7 +1,7 @@
 import { Account, Category } from '@/lib/models';
 import { apiSlice } from '../mainApiSlice';
 
-interface AccountStats extends Partial<Account> {
+export interface AccountStats extends Partial<Account> {
   income?: {
     total: number;
     categoryDistribution: (Partial<Category> & { count: number })[];
