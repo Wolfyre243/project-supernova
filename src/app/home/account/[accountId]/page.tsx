@@ -13,6 +13,7 @@ import {
 } from '@/components/accounts/single-account/stats-cards';
 import Link from 'next/link';
 import { AccountTransactionList } from '@/components/accounts/single-account/transaction-list';
+import { TransactionChart } from '@/components/transactions/transaction-charts';
 
 export default async function DashboardSingleAccountPage({
   params,
@@ -35,6 +36,8 @@ export default async function DashboardSingleAccountPage({
         <div className='flex w-full flex-col gap-4 md:flex-row'>
           {/* Card Display */}
           <AccountDisplayCard accountId={accountId} />
+
+          <TransactionChart accountIds={[accountId]} />
 
           {/* Income / Expense */}
           <Tabs defaultValue='income' className='w-full'>
@@ -63,6 +66,11 @@ export default async function DashboardSingleAccountPage({
           </Tabs>
         </div>
         {/* Row 2 */}
+        <div className='flex w-full flex-col gap-4 md:flex-row'>
+          {/* Put transaction chart here on desktop */}
+          {/* <TransactionChart accountIds={[accountId]} /> */}
+        </div>
+        {/* Row 3 */}
         <div className='flex w-full flex-col gap-4 md:flex-row'>
           {/* Transactions */}
           <div className='flex flex-col gap-4'>

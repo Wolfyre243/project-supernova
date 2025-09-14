@@ -6,6 +6,7 @@ type Scope = 'week' | 'month' | 'year' | 'all';
 type TransactionType = 'income' | 'expense';
 
 export const transactionsApi = apiSlice.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     createIncome: builder.mutation<Transaction, Partial<Transaction>>({
       query: (income) => ({
@@ -45,18 +46,27 @@ export const transactionsApi = apiSlice.injectEndpoints({
     }),
 
     getTransactionStats: builder.query<
-      { totalAmount: number | null; date: string; transactionCount: number }[],
+      {
+        totalAmount: number | null;
+        date: string;
+        transactionCount: number;
+        totalIncome?: number;
+        totalExpense?: number;
+      }[],
       {
         scope?: Scope;
+        accountIds?: string[];
         type?: TransactionType;
         startDate?: string;
         endDate?: string;
       }
     >({
-      query: ({ scope, type, startDate, endDate }) => {
+      query: ({ scope, accountIds, type, startDate, endDate }) => {
         const url = '/transaction/stats';
         const params = new URLSearchParams();
         if (scope) params.append('scope', scope);
+        if (accountIds && accountIds.length > 0)
+          params.append('accountIds', accountIds.join(','));
         if (type) params.append('type', type);
         if (startDate) params.append('startDate', startDate);
         if (endDate) params.append('endDate', endDate);

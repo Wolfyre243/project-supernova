@@ -12,7 +12,9 @@ import {
   asc,
   countDistinct,
   eq,
+  gt,
   gte,
+  inArray,
   lt,
   lte,
   sql,
@@ -49,6 +51,8 @@ const fillEntries = async (
   endRange: Date,
   data: Array<{
     totalAmount: number;
+    totalIncome: number;
+    totalExpense: number;
     date: unknown;
     transactionCount: number;
   }>,
@@ -74,6 +78,8 @@ const fillEntries = async (
           day: '2-digit',
         }),
         totalAmount: startRange <= now ? previousTotal : 0,
+        totalIncome: 0,
+        totalExpense: 0,
         transactionCount: 0,
       },
     );
@@ -125,6 +131,7 @@ const queryTransactionsByType = async (
 
 const queryAllTransactions = async (
   scope: Scope,
+  accountIds: string[] | null,
   startDate: Date,
   endDate: Date,
   userId: string,
@@ -136,6 +143,17 @@ const queryAllTransactions = async (
     endDate = parsed.endDate;
   }
 
+  const whereClause = [
+    eq(account.userId, userId),
+    eq(transaction.statusId, 1),
+    gt(transaction.date, startDate),
+    lte(transaction.date, endDate),
+  ];
+  // TODO: Fix account specific graph data
+  if (accountIds) {
+    whereClause.push(inArray(transaction.accountId, accountIds));
+  }
+
   // Get all unique days in the range
   const dateExpr = scope
     ? getDateExpression(scope)
@@ -144,14 +162,7 @@ const queryAllTransactions = async (
     .select({ date: dateExpr })
     .from(transaction)
     .innerJoin(account, eq(transaction.accountId, account.accountId))
-    .where(
-      and(
-        eq(account.userId, userId),
-        eq(transaction.statusId, 1),
-        gte(transaction.date, startDate),
-        lt(transaction.date, endDate),
-      ),
-    )
+    .where(and(...whereClause))
     .groupBy(dateExpr)
     .orderBy(asc(dateExpr));
 
@@ -160,12 +171,16 @@ const queryAllTransactions = async (
   // For each day, calculate the running balance up to and including that day using Drizzle ORM methods
   const results: {
     totalAmount: number;
+    totalIncome: number;
+    totalExpense: number;
     date: unknown;
     transactionCount: number;
   }[] = [];
 
   let filledResults: {
     totalAmount: number;
+    totalIncome: number;
+    totalExpense: number;
     date: unknown;
     transactionCount: number;
   }[] = [];
@@ -178,6 +193,12 @@ const queryAllTransactions = async (
         totalAmount: sum(
           sql`CASE WHEN ${transaction.type} = 'income' THEN ${transaction.amount} ELSE -${transaction.amount} END`,
         ).mapWith(Number),
+        totalIncome: sum(
+          sql`CASE WHEN ${transaction.type} = 'income' THEN ${transaction.amount} END`,
+        ).mapWith(Number),
+        totalExpense: sum(
+          sql`CASE WHEN ${transaction.type} = 'expense' THEN ${transaction.amount} END`,
+        ).mapWith(Number),
         transactionCount: countDistinct(transaction.transactionId).mapWith(
           Number,
         ),
@@ -188,6 +209,9 @@ const queryAllTransactions = async (
         and(
           eq(account.userId, userId),
           eq(transaction.statusId, 1),
+          ...[
+            accountIds ? inArray(transaction.accountId, accountIds) : undefined,
+          ],
           lte(
             scope ? getDateExpression(scope) : getDateExpression('month'),
             dayValue,
@@ -198,6 +222,8 @@ const queryAllTransactions = async (
 
     results.push({
       totalAmount: runningBalanceQuery[0].totalAmount ?? 0,
+      totalIncome: runningBalanceQuery[0].totalIncome ?? 0,
+      totalExpense: runningBalanceQuery[0].totalExpense ?? 0,
       date: dayValue,
       transactionCount: runningBalanceQuery[0].transactionCount ?? 0,
     });
@@ -229,6 +255,7 @@ export async function GET(request: NextRequest) {
   try {
     const { searchParams } = new URL(request.url);
     const scope: Scope = searchParams.get('scope') as Scope;
+    const accountIdsParam = searchParams.get('accountIds');
     const type: TransactionType = searchParams.get('type') as TransactionType;
     const startDate = searchParams.get('startDate');
     const endDate = searchParams.get('endDate');
@@ -257,6 +284,9 @@ export async function GET(request: NextRequest) {
     } else {
       entries = await queryAllTransactions(
         scope,
+        accountIdsParam
+          ? accountIdsParam.split(',').map((id) => id.trim())
+          : null,
         new Date(startDate ?? Date.now()),
         new Date(endDate ?? Date.now()),
         user.id,

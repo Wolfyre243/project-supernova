@@ -14,7 +14,7 @@ import { useAppSelector } from '@/hooks/redux-hooks';
 import { selectChartFilters } from '@/app/state/chartFiltersSlice';
 import { CircleX, Loader2 } from 'lucide-react';
 
-export function TransactionChart() {
+export function TransactionChart({ accountIds }: { accountIds?: string[] }) {
   const isMobile = useIsMobile();
   const userLocale = useLocale();
 
@@ -29,12 +29,19 @@ export function TransactionChart() {
     // startDate: startDate,
     // endDate: endDate,
     scope,
+    accountIds: accountIds ?? undefined,
   });
 
   // TODO: Include more comprehensive data
   const chartConfig = {
     totalAmount: {
       label: 'Total',
+    },
+    totalIncome: {
+      label: 'Income',
+    },
+    totalExpense: {
+      label: 'Expense',
     },
     date: {
       label: 'Date',
@@ -115,9 +122,33 @@ export function TransactionChart() {
           }}
         />
         <defs>
-          <linearGradient id='fill' x1='0' y1='0' x2='0' y2='1'>
+          <linearGradient id='totalFill' x1='0' y1='0' x2='0' y2='1'>
             <stop offset='5%' stopColor='var(--chart-1)' stopOpacity={0.8} />
             <stop offset='95%' stopColor='var(--chart-1)' stopOpacity={0.1} />
+          </linearGradient>
+          <linearGradient id='incomeFill' x1='0' y1='0' x2='0' y2='1'>
+            <stop
+              offset='5%'
+              stopColor='var(--color-green-500)'
+              stopOpacity={0.8}
+            />
+            <stop
+              offset='95%'
+              stopColor='var(--color-green-500)'
+              stopOpacity={0.1}
+            />
+          </linearGradient>
+          <linearGradient id='expenseFill' x1='0' y1='0' x2='0' y2='1'>
+            <stop
+              offset='5%'
+              stopColor='var(--color-red-500)'
+              stopOpacity={0.8}
+            />
+            <stop
+              offset='95%'
+              stopColor='var(--color-red-500)'
+              stopOpacity={0.1}
+            />
           </linearGradient>
         </defs>
         <ChartTooltip
@@ -139,7 +170,7 @@ export function TransactionChart() {
         <Area
           dataKey='totalAmount'
           type='bump'
-          fill='url(#fill)'
+          fill='url(#totalFill)'
           fillOpacity={0.1}
           stroke='var(--chart-1)'
         />
@@ -151,6 +182,24 @@ export function TransactionChart() {
           fillOpacity={0.1}
           stroke='var(--chart-1)'
         />
+        {/* <Area
+          dataKey='totalIncome'
+          // hide
+          type='linear'
+          fill='url(#incomeFill)'
+          fillOpacity={0.1}
+          opacity={0.5}
+          stroke='var(--color-green-500)'
+        />
+        <Area
+          dataKey='totalExpense'
+          // hide
+          type='linear'
+          fill='url(#expenseFill)'
+          fillOpacity={0.1}
+          opacity={0.5}
+          stroke='var(--color-red-500)'
+        /> */}
       </AreaChart>
     </ChartContainer>
   );
