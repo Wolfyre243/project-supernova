@@ -42,10 +42,16 @@ export interface Account {
 
 export interface Transaction {
   transactionId: string | null | undefined;
-  amount: number | null | undefined;
-  accountId: string | null | undefined;
+  amount: number;
   type: 'income' | 'expense' | null | undefined;
+  accountId: string | null | undefined;
+  accountName?: string;
+  accountIcon?: string;
+  accountColor?: string;
   categoryId: string | null | undefined;
+  categoryName?: string;
+  categoryIcon?: string;
+  categoryColor?: string;
   notes: string | null | undefined;
   date: Date | null | undefined;
   createdAt: Date | null | undefined;

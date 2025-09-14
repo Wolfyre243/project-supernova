@@ -88,7 +88,7 @@ export function AccountIncomeStatCard({ accountId }: { accountId: string }) {
   if (isLoading) return <StatCardSkeleton />;
 
   return (
-    <div className='flex flex-col gap-2 p-4'>
+    <div className='flex flex-col gap-2 py-2 md:p-4'>
       <h1 className='text-xl font-semibold'>
         ${accountData?.income?.total.toFixed(2)}
       </h1>
@@ -105,7 +105,7 @@ export function AccountExpenseStatCard({ accountId }: { accountId: string }) {
   if (isLoading) return <StatCardSkeleton />;
 
   return (
-    <div className='flex flex-col gap-2 p-4'>
+    <div className='flex flex-col gap-2 py-2 md:p-4'>
       <h1 className='text-xl font-semibold'>
         ${accountData?.expense?.total.toFixed(2)}
       </h1>

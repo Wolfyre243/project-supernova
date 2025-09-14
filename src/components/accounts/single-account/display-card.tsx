@@ -49,9 +49,7 @@ export function AccountDisplayCard({ accountId }: { accountId: string }) {
             </div>
             <div>
               {/* Truncate account name */}
-              <h2 className='text-muted-foreground text-lg'>
-                {accountData?.name}
-              </h2>
+              <h2 className='text-muted-foreground'>{accountData?.name}</h2>
               <h1 className='text-3xl font-semibold'>
                 ${accountData?.total?.toFixed(2)}
               </h1>

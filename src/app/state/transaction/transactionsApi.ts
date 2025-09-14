@@ -27,6 +27,7 @@ export const transactionsApi = apiSlice.injectEndpoints({
       query: () => `/transaction/balance`,
       providesTags: ['Transactions'],
     }),
+
     getIncomeTotal: builder.query<
       { totalIncome: number; incomeDifference: number },
       Granularity
@@ -34,6 +35,7 @@ export const transactionsApi = apiSlice.injectEndpoints({
       query: (granularity) => `/transaction/income?granularity=${granularity}`,
       providesTags: ['Transactions'],
     }),
+
     getExpenseTotal: builder.query<
       { totalExpense: number; expenseDifference: number },
       Granularity
@@ -41,6 +43,7 @@ export const transactionsApi = apiSlice.injectEndpoints({
       query: (granularity) => `/transaction/expense?granularity=${granularity}`,
       providesTags: ['Transactions'],
     }),
+
     getTransactionStats: builder.query<
       { totalAmount: number | null; date: string; transactionCount: number }[],
       {
@@ -61,14 +64,31 @@ export const transactionsApi = apiSlice.injectEndpoints({
       },
       providesTags: ['Transactions'],
     }),
-    // getTransactionStatsByDate: builder.query<
-    //   { totalAmount: number | null; date: string; transactionCount: number }[],
-    //   { type: TransactionType; startDate: string; endDate: string }
-    // >({
-    //   query: ({ type, startDate, endDate }) =>
-    //     `/transaction/stats?type=${type}&startDate=${startDate}&endDate=${endDate}`,
-    //   providesTags: ['Transactions'],
-    // }),
+
+    getAllTransactions: builder.query<
+      {
+        count: number;
+        transactions: Transaction[] | Record<string, Transaction[]>;
+      },
+      {
+        accountIds?: string[];
+        categoryIds?: string[];
+        type?: TransactionType;
+        groupBy?: 'date';
+      }
+    >({
+      query: ({ accountIds, categoryIds, type, groupBy } = {}) => {
+        const params = new URLSearchParams();
+        if (accountIds && accountIds.length > 0)
+          params.append('accountIds', accountIds.join(','));
+        if (categoryIds && categoryIds.length > 0)
+          params.append('categoryIds', categoryIds.join(','));
+        if (type) params.append('type', type);
+        if (groupBy) params.append('groupBy', groupBy);
+        return `/transaction?${params.toString()}`;
+      },
+      providesTags: ['Transactions'],
+    }),
   }),
 });
 // Export the auto-generated hooks
@@ -79,4 +99,5 @@ export const {
   useGetIncomeTotalQuery,
   useGetExpenseTotalQuery,
   useGetTransactionStatsQuery,
+  useGetAllTransactionsQuery,
 } = transactionsApi;

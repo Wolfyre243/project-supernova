@@ -66,7 +66,7 @@ export default async function DashboardSingleAccountPage({
         <div className='flex w-full flex-col gap-4 md:flex-row'>
           {/* Transactions */}
           <div className='flex flex-col gap-4'>
-            <div className='flex flex-row items-end justify-between'>
+            <div className='flex flex-row items-baseline justify-between'>
               <h1 className='text-xl'>Transactions</h1>
               <Link
                 href={'/home/activity'}
