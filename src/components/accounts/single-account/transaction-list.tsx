@@ -1,57 +1,13 @@
 'use client';
 
 import { useGetAllTransactionsQuery } from '@/app/state/transaction/transactionsApi';
+import {
+  TransactionItem,
+  TransactionItemSkeleton,
+} from '@/components/transactions/transaction-item';
 import { Separator } from '@/components/ui/separator';
-import { Skeleton } from '@/components/ui/skeleton';
-import { IconMap } from '@/config/iconMap';
 import { useLocale } from '@/hooks/useLocale';
 import { Transaction } from '@/lib/models';
-import { cn } from '@/utils/cn';
-
-function TransactionItemSkeleton() {
-  return (
-    <div className='flex flex-row items-center justify-between'>
-      <div className='flex flex-row items-center gap-4'>
-        <Skeleton className='h-10 w-10 rounded-full' />
-        <Skeleton className='h-4 w-32' />
-      </div>
-      <Skeleton className='h-4 w-16' />
-    </div>
-  );
-}
-
-function TransactionItem({ transaction }: { transaction: Transaction }) {
-  const isExpense = transaction.type === 'expense';
-
-  return (
-    <div className='flex flex-row items-center justify-between'>
-      <div className='flex flex-row items-center gap-4'>
-        <div
-          className='h-fit w-fit rounded-full p-2'
-          style={{ backgroundColor: transaction.categoryColor }}
-        >
-          {transaction.categoryIcon &&
-            (() => {
-              const SelectedIcon = IconMap[transaction.categoryIcon];
-              return SelectedIcon ? <SelectedIcon className='size-5' /> : null;
-            })()}
-        </div>
-        <h1 className='max-w-full truncate'>
-          {transaction.notes?.trim() || transaction.categoryName}
-        </h1>
-      </div>
-      <h2
-        className={cn(
-          isExpense ? 'text-red-400' : 'text-green-400',
-          'font-bold',
-        )}
-      >
-        {/* TODO: Fix transaction amount decimals */}
-        {isExpense && '-'}${transaction.amount}
-      </h2>
-    </div>
-  );
-}
 
 export function AccountTransactionList({ accountId }: { accountId: string }) {
   const locale = useLocale();
@@ -81,7 +37,7 @@ export function AccountTransactionList({ accountId }: { accountId: string }) {
           ([date, transactions]) => {
             return (
               <div key={date}>
-                <div className='text-muted mb-2 text-sm'>
+                <div className='text-muted mb-2 text-sm font-medium'>
                   {new Date(date).toLocaleDateString(locale, {
                     timeZone: timezone,
                     weekday: 'long',

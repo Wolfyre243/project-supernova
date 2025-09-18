@@ -51,7 +51,7 @@ export function AccountPaginationItem({
 }
 
 export function AccountPagination() {
-  const [searchTerm, setSearchTerm] = useState<string | undefined>();
+  const [searchTerm, setSearchTerm] = useState<string>('');
   const [sort, setSort] = useState<string>('total,desc');
 
   const { data: result, isLoading } = useGetAccountPaginationQuery({
@@ -65,7 +65,10 @@ export function AccountPagination() {
   return (
     <div className='flex w-full flex-col gap-4'>
       <div className='flex flex-row items-center gap-2 md:w-1/3'>
-        <PaginationSearch onChange={(e) => setSearchTerm(e.target.value)} />
+        <PaginationSearch
+          value={searchTerm}
+          onChange={(e) => setSearchTerm(e.target.value)}
+        />
         {/* TODO: Turn into dropdown menus for multiple filters etc, 
         display those filters on desktop, and truncate to a badge on mobile
         showing how many active filters there are */}

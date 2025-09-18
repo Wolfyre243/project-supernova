@@ -1,5 +1,6 @@
 import { Transaction } from '@/lib/models';
 import { apiSlice } from '../mainApiSlice';
+import { param } from 'drizzle-orm';
 
 type Granularity = 'day' | 'week' | 'month' | 'year';
 type Scope = 'week' | 'month' | 'year' | 'all';
@@ -78,6 +79,7 @@ export const transactionsApi = apiSlice.injectEndpoints({
     getAllTransactions: builder.query<
       {
         count: number;
+        total: number;
         transactions: Transaction[] | Record<string, Transaction[]>;
       },
       {
@@ -85,9 +87,11 @@ export const transactionsApi = apiSlice.injectEndpoints({
         categoryIds?: string[];
         type?: TransactionType;
         groupBy?: 'date';
+        page?: number;
+        limit?: number;
       }
     >({
-      query: ({ accountIds, categoryIds, type, groupBy } = {}) => {
+      query: ({ accountIds, categoryIds, type, groupBy, page, limit } = {}) => {
         const params = new URLSearchParams();
         if (accountIds && accountIds.length > 0)
           params.append('accountIds', accountIds.join(','));
@@ -95,6 +99,8 @@ export const transactionsApi = apiSlice.injectEndpoints({
           params.append('categoryIds', categoryIds.join(','));
         if (type) params.append('type', type);
         if (groupBy) params.append('groupBy', groupBy);
+        if (page) params.append('page', page.toString());
+        if (limit) params.append('limit', limit.toString());
         return `/transaction?${params.toString()}`;
       },
       providesTags: ['Transactions'],

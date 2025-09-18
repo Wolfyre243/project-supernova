@@ -31,12 +31,12 @@ export const navItems: Array<NavItem> = [
   },
   {
     title: 'Activity',
-    url: '#',
+    url: '/home/activity',
     icon: 'receipt',
   },
   {
     title: 'Statistics',
-    url: '#',
+    url: '/home/statistics',
     icon: 'chart',
   },
 ];

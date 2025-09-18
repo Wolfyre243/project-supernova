@@ -1,5 +1,5 @@
-import { InDevCard } from '@/components/misc/in-development-card';
 import { BackButton } from '@/components/nav/control-buttons';
+import { TransactionPagination } from '@/components/transactions/pagination';
 
 export default function DashboardActivityPage() {
   return (
@@ -10,9 +10,7 @@ export default function DashboardActivityPage() {
       <div className='flex flex-row items-center justify-between'>
         <h1 className='text-3xl font-semibold'>Transactions</h1>
       </div>
-      <div className='flex h-full flex-col justify-center'>
-        <InDevCard />
-      </div>
+      <TransactionPagination />
     </div>
   );
 }

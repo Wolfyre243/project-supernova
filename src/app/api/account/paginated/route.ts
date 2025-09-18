@@ -24,7 +24,6 @@ export async function GET(request: NextRequest) {
     const page = parseInt(searchParams.get('page') || '1', 10);
     const limit = parseInt(searchParams.get('limit') || '10', 10);
     const searchTerm = searchParams.get('search') || '';
-    console.log('Search Term:', searchTerm);
     const sortBy = searchParams.get('sortBy');
     const sortOrder =
       searchParams.get('sortOrder')?.toLowerCase() === 'asc' ? 'asc' : 'desc';
