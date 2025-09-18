@@ -79,7 +79,7 @@ export function AccountPagination() {
       </div>
       <div className='flex w-full flex-col gap-4'>
         {isLoading &&
-          Array.from({ length: 3 }).map((item) => (
+          Array.from({ length: 3 }).map(() => (
             <div
               className='flex w-full flex-row items-center gap-4'
               key={crypto.randomUUID()}

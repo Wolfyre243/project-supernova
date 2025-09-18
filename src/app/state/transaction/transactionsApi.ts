@@ -1,6 +1,5 @@
 import { Transaction } from '@/lib/models';
 import { apiSlice } from '../mainApiSlice';
-import { param } from 'drizzle-orm';
 
 type Granularity = 'day' | 'week' | 'month' | 'year';
 type Scope = 'week' | 'month' | 'year' | 'all';
@@ -89,15 +88,25 @@ export const transactionsApi = apiSlice.injectEndpoints({
         groupBy?: 'date';
         page?: number;
         limit?: number;
+        searchTerm?: string;
       }
     >({
-      query: ({ accountIds, categoryIds, type, groupBy, page, limit } = {}) => {
+      query: ({
+        accountIds,
+        categoryIds,
+        type,
+        groupBy,
+        page,
+        limit,
+        searchTerm,
+      } = {}) => {
         const params = new URLSearchParams();
         if (accountIds && accountIds.length > 0)
           params.append('accountIds', accountIds.join(','));
         if (categoryIds && categoryIds.length > 0)
           params.append('categoryIds', categoryIds.join(','));
         if (type) params.append('type', type);
+        if (searchTerm) params.append('search', searchTerm);
         if (groupBy) params.append('groupBy', groupBy);
         if (page) params.append('page', page.toString());
         if (limit) params.append('limit', limit.toString());

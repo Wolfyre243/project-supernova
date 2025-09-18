@@ -12,12 +12,12 @@ export interface UserDetails {
 }
 
 export interface Category {
-  categoryId: string | null | undefined;
-  userId: string | null | undefined;
-  name: string | null | undefined;
+  categoryId: string;
+  userId: string;
+  name: string;
   type: 'income' | 'expense' | null | undefined;
-  icon: string | null | undefined;
-  color: string | null | undefined;
+  icon: string;
+  color: string;
   description: string | null | undefined;
   createdAt: Date | null | undefined;
   updatedAt: Date | null | undefined;

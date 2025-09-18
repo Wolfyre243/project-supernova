@@ -2,10 +2,19 @@ import db from '@/db/db';
 import { account, category, transaction } from '@/db/schema';
 import { createClient } from '@/utils/supabase/server';
 import { Status } from '@/config/statusConfig';
-import { and, eq, desc, inArray, getTableColumns, lte, gt } from 'drizzle-orm';
+import {
+  and,
+  eq,
+  desc,
+  inArray,
+  getTableColumns,
+  lte,
+  gt,
+  or,
+  ilike,
+} from 'drizzle-orm';
 import { NextResponse } from 'next/server';
 import { APIError } from '@/lib/exceptions';
-import { url } from 'inspector/promises';
 
 const timeZone = Intl.DateTimeFormat().resolvedOptions().timeZone;
 
@@ -25,9 +34,13 @@ export async function GET(request: Request) {
     const { searchParams } = new URL(request.url);
 
     // Get Search Parameters
+    // Filters
     const accountIdsParam = searchParams.get('accountIds');
     const categoryIdsParam = searchParams.get('categoryIds');
     const typeParam = searchParams.get('type');
+    const searchTerm = searchParams.get('search') || '';
+
+    // Pagination
     const page = searchParams.get('page');
     const limit = searchParams.get('limit');
 
@@ -48,6 +61,10 @@ export async function GET(request: Request) {
       eq(transaction.statusId, activeStatus),
       gt(transaction.date, new Date(startDateParam)),
       lte(transaction.date, new Date(endDateParam)),
+      or(
+        ilike(category.name, `%${searchTerm}%`),
+        ilike(transaction.notes, `%${searchTerm}%`),
+      ),
     ];
 
     // Filter by account ID
