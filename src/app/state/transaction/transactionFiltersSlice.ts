@@ -7,11 +7,13 @@ export interface TransactionFilterState {
   accountIds: string[];
   categoryIds: string[];
   type?: TransactionType;
+  searchTerm?: string;
 }
 
 const initialState: TransactionFilterState = {
   accountIds: [],
   categoryIds: [],
+  searchTerm: '',
 };
 
 export const transactionFiltersSlice = createSlice({
@@ -24,6 +26,9 @@ export const transactionFiltersSlice = createSlice({
         return;
       }
       state.type = action.payload;
+    },
+    setSearchTerm: (state, action: { payload: string }) => {
+      state.searchTerm = action.payload;
     },
     addCategoryId: (state, action: { payload: string }) => {
       // If the category ID is already selected, remove it (toggle off)
@@ -42,8 +47,12 @@ export const transactionFiltersSlice = createSlice({
   },
 });
 
-export const { setTransactionType, addCategoryId, clearCategoryIds } =
-  transactionFiltersSlice.actions;
+export const {
+  setTransactionType,
+  setSearchTerm,
+  addCategoryId,
+  clearCategoryIds,
+} = transactionFiltersSlice.actions;
 
 export const selectTransactionFilters = (state: RootState) =>
   state.transactionFilters;

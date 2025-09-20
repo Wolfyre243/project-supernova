@@ -2,7 +2,7 @@
 
 import { useState } from 'react';
 import { Popover, PopoverContent, PopoverTrigger } from '../ui/popover';
-import { Check, Filter, LayoutGrid, Plus, PlusCircle } from 'lucide-react';
+import { Check, Filter, LayoutGrid, Plus, PlusCircle, X } from 'lucide-react';
 import { Button } from '../ui/button';
 import { useIsMobile } from '@/hooks/use-mobile';
 import {
@@ -149,12 +149,44 @@ function TransactionsCategoryFilter() {
   );
 }
 
-// This component is intended for mobile only.
+export function TransactionCategoryFilterArray() {
+  const dispatch = useAppDispatch();
+  const { categoryIds } = useAppSelector(selectTransactionFilters);
+
+  const { data } = useGetCategoriesQuery();
+
+  return (
+    <div className='flex flex-row gap-2'>
+      {data &&
+        data.map((category: Category) => {
+          const isSelected = Boolean(
+            categoryIds?.includes(category.categoryId),
+          );
+          if (isSelected) {
+            return (
+              <Button
+                size={'sm'}
+                variant={'outline'}
+                style={{ borderColor: category.color, borderWidth: 2 }}
+                onClick={() => dispatch(addCategoryId(category.categoryId))}
+                key={crypto.randomUUID()}
+              >
+                {category.name}
+                <X />
+              </Button>
+            );
+          }
+        })}
+    </div>
+  );
+}
+
 export function TransactionsFilterMenu() {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
   const [snap, setSnap] = useState<number | string | null>(snapPoints[0]);
 
+  // Use drawer if mobile
   if (isMobile) {
     return (
       <Drawer
@@ -188,6 +220,7 @@ export function TransactionsFilterMenu() {
     );
   }
 
+  // TODO: Add desktop version as dropdown
   return (
     <Popover open={isOpen} onOpenChange={setIsOpen}>
       <PopoverTrigger asChild>

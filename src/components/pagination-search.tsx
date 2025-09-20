@@ -29,7 +29,6 @@ export function PaginationSearch(
         type='text'
         placeholder='Search'
         className='placeholder:text-muted-foreground w-full text-sm outline-0'
-        aria-autocomplete='inline'
       />
       <button
         type='button'
