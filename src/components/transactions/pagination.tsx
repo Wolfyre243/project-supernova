@@ -1,6 +1,5 @@
 'use client';
 
-import { useState } from 'react';
 import { PaginationSearch } from '../pagination-search';
 import { useGetAllTransactionsQuery } from '@/app/state/transaction/transactionsApi';
 import { SearchX } from 'lucide-react';

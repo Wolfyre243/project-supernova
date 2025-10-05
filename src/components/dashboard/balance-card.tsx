@@ -127,9 +127,9 @@ function BalanceCardGreeting() {
         </ChartContainer>
       </div>
       {/* TODO: Put better name here */}
-      <span className='text-muted-foreground text-sm'>
+      {/* <span className='text-muted-foreground text-sm'>
         Your balance increased by $100 from last month!
-      </span>
+      </span> */}
     </div>
   );
 }

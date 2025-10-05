@@ -5,9 +5,19 @@ import {
   TransactionItem,
   TransactionItemSkeleton,
 } from '@/components/transactions/transaction-item';
+import { Button } from '@/components/ui/button';
+import {
+  Empty,
+  EmptyContent,
+  EmptyDescription,
+  EmptyHeader,
+  EmptyMedia,
+  EmptyTitle,
+} from '@/components/ui/empty';
 import { Separator } from '@/components/ui/separator';
 import { useLocale } from '@/hooks/useLocale';
 import { Transaction } from '@/lib/models';
+import { ListX } from 'lucide-react';
 
 export function AccountTransactionList({ accountId }: { accountId: string }) {
   const locale = useLocale();
@@ -32,7 +42,7 @@ export function AccountTransactionList({ accountId }: { accountId: string }) {
   return (
     <div className='flex flex-col gap-4'>
       {/* TODO: Add more controls to allow user to pick a month from this year, can take inspo from POSB */}
-      {transactionsData &&
+      {transactionsData && transactionsData.transactions.length !== 0 ? (
         Object.entries(transactionsData?.transactions).map(
           ([date, transactions]) => {
             return (
@@ -59,7 +69,17 @@ export function AccountTransactionList({ accountId }: { accountId: string }) {
               </div>
             );
           },
-        )}
+        )
+      ) : (
+        <Empty>
+          <EmptyHeader>
+            <EmptyMedia variant='default'>
+              <ListX className='size-8' />
+            </EmptyMedia>
+          </EmptyHeader>
+          <EmptyTitle>No transaction data found!</EmptyTitle>
+        </Empty>
+      )}
       {/* End */}
       <Separator />
       <div className='text-muted flex w-full flex-col items-center justify-center gap-1 text-xs'>
