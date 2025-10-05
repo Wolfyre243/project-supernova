@@ -5,6 +5,7 @@ import {
   BalanceCardMobile,
 } from '@/components/dashboard/balance-card';
 import { ExpenseCard, IncomeCard } from '@/components/dashboard/cashflow-cards';
+import { TransactionChartCard } from '@/components/transactions/statistics-card';
 import React from 'react';
 
 export default function UserHomePage() {
@@ -16,7 +17,7 @@ export default function UserHomePage() {
         <BalanceCardMobile />
       </header>
 
-      <section className='bg-background flex flex-col gap-4 rounded-t-3xl p-6 pb-24 md:flex-row md:rounded-none md:pb-6'>
+      <section className='bg-background flex flex-col gap-4 rounded-t-3xl p-4 pb-24 md:flex-row md:rounded-none md:pb-4'>
         <div className='flex h-full w-full flex-col gap-4 md:w-[80%]'>
           <div className='flex w-full flex-row items-center gap-4'>
             <BalanceCard />
@@ -32,9 +33,7 @@ export default function UserHomePage() {
               Quick Add Card
             </div>
           </div>
-          <div className='bg-card h-100 w-full rounded-2xl border p-4'>
-            Chart here
-          </div>
+          <TransactionChartCard />
         </div>
 
         {/* Right Column, hidden on mobile */}

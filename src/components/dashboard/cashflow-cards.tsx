@@ -7,14 +7,9 @@ import { cn } from '@/utils/cn';
 import {
   useGetExpenseTotalQuery,
   useGetIncomeTotalQuery,
-  useGetTransactionStatsByDateQuery,
+  useGetTransactionStatsQuery,
 } from '@/app/state/transaction/transactionsApi';
-import {
-  ChartConfig,
-  ChartContainer,
-  ChartTooltip,
-  ChartTooltipContent,
-} from '../ui/chart';
+import { ChartConfig, ChartContainer } from '../ui/chart';
 import { Area, AreaChart } from 'recharts';
 
 export function IncomeCard({ className }: { className?: string }) {
@@ -26,7 +21,7 @@ export function IncomeCard({ className }: { className?: string }) {
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const { data: chartData, isLoading: chartIsLoading } =
-    useGetTransactionStatsByDateQuery({
+    useGetTransactionStatsQuery({
       type: 'income',
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
@@ -37,7 +32,7 @@ export function IncomeCard({ className }: { className?: string }) {
       label: 'Total',
     },
     date: {
-      label: 'Income',
+      label: 'Date',
     },
     transactionCount: {
       label: 'Transaction Count',
@@ -71,7 +66,7 @@ export function IncomeCard({ className }: { className?: string }) {
                 accessibilityLayer
                 data={chartData}
                 margin={{
-                  bottom: 10,
+                  bottom: 12,
                 }}
               >
                 <Area
@@ -122,7 +117,7 @@ export function ExpenseCard({ className }: { className?: string }) {
   const startDate = new Date(now.getFullYear(), now.getMonth(), 1);
   const endDate = new Date(now.getFullYear(), now.getMonth() + 1, 0);
   const { data: chartData, isLoading: chartIsLoading } =
-    useGetTransactionStatsByDateQuery({
+    useGetTransactionStatsQuery({
       type: 'expense',
       startDate: startDate.toISOString(),
       endDate: endDate.toISOString(),
@@ -133,7 +128,7 @@ export function ExpenseCard({ className }: { className?: string }) {
       label: 'Total',
     },
     date: {
-      label: 'Expense',
+      label: 'Date',
     },
     transactionCount: {
       label: 'Transaction Count',
@@ -167,7 +162,7 @@ export function ExpenseCard({ className }: { className?: string }) {
                 accessibilityLayer
                 data={chartData}
                 margin={{
-                  bottom: 10,
+                  bottom: 12,
                 }}
               >
                 <Area

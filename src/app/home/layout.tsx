@@ -30,9 +30,7 @@ export default async function UserHomeLayout({
         <SidebarInset>
           <main className='bg-homepage-gradient flex flex-1 flex-col lg:bg-none'>
             <SiteHeader />
-            <div className='flex h-full min-h-screen flex-1 flex-col'>
-              {children}
-            </div>
+            <div className='flex h-full flex-1 flex-col'>{children}</div>
           </main>
           <div className='fixed right-0 bottom-0 left-0 z-50 w-full md:hidden'>
             <BottomBar />

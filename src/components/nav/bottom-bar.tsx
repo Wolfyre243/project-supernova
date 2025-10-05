@@ -34,7 +34,8 @@ export default function BottomBar() {
   return (
     <nav className='border-muted/50 bg-background flex w-full flex-row items-end gap-6 border-t px-2 py-3'>
       {items.slice(0, Math.floor(items.length / 2)).map((item: NavIconItem) => {
-        const isActive = pathname.startsWith(item.url);
+        // TODO: Fix active state of bottom nav
+        const isActive = pathname.endsWith(item.url);
         return (
           <BottomBarItem
             item={item}
@@ -47,7 +48,7 @@ export default function BottomBar() {
       {items
         .slice(Math.floor(items.length / 2), items.length)
         .map((item: NavIconItem) => {
-          const isActive = pathname.startsWith(item.url);
+          const isActive = pathname.endsWith(item.url);
           return (
             <BottomBarItem
               item={item}

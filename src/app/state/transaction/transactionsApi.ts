@@ -2,10 +2,11 @@ import { Transaction } from '@/lib/models';
 import { apiSlice } from '../mainApiSlice';
 
 type Granularity = 'day' | 'week' | 'month' | 'year';
-type Scope = 'day' | 'week' | 'month' | 'yearly';
+type Scope = 'week' | 'month' | 'year' | 'all';
 type TransactionType = 'income' | 'expense';
 
 export const transactionsApi = apiSlice.injectEndpoints({
+  overrideExisting: true,
   endpoints: (builder) => ({
     createIncome: builder.mutation<Transaction, Partial<Transaction>>({
       query: (income) => ({
@@ -27,6 +28,7 @@ export const transactionsApi = apiSlice.injectEndpoints({
       query: () => `/transaction/balance`,
       providesTags: ['Transactions'],
     }),
+
     getIncomeTotal: builder.query<
       { totalIncome: number; incomeDifference: number },
       Granularity
@@ -34,6 +36,7 @@ export const transactionsApi = apiSlice.injectEndpoints({
       query: (granularity) => `/transaction/income?granularity=${granularity}`,
       providesTags: ['Transactions'],
     }),
+
     getExpenseTotal: builder.query<
       { totalExpense: number; expenseDifference: number },
       Granularity
@@ -41,20 +44,74 @@ export const transactionsApi = apiSlice.injectEndpoints({
       query: (granularity) => `/transaction/expense?granularity=${granularity}`,
       providesTags: ['Transactions'],
     }),
-    getTransactionStatsByScope: builder.query<
-      { totalAmount: number | null; date: string; transactionCount: number }[],
-      { scope: Scope; type: TransactionType }
+
+    getTransactionStats: builder.query<
+      {
+        totalAmount: number | null;
+        date: string;
+        transactionCount: number;
+        totalIncome?: number;
+        totalExpense?: number;
+      }[],
+      {
+        scope?: Scope;
+        accountIds?: string[];
+        type?: TransactionType;
+        startDate?: string;
+        endDate?: string;
+      }
     >({
-      query: ({ scope, type }) =>
-        `/transaction/stats?scope=${scope}&type=${type}`,
+      query: ({ scope, accountIds, type, startDate, endDate }) => {
+        const url = '/transaction/stats';
+        const params = new URLSearchParams();
+        if (scope) params.append('scope', scope);
+        if (accountIds && accountIds.length > 0)
+          params.append('accountIds', accountIds.join(','));
+        if (type) params.append('type', type);
+        if (startDate) params.append('startDate', startDate);
+        if (endDate) params.append('endDate', endDate);
+        return `${url}?${params.toString()}`;
+      },
       providesTags: ['Transactions'],
     }),
-    getTransactionStatsByDate: builder.query<
-      { totalAmount: number | null; date: string; transactionCount: number }[],
-      { type: TransactionType; startDate: string; endDate: string }
+
+    getAllTransactions: builder.query<
+      {
+        count: number;
+        total: number;
+        transactions: Transaction[] | Record<string, Transaction[]>;
+      },
+      {
+        accountIds?: string[];
+        categoryIds?: string[];
+        type?: TransactionType;
+        groupBy?: 'date';
+        page?: number;
+        limit?: number;
+        searchTerm?: string;
+      }
     >({
-      query: ({ type, startDate, endDate }) =>
-        `/transaction/stats?type=${type}&startDate=${startDate}&endDate=${endDate}`,
+      query: ({
+        accountIds,
+        categoryIds,
+        type,
+        groupBy,
+        page,
+        limit,
+        searchTerm,
+      } = {}) => {
+        const params = new URLSearchParams();
+        if (accountIds && accountIds.length > 0)
+          params.append('accountIds', accountIds.join(','));
+        if (categoryIds && categoryIds.length > 0)
+          params.append('categoryIds', categoryIds.join(','));
+        if (type) params.append('type', type);
+        if (searchTerm) params.append('search', searchTerm);
+        if (groupBy) params.append('groupBy', groupBy);
+        if (page) params.append('page', page.toString());
+        if (limit) params.append('limit', limit.toString());
+        return `/transaction?${params.toString()}`;
+      },
       providesTags: ['Transactions'],
     }),
   }),
@@ -66,6 +123,6 @@ export const {
   useGetBalanceQuery,
   useGetIncomeTotalQuery,
   useGetExpenseTotalQuery,
-  useGetTransactionStatsByDateQuery,
-  useGetTransactionStatsByScopeQuery,
+  useGetTransactionStatsQuery,
+  useGetAllTransactionsQuery,
 } = transactionsApi;

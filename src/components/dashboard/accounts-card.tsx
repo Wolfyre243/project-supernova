@@ -108,9 +108,7 @@ export function AccountsCard({ className }: { className?: string }) {
       )}
     >
       <div className='flex flex-row items-center justify-between'>
-        <h1 className='text-xl font-semibold text-nowrap md:text-base md:font-semibold'>
-          Accounts
-        </h1>
+        <h1 className='font-semibold text-nowrap md:font-semibold'>Accounts</h1>
         <NewAccountButton />
       </div>
       <div className='flex w-full flex-row items-center justify-center gap-2'>

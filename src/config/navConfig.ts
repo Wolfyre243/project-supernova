@@ -26,17 +26,17 @@ export const navItems: Array<NavItem> = [
   },
   {
     title: 'Accounts',
-    url: '#',
+    url: '/home/account',
     icon: 'wallet',
   },
   {
-    title: 'History',
-    url: '#',
+    title: 'Activity',
+    url: '/home/activity',
     icon: 'receipt',
   },
   {
     title: 'Statistics',
-    url: '#',
+    url: '/home/statistics',
     icon: 'chart',
   },
 ];
@@ -62,17 +62,17 @@ export const mobileNavItems: NavIconItem[] = [
   },
   {
     title: 'Accounts',
-    url: '#',
+    url: '/home/account',
     icon: Wallet,
   },
   {
-    title: 'History',
-    url: '#',
+    title: 'Activity',
+    url: '/home/activity',
     icon: Receipt,
   },
   {
     title: 'Statistics',
-    url: '#',
+    url: '/home/statistics',
     icon: ChartNoAxesColumnIncreasing,
   },
 ];

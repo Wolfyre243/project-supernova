@@ -90,6 +90,9 @@ export async function POST(request: NextRequest) {
   try {
     const body = await request.json();
 
+    // TODO: Enforce color and icon validation
+    // TODO: Enforce color checking for free accounts
+
     const newAccount = await db
       .insert(account)
       .values({

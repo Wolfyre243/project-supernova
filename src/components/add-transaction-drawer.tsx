@@ -115,7 +115,7 @@ export function CreateTransactionDrawer() {
           <Plus className='size-8 bg-clip-content text-[#f9f9f9]' />
         </div>
       </DrawerTrigger>
-      <DrawerContent className='min-h-5/6 w-full outline-0'>
+      <DrawerContent className='min-h-5/6 w-full'>
         <DrawerHeader>
           <DialogTitle className='sr-only'>Add Transaction</DialogTitle>
           <div className='flex flex-row justify-around'>

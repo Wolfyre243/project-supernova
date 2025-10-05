@@ -1,8 +1,8 @@
 import { APIError } from '@/lib/exceptions';
 
 /**
- * Parses the granularity string and returns the corresponding date range.
- * @param granularity The granularity string (e.g., "day", "week", "month", "year").
+ * Parses the scope string and returns the corresponding date range.
+ * @param scope The scope string (e.g., "day", "week", "month", "year").
  * @returns An object containing the start and end dates for the current and previous periods.
  */
 export function parseScope(
@@ -19,28 +19,13 @@ export function parseScope(
   let previousStartDate: Date;
   let previousEndDate: Date;
 
-  if (scope === 'day') {
-    startDate = new Date(
-      currentDate.getFullYear(),
-      currentDate.getMonth(),
-      currentDate.getDate(),
-    );
-    startDate.setHours(0, 0, 0, 0); // Start of the day
-    endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 1); // Start of next day
-
-    // Previous day
-    previousStartDate = new Date(startDate);
-    previousStartDate.setDate(startDate.getDate() - 1);
-    previousEndDate = new Date(startDate);
-  } else if (scope === 'month') {
+  if (scope === 'month') {
     startDate = new Date(currentDate.getFullYear(), currentDate.getMonth(), 1);
     endDate = new Date(
       currentDate.getFullYear(),
       currentDate.getMonth() + 1,
       0,
-    ); // End of this month
-    endDate.setHours(23, 59, 59, 999);
+    );
 
     // Previous month
     previousStartDate = new Date(
@@ -57,10 +42,12 @@ export function parseScope(
   } else if (scope === 'week') {
     const dayOfWeek = currentDate.getDay();
     startDate = new Date(currentDate);
-    startDate.setDate(currentDate.getDate() - (dayOfWeek || 7) + 1);
+    startDate.setDate(
+      currentDate.getDate() - (dayOfWeek === 0 ? 7 : dayOfWeek) + 1,
+    );
     startDate.setHours(0, 0, 0, 0);
     endDate = new Date(startDate);
-    endDate.setDate(startDate.getDate() + 7);
+    endDate.setDate(startDate.getDate() + 6);
     endDate.setHours(23, 59, 59, 999);
 
     // Previous week
@@ -69,6 +56,15 @@ export function parseScope(
     previousEndDate = new Date(startDate);
     previousEndDate.setHours(23, 59, 59, 999);
   } else if (scope === 'year') {
+    startDate = new Date(currentDate.getFullYear(), 0, 1);
+    endDate = new Date(currentDate.getFullYear() + 1, 0, 1);
+    endDate.setHours(23, 59, 59, 999);
+
+    // Previous year
+    previousStartDate = new Date(currentDate.getFullYear() - 1, 0, 1);
+    previousEndDate = new Date(currentDate.getFullYear(), 0, 1);
+    previousEndDate.setHours(23, 59, 59, 999);
+  } else if (scope === 'all') {
     startDate = new Date(currentDate.getFullYear(), 0, 1);
     endDate = new Date(currentDate.getFullYear() + 1, 0, 1);
     endDate.setHours(23, 59, 59, 999);

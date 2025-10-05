@@ -8,7 +8,7 @@ import {
   DialogTrigger,
 } from '../ui/dialog';
 import { Button } from '../ui/button';
-import { CircleX, Edit2, PiggyBank, Plus, X } from 'lucide-react';
+import { Plus, X } from 'lucide-react';
 import { useIsMobile } from '@/hooks/use-mobile';
 import { cn } from '@/utils/cn';
 import { useState } from 'react';
@@ -32,6 +32,7 @@ import { IconSelector } from '../icon-select';
 import { ColorSelector } from '../color-select';
 import { useCreateAccountMutation } from '@/app/state/account/accountsApi';
 import { toast } from 'sonner';
+import { ColorOptions } from '@/config/colorOptions';
 
 const formSchema = z.object({
   name: z
@@ -55,7 +56,11 @@ const formSchema = z.object({
   isSavings: z.boolean(),
 });
 
-function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
+export function NewAccountForm({
+  setIsOpen,
+}: {
+  setIsOpen: (bool: boolean) => void;
+}) {
   const [createAccountMutation] = useCreateAccountMutation();
 
   const form = useForm<z.infer<typeof formSchema>>({
@@ -63,7 +68,7 @@ function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
     defaultValues: {
       name: '',
       icon: 'CreditCard',
-      color: '#f9f9f9',
+      color: ColorOptions[0],
       isSavings: false,
     },
   });
@@ -83,7 +88,15 @@ function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
     name: 'color',
   });
 
-  async function onSubmit(data: z.infer<typeof formSchema>) {
+  async function onSubmit(
+    data: z.infer<typeof formSchema>,
+    event?: React.BaseSyntheticEvent,
+  ) {
+    if (event) {
+      console.log(event);
+      event.preventDefault();
+      event.stopPropagation();
+    }
     try {
       await createAccountMutation(data);
       setIsOpen(false);
@@ -101,7 +114,7 @@ function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
   return (
     <Form {...form}>
       <form
-        onSubmit={form.handleSubmit(onSubmit)}
+        onSubmit={(e) => form.handleSubmit(onSubmit)(e)}
         className='flex w-full flex-col gap-4'
         noValidate
       >
@@ -235,7 +248,7 @@ function NewAccountForm({ setIsOpen }: { setIsOpen: (bool: boolean) => void }) {
 
 // Consider adapting to a drawer component in the future
 // Or add more features to the account entity and display as a separate creation page
-export function NewAccountButton() {
+export function NewAccountButton({ className }: { className?: string }) {
   const isMobile = useIsMobile();
   const [isOpen, setIsOpen] = useState(false);
 
@@ -243,11 +256,12 @@ export function NewAccountButton() {
     <Dialog open={isOpen} onOpenChange={setIsOpen}>
       <DialogTrigger asChild>
         <Button
+          type='button'
           size={'icon'}
           variant={'ghost'}
           className='h-fit w-fit cursor-pointer hover:bg-transparent dark:hover:bg-transparent'
         >
-          <Plus className='size-5' />
+          <Plus className={cn('size-5', className)} />
         </Button>
       </DialogTrigger>
       <DialogContent
@@ -261,6 +275,7 @@ export function NewAccountButton() {
         <DialogTitle className='flex h-fit flex-row justify-between'>
           <span>Add Account</span>
           <Button
+            type='button'
             size={'icon'}
             variant={'ghost'}
             className='h-fit w-fit outline-0 hover:bg-none dark:hover:bg-transparent'
