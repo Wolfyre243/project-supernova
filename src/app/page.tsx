@@ -22,6 +22,8 @@ import { ThemeToggler } from '@/components/theme-provider';
 import Image from 'next/image';
 import Link from 'next/link';
 import { APP_VERSION } from '@/config/appInfoConfig';
+import { InstallPromptModal } from '@/components/install-prompt-modal';
+import { LandingPageDropdown } from '@/components/nav/landing-page-dropdown';
 
 export const metadata: Metadata = {
   title: 'Nova - Empower Your Finances with Simple Tracking',
@@ -37,12 +39,7 @@ export default function Home() {
       {/* Header/Navbar */}
       <header className='main mx-auto flex items-center justify-between px-6 py-6'>
         <div className='flex flex-row items-center gap-4'>
-          <Image
-            src='/logo.svg' // Path relative to public directory
-            alt='Nova Logo'
-            width={40} // Set your desired width
-            height={40} // Set your desired height
-          />
+          <LandingPageDropdown />
           <div className='hidden flex-row items-baseline gap-2 md:flex'>
             <h1 className='text-2xl font-semibold'>Nova</h1>
             <p className='text-sm'>{APP_VERSION}</p>
@@ -60,6 +57,7 @@ export default function Home() {
                 Pricing
               </Link>
             </Button>
+            <InstallPromptModal />
             <ThemeToggler />
           </div>
           <Button variant='outline' asChild>
@@ -74,7 +72,7 @@ export default function Home() {
       </header>
 
       {/* Hero Section */}
-      <section className='flex w-full flex-col items-center justify-center px-6 py-20 text-center md:px-8 lg:px-16 xl:px-20'>
+      <section className='flex w-full flex-col items-center justify-center px-6 py-16 text-center md:px-8 lg:px-16 xl:px-20'>
         <h2 className='from-secondary mb-4 w-fit bg-gradient-to-r to-purple-500 bg-clip-text py-2 text-5xl font-extrabold text-transparent'>
           Ignite Your Financial Supernova
         </h2>
@@ -99,6 +97,10 @@ export default function Home() {
           <Badge variant='outline' className='rounded-full px-4 py-1 text-sm'>
             Empowering
           </Badge>
+        </div>
+        <div className='text-muted-foreground mt-8 flex w-full flex-col gap-2 md:hidden'>
+          <h1 className='text-xl'>Mobile user? Even better!</h1>
+          <InstallPromptModal className='text-lg' />
         </div>
       </section>
 
